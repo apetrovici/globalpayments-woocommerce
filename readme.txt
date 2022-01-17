@@ -3,7 +3,7 @@ Contributors: globalpayments
 Tags: woocommerce, woo, unified, commerce, platform, global, payments, ucp, heartland, payment, systems, tsys, genius, 3DS, gateway, token, tokenize, save cards
 Requires at least: 5.4
 Tested up to: 5.8
-Stable tag: 1.1.3
+Stable tag: 1.2.0
 License: MIT
 License URI: https://github.com/globalpayments/globalpayments-woocommerce/blob/main/LICENSE
 
@@ -22,6 +22,7 @@ This extension allows WooCommerce to use the available Global Payments payment g
 - Stored payment methods
 - 3D Secure 2 & SCA
 - 3D Secure 1
+- Digital Wallets - Google Pay
 
 = Support =
 For more information or questions, please email <a href="mailto:developers@globalpay.com">developers@globalpay.com </a>.
@@ -45,7 +46,10 @@ Access to our Unified Commerce Platform (UCP) requires sandbox credentials which
 
 == Changelog ==
 
-= 1.1.3=
+= 1.2.0 =
+* Added Digital Wallets - Google Pay
+
+= 1.1.3 =
 * Added composer
 * Bug fix - globalpayments_gpapi-checkout_validated displayed although it should be hidden
 
