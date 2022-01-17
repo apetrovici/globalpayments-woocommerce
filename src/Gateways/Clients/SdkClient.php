@@ -201,6 +201,16 @@ class SdkClient implements ClientInterface {
 			}
 		}
 
+		if ( $this->has_arg( RequestArg::DIGITAL_WALLET_TOKEN ) ) {
+			$this->card_data = new CreditCardData();
+			$this->card_data->token = $this->get_arg( RequestArg::DIGITAL_WALLET_TOKEN );
+			$this->card_data->mobileType = $this->get_arg( RequestArg::MOBILE_TYPE );
+		}
+
+		if ( $this->has_arg( RequestArg::TRANSACTION_MODIFIER ) ) {
+			$this->builder_args['modifier'] = array( $this->get_arg( RequestArg::TRANSACTION_MODIFIER ) );
+		}
+
 		if ( $this->has_arg( RequestArg::BILLING_ADDRESS ) ) {
 			$this->prepare_address( AddressType::BILLING, $this->get_arg( RequestArg::BILLING_ADDRESS ) );
 		}

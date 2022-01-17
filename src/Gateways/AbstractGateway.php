@@ -54,6 +54,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	const TXN_TYPE_CHECK_ENROLLMENT        = 'checkEnrollment';
 	const TXN_TYPE_INITIATE_AUTHENTICATION = 'initiateAuthentication';
 
+	// DigitalWallet
+	const DIGITAL_WALLETS = ['globalpayments_googlepay','globalpayments_applepay'];
+
 	/**
 	 * Gateway provider. Should be overriden by individual gateway implementations
 	 *
@@ -717,7 +720,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 		// hooks only active when the gateway is enabled
-		add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ) );
+		if ( !in_array($this->id, $this::DIGITAL_WALLETS ) ) {
+			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ) );
+		}
 
 		if ( is_add_payment_method_page() ) {
 			add_action( 'wp_enqueue_scripts', array( $this, 'tokenization_script' ) );
@@ -1076,6 +1081,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$available_gateways = WC()->payment_gateways->get_available_payment_gateways();
 		foreach ( $available_gateways as $gateway_id => $gateway ) {
 			if ( $this->id !== $gateway_id && false !== strpos( $gateway_id, 'globalpayments_' ) ) {
+				if ( in_array ( $this->id, $this::DIGITAL_WALLETS ) || in_array ( $gateway_id, $this::DIGITAL_WALLETS ) ) {
+					return $settings;
+				}
 				$settings['enabled'] = 'no';
 				add_action ( 'woocommerce_sections_checkout', function() use ( $gateway ) {
 					echo '<div id="message" class="error inline"><p><strong>' .

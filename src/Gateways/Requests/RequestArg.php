@@ -17,4 +17,7 @@ abstract class RequestArg {
 	const GATEWAY_ID       = 'GATEWAY_ID';
 	const DESCRIPTION      = 'DESCRIPTION';
 	const AUTH_AMOUNT      = 'AUTH_AMOUNT';
+	const DIGITAL_WALLET_TOKEN = 'DIGITAL_WALLET_TOKEN';
+	const MOBILE_TYPE	   = 'MOBILE_TYPE';
+	const TRANSACTION_MODIFIER = 'TRANSACTION_MODIFIER';
 }
