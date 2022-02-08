@@ -1,20 +1,22 @@
 (function(
     $,
-    globalpayments_google_pay_params
+    globalpayments_google_pay_params,
+    helpers
 ) {
     function GooglePayWoocommerce(options)
     {
-        var google_merchant_id = options.google_merchant_id;
+        var google_merchant_id  = options.google_merchant_id;
         
         var global_payments_merchant_id = options.global_payments_merchant_id;
         
-        var accepted_cards = options.accepted_cards;
+        var accepted_cards      = options.accepted_cards;
         
-        var button_color = options.button_color;
+        var button_color        = options.button_color;
 
-        var currencyCode = options.currency;
+        var currencyCode        = options.currency;
 
-        var self = this;
+        var self                = this;
+
         // Checkout
         if ( 1 == wc_checkout_params.is_checkout ) {
             $( document.body ).on(
@@ -30,9 +32,8 @@
         
         initialize: function(data) {
 
-            var self = this;
-
-            self.configData = data;
+            var self            = this;
+            self.configData     = data;
             self.paymentsClient = null;
 
             self.setGooglePaymentsClient();
@@ -52,8 +53,8 @@
 
         getBaseRequest: function () {
             return {
-                apiVersion: 2,
-                apiVersionMinor: 0
+                apiVersion:         2,
+                apiVersionMinor:    0
             }
         },
 
@@ -83,25 +84,25 @@
         },
 
         getAllowedCardAuthMethods: function () {
-            return ["PAN_ONLY", "CRYPTOGRAM_3DS"];
+            return ['PAN_ONLY', 'CRYPTOGRAM_3DS'];
         },
 
         getTokenizationSpecification: function () {
             return {
                 type: 'PAYMENT_GATEWAY',
                 parameters: {
-                    'gateway': 'globalpayments',
-                    'gatewayMerchantId': 'gpapiqa1'
+                    'gateway'           : 'globalpayments',
+                    'gatewayMerchantId' : 'gpapiqa1'
                 }
             }
         },
 
         getBaseCardPaymentMethod: function () {
             return {
-                type: 'CARD',
+                type : 'CARD',
                 parameters: {
-                    allowedAuthMethods: this.getAllowedCardAuthMethods(),
-                    allowedCardNetworks: this.getAllowedCardNetworks()
+                    allowedAuthMethods  : this.getAllowedCardAuthMethods(),
+                    allowedCardNetworks : this.getAllowedCardNetworks()
                 }
             }
         },
@@ -111,7 +112,7 @@
                 {},
                 this.getBaseCardPaymentMethod(),
                 {
-                    tokenizationSpecification: this.getTokenizationSpecification()
+                    tokenizationSpecification : this.getTokenizationSpecification()
                 }
             );
         },
@@ -121,26 +122,25 @@
                 {},
                 this.getBaseRequest(),
                 {
-                    allowedPaymentMethods: [this.getBaseCardPaymentMethod()]
+                    allowedPaymentMethods : [this.getBaseCardPaymentMethod()]
                 }
             );
         },
 
-        getGooglePaymentDataRequest: function () {
-            var paymentDataRequest = Object.assign({}, this.getBaseRequest());
-            paymentDataRequest.allowedPaymentMethods = [this.getCardPaymentMethod()];
-            paymentDataRequest.transactionInfo = this.getGoogleTransactionInfo();
-            paymentDataRequest.merchantInfo = {
-                merchantId: this.getGoogleMerchantId()
-            };
+        getGooglePaymentDataRequest : function () {
+            var paymentDataRequest                      = Object.assign({}, this.getBaseRequest());
+            paymentDataRequest.allowedPaymentMethods    = [this.getCardPaymentMethod()];
+            paymentDataRequest.transactionInfo          = this.getGoogleTransactionInfo();
+            paymentDataRequest.merchantInfo             = { merchantId: this.getGoogleMerchantId() };
+
             return paymentDataRequest;
         },
 
         getGoogleTransactionInfo: function () {
             return {
-                totalPriceStatus: 'FINAL',
-                totalPrice: this.configData.grandTotalAmount,
-                currencyCode: this.configData.currency
+                totalPriceStatus    : 'FINAL',
+                totalPrice          : this.configData.grandTotalAmount,
+                currencyCode        : this.configData.currency
             };
         },
 
@@ -149,8 +149,8 @@
          */
         setGooglePaymentsClient: function () {
             var self = this;
-            if (null === this.paymentsClient) {
-                this.paymentsClient = new google.payments.api.PaymentsClient({
+            if ( null === this.paymentsClient ) {
+                this.paymentsClient = new google.payments.api.PaymentsClient ( {
                     environment: self.getEnvironment()
                 });
             }
@@ -159,79 +159,53 @@
         /**
          * Add the google pay button to the DOM
          */
-        addGooglePayButton: function(element) {
-            var self = this;
-            var button = this.paymentsClient.createButton(
+        addGooglePayButton: function( element ) {
+            var self    = this;
+            var button  = this.paymentsClient.createButton (
                 {
-                    buttonColor: self.getBtnColor(),
-                    onClick: function () { self.onGooglePaymentButtonClicked() }
+                    buttonColor : self.getBtnColor(),
+                    onClick     : function () { self.onGooglePaymentButtonClicked() }
                 }
             );
             
             var el       = document.createElement( 'div' );
 			el.id        = element;
 			el.className = 'payment_box payment_method_globalpayments_googlepay'; //'globalpayments ' + this.id + ' card-submit';
-			$( self.getPlaceOrderButtonSelector() ).after( el );
+			$( helpers.getPlaceOrderButtonSelector() ).after( el );
 
-            $('#' + element).append(button);
+            $( '#' + element ).append(button);
 
-            $('input[type=radio][name=payment_method]').change(function() {
-                self.toggleGoodlePayButton(this.id, element);
+            $( 'input[type=radio][name=payment_method]' ).change( function() {
+                self.toggleGooglePayButton( this.id, element );
             });
 
-            if ( $('#payment_method_globalpayments_googlepay').is(':checked') ) {
-                $( self.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+            if ( $( '#payment_method_globalpayments_googlepay' ).is( ':checked' ) ) {
+                $( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+            } else {
+                $( '#globalpayments_googlepay' ).hide();
             }
             
         },
 
-        toggleGoodlePayButton: function(radioButtonId, googlepayButtonId){
+        toggleGooglePayButton : function(radioButtonId, googlepayButtonId){
             if( radioButtonId == 'payment_method_globalpayments_googlepay' ) {
-                $('#' + googlepayButtonId ).show();
-                $(this.getPlaceOrderButtonSelector()).hide();
-            } else {
-                $('#' + googlepayButtonId ).hide();
-                $(this.getPlaceOrderButtonSelector()).show();
+                $( '#' + googlepayButtonId ).show();
+                $( helpers.getPlaceOrderButtonSelector() ).hide();
+            } else if ( radioButtonId == 'payment_method_globalpayments_applepay' ) {
+                $( '#' + googlepayButtonId ).hide();
+                $( helpers.getPlaceOrderButtonSelector() ).hide();
+            } else  {
+                $( '#' + googlepayButtonId ).hide();
+                $( helpers.getPlaceOrderButtonSelector() ).show();
             }
         },
-
-        /**
-		 * Convenience function to get CSS selector for the built-in 'Place Order' button
-		 *
-		 * @returns {string}
-		 */
-		getPlaceOrderButtonSelector: function () { return '#place_order'; },
-
-        /**
-		 * Places/submits the order to WooCommerce
-		 *
-		 * Attempts to click the default 'Place Order' button that is used by payment methods.
-		 * This is to account for other plugins taking action based on that click event, even
-		 * though there are usually better options. If anything fails during that process,
-		 * we fall back to calling `this.placeOrder` manually.
-		 *
-		 * @returns
-		 */
-		placeOrder: function () {
-			try {
-				var originalSubmit = $( this.getPlaceOrderButtonSelector() );
-				if ( originalSubmit ) {
-					originalSubmit.click();
-					return;
-				}
-			} catch ( e ) {
-				/* om nom nom */
-			}
-
-			$( this.getForm() ).submit();
-		},
 
         /**
 		 * Gets the current checkout form
 		 *
 		 * @returns {Element}
 		 */
-		getForm: function () {
+		getForm : function () {
 			var checkoutForms = [
 				// Order Pay
 				'form#order_review',
@@ -244,11 +218,10 @@
 			return forms.item( 0 );
 		},
 
-        onGooglePaymentButtonClicked: function() {
+        onGooglePaymentButtonClicked : function() {
             var self = this;
-            var paymentDataRequest = this.getGooglePaymentDataRequest();
-            
-            paymentDataRequest.transactionInfo = this.getGoogleTransactionInfo();
+            var paymentDataRequest              = this.getGooglePaymentDataRequest();
+            paymentDataRequest.transactionInfo  = this.getGoogleTransactionInfo();
 
             this.paymentsClient.loadPaymentData(paymentDataRequest).then(function (paymentData) {
                 var token = paymentData.paymentMethodData.tokenizationData.token;
@@ -260,21 +233,18 @@
 
                 var tokenResponseElement =
 
-                (document.getElementById('gp_googlepay_digital_wallet_token_response'));
+                ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
 
-                if ( ! tokenResponseElement) {
+                if ( ! tokenResponseElement ) {
                     tokenResponseElement      = document.createElement('input');
                     tokenResponseElement.id   = self.configData.id + '_digital_wallet_token_response';
                     tokenResponseElement.name = self.configData.id +  '[digital_wallet_token_response]';
                     tokenResponseElement.type = 'hidden';
-                    $('form[name="checkout"]').append(tokenResponseElement);
+                    $( 'form[name="checkout"]' ).append( tokenResponseElement );
                 }
-                tokenResponseElement.value = JSON.stringify(JSON.parse(token));
+                tokenResponseElement.value = JSON.stringify( JSON.parse( token ) );
 
-                //$('#gp_googlepay_token_response').val(JSON.stringify(JSON.parse(token)));
-
-                return self.placeOrder();
-
+                return helpers.placeOrder();
             }).catch(function (err) {
                 // Handle errors
                 console.error(err);
@@ -282,9 +252,10 @@
         },
     };
 
-    new GooglePayWoocommerce(globalpayments_google_pay_params.gateway_options);
+    new GooglePayWoocommerce ( globalpayments_google_pay_params.gateway_options );
 
 }(
     (window).jQuery,
     (window).globalpayments_google_pay_params,
+    (window).GlobalPaymentsHelpers
 ));

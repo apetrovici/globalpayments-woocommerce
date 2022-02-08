@@ -6,7 +6,8 @@
 	GlobalPayments,
 	GlobalPayments3DS,
 	globalpayments_secure_payment_fields_params,
-	globalpayments_secure_payment_threedsecure_params
+	globalpayments_secure_payment_threedsecure_params,
+	helpers
 ) {
 	/**
 	 * Frontend code for Global Payments in WooCommerce
@@ -146,13 +147,6 @@
 		},
 
 		/**
-		 * Convenience function to get CSS selector for the built-in 'Place Order' button
-		 *
-		 * @returns {string}
-		 */
-		getPlaceOrderButtonSelector: function () { return '#place_order'; },
-
-		/**
 		 * Convenience function to get CSS selector for the custom 'Place Order' button's parent element
 		 *
 		 * @returns {string}
@@ -265,7 +259,7 @@
 			var el       = document.createElement( 'div' );
 			el.id        = this.getSubmitButtonTargetSelector().replace( '#', '' );
 			el.className = 'globalpayments ' + this.id + ' card-submit';
-			$( this.getPlaceOrderButtonSelector() ).after( el );
+			$( helpers.getPlaceOrderButtonSelector() ).after( el );
 			// match the visibility of our payment form
 			this.toggleSubmitButtons();
 		},
@@ -284,11 +278,11 @@
 			if (shouldBeVisible) {
 				// our gateway was selected
 				$( this.getSubmitButtonTargetSelector() ).show();
-				$( this.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
 				// another gateway was selected
 				$( this.getSubmitButtonTargetSelector() ).hide();
-				$( this.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
+				$( helpers.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
 			}
 		},
 
@@ -337,7 +331,7 @@
 
 				response.details.cardSecurityCode = cvvVal;
 				tokenResponseElement.value = JSON.stringify( response );
-				that.placeOrder();
+				helpers.placeOrder();
 			});
 		},
 
@@ -448,30 +442,6 @@
 			}
 
 			inputElement.value = value;
-		},
-
-		/**
-		 * Places/submits the order to WooCommerce
-		 *
-		 * Attempts to click the default 'Place Order' button that is used by payment methods.
-		 * This is to account for other plugins taking action based on that click event, even
-		 * though there are usually better options. If anything fails during that process,
-		 * we fall back to calling `this.placeOrder` manually.
-		 *
-		 * @returns
-		 */
-		placeOrder: function () {
-			try {
-				var originalSubmit = $( this.getPlaceOrderButtonSelector() );
-				if ( originalSubmit ) {
-					originalSubmit.click();
-					return;
-				}
-			} catch ( e ) {
-				/* om nom nom */
-			}
-
-			$( this.getForm() ).submit();
 		},
 
 		/**
@@ -773,5 +743,13 @@
 	 *
 	 * @type {any}
 	 */
-	(window).globalpayments_secure_payment_threedsecure_params || {}
+	(window).globalpayments_secure_payment_threedsecure_params || {},
+
+	/**
+     * Global `helpers` reference
+     *
+     * @type {any}
+     */
+	 (window).GlobalPaymentsHelpers
+	 
 ));

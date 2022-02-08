@@ -301,6 +301,14 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			WC()->version
 		);
 
+		wp_enqueue_script(
+            'globalpayments-helpers',
+            Plugin::get_url( '/assets/frontend/js/globalpayments-helpers.js' ),
+            array('jquery'),
+            WC()->version,
+            true
+        ); 
+
 		// Global Payments scripts for handling client-side tokenization
 		wp_enqueue_script(
 			'globalpayments-secure-payment-fields-lib',

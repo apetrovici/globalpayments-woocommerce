@@ -128,8 +128,8 @@ class GooglePayGateway extends AbstractGateway {
 
     public function get_frontend_gateway_options() {
 		return array(
-			'publicApiKey' => $this->get_credential_setting( 'public_key' ),
-			'btnColor' => $this->button_color,
+			'publicApiKey'	=> $this->get_credential_setting( 'public_key' ),
+			'btnColor'		=> $this->button_color,
 		);
 	}
 
@@ -174,7 +174,7 @@ class GooglePayGateway extends AbstractGateway {
 				'css'         => 'width: 450px',
 				'description' => __( 'Choose for which AVS result codes, the transaction must be auto reversed.'),
 				'options'     => $this->acceptedCardsOptions(),
-				'default'     => array("JCB"),
+				'default'     => array('JCB'),
 				'custom_attributes' => array( 'required' => 'required' ),
 			),
 			'button_color'    => array(
@@ -184,7 +184,7 @@ class GooglePayGateway extends AbstractGateway {
 				'default'     => 'white',
 				'desc_tip'    => true,
 				'options'     => array(
-					'WHITE'      => __( 'White', 'WHITE' ),
+					'WHITE'	=> __( 'White', 'WHITE' ),
 					'BLACK' => __( 'Black', 'BLACK' ),
 				),
 			),
@@ -200,7 +200,7 @@ class GooglePayGateway extends AbstractGateway {
 				'label'   => __( 'Enable Gateway', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'default' => 'no',
 			),
-			'payment_action'    => array(
+			'payment_action' => array(
 				'title'       => __( 'Payment Action', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'        => 'select',
 				'description' => __( 'Choose whether you wish to capture funds immediately or authorize payment only for a delayed capture.', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -212,7 +212,7 @@ class GooglePayGateway extends AbstractGateway {
 					//self::TXN_TYPE_VERIFY    => __( 'Verify only', 'globalpayments-gateway-provider-for-woocommerce' ),
 				),
 			),
-			'title'   => array(
+			'title'	=> array(
 				'title'       => __( 'Title', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'        => 'text',
 				'description' => __( 'This controls the title which the user sees during checkout.', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -225,11 +225,11 @@ class GooglePayGateway extends AbstractGateway {
 	public function acceptedCardsOptions()
 	{
 		return array(
-			'VISA' => 'Visa',
-            'MASTERCARD' => 'MasterCard',
-			'AMEX' => 'AMEX',
-			'DISCOVER' =>  'Discover',
-			'JCB' => 'JCB'
+			'VISA'			=> 'Visa',
+            'MASTERCARD'	=> 'MasterCard',
+			'AMEX'			=> 'AMEX',
+			'DISCOVER'		=>  'Discover',
+			'JCB'			=> 'JCB'
            
 		);
 	}
@@ -272,13 +272,13 @@ class GooglePayGateway extends AbstractGateway {
 
 	public function secure_payment_fields_config(){
 		return array(
-			'id' 					=>$this->id,
-			'google_merchant_id' 	=> $this->google_merchant_id,
-			'global_payments_merchant_id' => $this->global_payments_merchant_id,
-			'accepted_cards' 		=> $this->accepted_cards,
-			'button_color' 			=> $this->button_color,
-			'currency'        		=> get_woocommerce_currency(),
-			'grandTotalAmount'		=> (string)$this->get_session_amount(),
+			'id' 							=>$this->id,
+			'google_merchant_id' 			=> $this->google_merchant_id,
+			'global_payments_merchant_id' 	=> $this->global_payments_merchant_id,
+			'accepted_cards' 				=> $this->accepted_cards,
+			'button_color' 					=> $this->button_color,
+			'currency'        				=> get_woocommerce_currency(),
+			'grandTotalAmount'				=> (string)$this->get_session_amount(),
 		);
 	}
 
