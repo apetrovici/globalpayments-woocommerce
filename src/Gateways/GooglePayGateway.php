@@ -24,63 +24,6 @@ class GooglePayGateway extends AbstractGateway {
 	 * @var string
 	 */
 	public $gateway_provider = GatewayProvider::GP_API;
-
-	/**
-	 * Live Merchant location public API key
-	 *
-	 * Used for single-use tokenization on frontend
-	 *
-	 * @var string
-	 */
-	public $public_key;
-
-	/**
-	 * Live Merchant location secret API key
-	 *
-	 * Used for gateway transactions on backend
-	 *
-	 * @var string
-	 */
-	public $secret_key;
-
-	/**
-	 * Sandbox Merchant location public API key
-	 *
-	 * Used for single-use tokenization on frontend
-	 *
-	 * @var string
-	 */
-	public $sandbox_public_key;
-
-	/**
-	 * Sandbox Merchant location secret API key
-	 *
-	 * Used for gateway transactions on backend
-	 *
-	 * @var string
-	 */
-	public $sandbox_secret_key;
-
-	/**
-	 * Should live payments be accepted
-	 *
-	 * @var bool
-	 */
-	public $is_production;
-
-	/**
-	 * Allows payment via Heartland Marketing Solutions (gift cards)
-	 *
-	 * @var bool
-	 */
-	public $allow_gift_cards;
-
-	/**
-	 * Should debug
-	 *
-	 * @var bool
-	 */
-	public $debug;
 	
 	/**
 	 * @var string
@@ -103,9 +46,8 @@ class GooglePayGateway extends AbstractGateway {
 	public $accepted_cards;
 
 	/**
-	 * 
+	 *  @var string
 	 */
-	//public $CCTypes;
 
 	public $payment_action;
 

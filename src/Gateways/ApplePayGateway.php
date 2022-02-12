@@ -24,91 +24,50 @@ class ApplePayGateway extends AbstractGateway {
 	public $gateway_provider = GatewayProvider::GP_API;
 
 	/**
-	 * Live Merchant location public API key
-	 *
-	 * Used for single-use tokenization on frontend
-	 *
-	 * @var string
-	 */
-	public $public_key;
-
-	/**
-	 * Live Merchant location secret API key
-	 *
-	 * Used for gateway transactions on backend
-	 *
-	 * @var string
-	 */
-	public $secret_key;
-
-	/**
-	 * Sandbox Merchant location public API key
-	 *
-	 * Used for single-use tokenization on frontend
-	 *
-	 * @var string
-	 */
-	public $sandbox_public_key;
-
-	/**
-	 * Sandbox Merchant location secret API key
-	 *
-	 * Used for gateway transactions on backend
-	 *
-	 * @var string
-	 */
-	public $sandbox_secret_key;
-
-	/**
-	 * Should live payments be accepted
-	 *
-	 * @var bool
-	 */
-	public $is_production;
-
-	/**
-	 * Allows payment via Heartland Marketing Solutions (gift cards)
-	 *
-	 * @var bool
-	 */
-	public $allow_gift_cards;
-
-	/**
-	 * Should debug
-	 *
-	 * @var bool
-	 */
-	public $debug;
-	
-	/**
-	 * @var string
-	 */
-	public $global_payments_merchant_id;
-
-	/**
 	 * @var array
 	 */
 	public $accepted_cards;
 
+	/**
+	 * @var string
+	*/
 	public $payment_action;
 	
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_id;
 
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_cert_path;
 
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_key_path;
 
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_key_passphrase;
 
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_domain;
 
+	/**
+	 * @var string
+	*/
 	public $apple_merchant_display_name;
 	
 
 	public function configure_method_settings () {
-		$this->id                 =  self::GATEWAY_ID;
-		$this->method_title       = __( 'ApplePay', 'applepay-gateway-provider-for-woocommerce' );
-		$this->method_description = __( 'Connect to the Apple Pay gateway', 'globalpayments-gateway-provider-for-woocommerce' );
+		$this->id					=  self::GATEWAY_ID;
+		$this->method_title			= __( 'ApplePay', 'applepay-gateway-provider-for-woocommerce' );
+		$this->method_description	= __( 'Connect to the Apple Pay gateway', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 
 	public function get_frontend_gateway_options () : array {
@@ -128,8 +87,8 @@ class ApplePayGateway extends AbstractGateway {
 			'country'					=> wc_get_base_location()['country'],
 			'developerId'				=> '',
 			'environment'				=> $gpApiGateway->is_production ? Environment::PRODUCTION : Environment::TEST,
-			'methodNotificationUrl'		=> WC()->api_request_url('globalpayments_threedsecure_methodnotification'),
-			'challengeNotificationUrl'	=> WC()->api_request_url('globalpayments_threedsecure_challengenotification'),
+			'methodNotificationUrl'		=> WC()->api_request_url( 'globalpayments_threedsecure_methodnotification' ),
+			'challengeNotificationUrl'	=> WC()->api_request_url( 'globalpayments_threedsecure_challengenotification' ),
 			'merchantContactUrl'		=> $gpApiGateway->merchant_contact_url,
 			'dynamicHeaders'			=> [
 				'x-gp-platform'		=> 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
