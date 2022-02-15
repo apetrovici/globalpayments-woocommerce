@@ -6,11 +6,11 @@ defined( 'ABSPATH' ) || exit;
 
 class Helper {
 
-    public static function removeSlashesFromToken( string $token ): string {
-        $replace = str_replace('\\"', '"', $token ) ;
-		$replace = str_replace('\\"', '"',$replace ) ;
-		$replace = str_replace('\\\\\\\\', '\\',$replace ) ;
+	public static function remove_slashes_from_token( string $token ): string {
+		$replace = str_replace( '\\"', '"', $token ) ;
+		$replace = str_replace( '\\"', '"',$replace ) ;
+		$replace = str_replace( '\\\\\\\\', '\\',$replace ) ;
 
-        return $replace;
-    }
+		return $replace;
+	}
 }
