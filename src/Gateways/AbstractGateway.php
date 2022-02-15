@@ -55,7 +55,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	const TXN_TYPE_INITIATE_AUTHENTICATION = 'initiateAuthentication';
 
 	// DigitalWallet
-	const DIGITAL_WALLETS = ['globalpayments_googlepay','globalpayments_applepay'];
+	const DIGITAL_WALLETS = array ( GooglePayGateway::GATEWAY_ID, ApplePayGateway::GATEWAY_ID );
 
 	/**
 	 * Gateway provider. Should be overriden by individual gateway implementations

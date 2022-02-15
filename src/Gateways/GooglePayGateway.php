@@ -2,13 +2,10 @@
 
 namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways;
 
-
 use GlobalPayments\Api\Entities\Enums\Environment;
 use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\Api\Entities\Enums\Channel;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
-
-
 
 defined( 'ABSPATH' ) || exit;
 

@@ -18,7 +18,7 @@ class AuthorizationRequest extends AbstractRequest {
 
 	public function get_args() {
 		$token = ( new PaymentTokenData( $this ) )->get_token();
-		$replacedTokenResponse = $this->data[$this->gateway_id]["digital_wallet_token_response"] ? Helper::removeSlashesFromToken($this->data[$this->gateway_id]["digital_wallet_token_response"] ) : '' ;
+		$replacedTokenResponse = $this->data[$this->gateway_id]["digital_wallet_token_response"] ? Helper::remove_slashes_from_token( $this->data[$this->gateway_id]["digital_wallet_token_response"] ) : '' ;
 		$response = array(
 			RequestArg::AMOUNT			=> null !== $this->order ? $this->order->get_total() : null,
 			RequestArg::CURRENCY		=> null !== $this->order ? $this->order->get_currency() : null,
