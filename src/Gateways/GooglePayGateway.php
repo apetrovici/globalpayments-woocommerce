@@ -217,4 +217,13 @@ class GooglePayGateway extends AbstractGateway {
 		);
 	}
 
+	public function mapResponseCodeToFriendlyMessage( $responseCode ) {
+		if ( 'DECLINED' === $responseCode ) {
+			return __( 'Your card has been declined by the bank.', 'globalpayments-gateway-provider-for-woocommerce' );
+		}
+
+		return __( 'An error occurred while processing the card.', 'globalpayments-gateway-provider-for-woocommerce' );
+	}
+
+
 }
