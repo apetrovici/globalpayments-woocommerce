@@ -23,6 +23,7 @@ This extension allows WooCommerce to use the available Global Payments payment g
 - 3D Secure 2 & SCA
 - 3D Secure 1
 - Digital Wallets - Google Pay
+- Digital Wallets - Apple Pay
 
 = Support =
 For more information or questions, please email <a href="mailto:developers@globalpay.com">developers@globalpay.com </a>.
@@ -48,6 +49,7 @@ Access to our Unified Commerce Platform (UCP) requires sandbox credentials which
 
 = 1.2.0 =
 * Added Digital Wallets - Google Pay
+* Added Digital Wallets - Apple Pay
 
 = 1.1.3 =
 * Added composer
