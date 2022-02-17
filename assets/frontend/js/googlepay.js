@@ -85,7 +85,7 @@
 				type:	'PAYMENT_GATEWAY',
 				parameters: {
 					'gateway'			: 'globalpayments',
-					'gatewayMerchantId'	: 'gpapiqa1'
+					'gatewayMerchantId'	: 'gpapiqa1'  /// TODO: poner la variable
 				}
 			}
 		},
@@ -157,7 +157,7 @@
 			var button	= this.paymentsClient.createButton (
 				{
 					buttonColor	: self.getBtnColor(),
-					onClick		: function() { self.onGooglePaymentButtonClicked() }
+					onClick		: function () { self.onGooglePaymentButtonClicked() }
 				}
 			);
 			
@@ -166,7 +166,7 @@
 			el.className	= 'payment_box payment_method_globalpayments_googlepay'; 
 			$( helpers.getPlaceOrderButtonSelector() ).after( el );
 
-			$( '#' + element ).append(button);
+			$( '#' + element ).append( button );
 
 			$( 'input[type=radio][name=payment_method]' ).change( function () {
 				self.toggleGooglePayButton( this.id, element );
