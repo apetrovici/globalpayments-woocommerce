@@ -5,7 +5,7 @@
 ) {
 	function ApplePayWoocommerce( options ) {
 	   var self = this;
-	   if ( wc_checkout_params.is_checkout == 1 ) {
+	   if ( 1 == wc_checkout_params.is_checkout ) {
 			$( document.body ).on(
 				'updated_checkout',
 				function() {
@@ -17,8 +17,8 @@
 
 	ApplePayWoocommerce.prototype = {
 		initialize: function ( data ) {
-			if ( this.deviceSupported() === false ) {
-				$('.payment_method_globalpayments_applepay').hide();
+			if ( false === his.deviceSupported() ) {
+				$( '.payment_method_globalpayments_applepay' ).hide();
 				return;
 			}
 			this.configData = data;
@@ -30,13 +30,13 @@
 		 */
 		addApplePayButton: function () {
 			var self				= this;
-			var paymentButton		= document.createElement('div');
+			var paymentButton		= document.createElement( 'div' );
 			paymentButton.className	= 'apple-pay-button apple-pay-button-white-with-line';
 			paymentButton.title		= 'Pay with Apple Pay';
 			paymentButton.alt		= 'Pay with Apple Pay';
 			paymentButton.id		= 'globalpayments_applepay';
 
-			paymentButton.addEventListener( 'click', function (e) {
+			paymentButton.addEventListener( 'click', function( e ) {
 				e.preventDefault();
 				var applePaySession = self.createApplePaySession();
 				applePaySession.begin();
@@ -44,7 +44,7 @@
 
 			$( helpers.getPlaceOrderButtonSelector() ).after( paymentButton );
 
-			$( 'input[type=radio][name=payment_method]' ).change( function() {
+			$( 'input[type=radio][name=payment_method]' ).change( function () {
 				self.toggleApplePayButton( this.id, 'globalpayments_applepay' );
 			});
 
@@ -55,11 +55,11 @@
 			}
 		},
 
-		toggleApplePayButton: function( radioButtonId, applepayButtonId ){
-			if( radioButtonId == 'payment_method_globalpayments_applepay' ) {
+		toggleApplePayButton: function ( radioButtonId, applepayButtonId ){
+			if ( 'payment_method_globalpayments_applepay' == radioButtonId ) {
 				$( '#' + applepayButtonId ).show();
 				$( helpers.getPlaceOrderButtonSelector() ).hide();
-			} else if ( radioButtonId == 'payment_method_globalpayments_googlepay' ) {
+			} else if ( 'payment_method_globalpayments_googlepay' == radioButtonId ) {
 				$( '#' + applepayButtonId ).hide();
 				$( helpers.getPlaceOrderButtonSelector() ).show();
 			}  else {
@@ -68,7 +68,7 @@
 			}
 		},
 
-		createApplePaySession: function() {
+		createApplePaySession: function () {
 			var self = this;
 			self.onApplePayValidateMerchant();
 			try {
@@ -90,13 +90,13 @@
 			}
 
 			applePaySession.oncancel = function ( event ) {
-				alert( "We're unable to take your payment through Apple Pay. Please try an again or use an alternative payment method." )
-			}.bind(this);
+				alert( "We're unable to take your payment through Apple Pay. Please try again or use an alternative payment method." )
+			}.bind( this );
 
 			return applePaySession;
 		},
 
-		onApplePayValidateMerchant: function( event, session ) {
+		onApplePayValidateMerchant: function ( event, session ) {
 			var self = this;
 
 			$.ajax({
@@ -105,44 +105,42 @@
 				data	: {'validationUrl': 'event.validationURL'},
 				dataType: 'json',
 			}).done( function ( response ) {
+				if ( response.error ) {
+					console.log( 'response', response );
+					session.abort();
+					alert( $t( "We're unable to take your payment through Apple Pay. Please try again or use an alternative payment method." ) );
+				} else {
+					session.completeMerchantValidation( JSON.parse( response.message ) );
+				}
+			}).fail( function ( response ) {
 				console.log( 'response', response );
-					if( response.error ) {
-						session.abort();
-						alert( $t( "We're unable to take your payment through Apple Pay. Please try an again or use an alternative payment method." ) );
-					} else {
-						session.completeMerchantValidation( JSON.parse( response.message ) );
-					}
-					
-			}).fail( function( response ) {
 				session.abort();
-				alert( $t( "We're unable to take your payment through Apple Pay. Please try an again or use an alternative payment method." ) );
+				alert( $t( "We're unable to take your payment through Apple Pay. Please try again or use an alternative payment method." ) );
 			});
 		},
 
-		onApplePayPaymentAuthorize: function( event, session ) {
+		onApplePayPaymentAuthorize: function ( event, session ) {
 			try {
-				var tokenResponseElement =
-				( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
+				var tokenResponseElement = ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
 				if ( ! tokenResponseElement ) {
 					tokenResponseElement		= document.createElement('input');
 					tokenResponseElement.id		= self.configData.id + '_digital_wallet_token_response';
-					tokenResponseElement.name	= self.configData.id +  '[digital_wallet_token_response]';
+					tokenResponseElement.name	= self.configData.id + '[digital_wallet_token_response]';
 					tokenResponseElement.type	= 'hidden';
 					$( 'form[name="checkout"]' ).append( tokenResponseElement );
 				}
 				tokenResponseElement.value = JSON.stringify( event.payment.token.paymentData );
 
 				return helpers.placeOrder();
-				
 			} catch ( e ) {
 				session.completePayment( ApplePaySession.STATUS_FAILURE );
 			}
 		},
 
-		getPaymentRequest: function() {
+		getPaymentRequest: function () {
 			return {
-				countryCode			:this.getCountryId(),
-				currencyCode		:this.configData.currency,
+				countryCode			: this.getCountryId(),
+				currencyCode		: this.configData.currency,
 				merchantCapabilities: [ 'supports3DS' ],
 				total: {
 					label	: this.getDisplayName(),
@@ -151,21 +149,21 @@
 			}
 		},
 
-		getCountryId: function() {
+		getCountryId: function () {
 			return this.configData.countryCode;
 		},
 
-		getDisplayName: function() {
+		getDisplayName: function () {
 			return this.configData.merchantDisplayName;
 		},
 
-		deviceSupported: function() {
-			if ( location.protocol != 'https:' ) {
+		deviceSupported: function () {
+			if ( 'https:' !== location.protocol ) {
 				console.warn( 'Apple Pay requires your checkout be served over HTTPS' );
 				return false;
 			}
 
-			if ( ( window.ApplePaySession && ApplePaySession.canMakePayments() ) !== true ) {
+			if ( ( true !== window.ApplePaySession && ApplePaySession.canMakePayments() ) ) {
 				console.warn( 'Apple Pay is not supported on this device/browser' );
 				return false;
 			}
