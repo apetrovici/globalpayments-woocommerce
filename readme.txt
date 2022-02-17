@@ -51,6 +51,9 @@ Access to our Unified Commerce Platform (UCP) requires sandbox credentials which
 * Added Digital Wallets - Google Pay
 * Added Digital Wallets - Apple Pay
 
+= 1.1.4 =
+* Add dependency for WC checkout frontend scripts.
+
 = 1.1.3 =
 * Added composer
 * Bug fix - globalpayments_gpapi-checkout_validated displayed although it should be hidden
