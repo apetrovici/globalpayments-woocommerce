@@ -275,7 +275,7 @@
 			var savedCardsAvailable    = $( this.getStoredPaymentMethodsRadioSelector() + '[value!="new"]' ).length > 0;
 			var newSavedCardSelected   = 'new' === $( this.getStoredPaymentMethodsRadioSelector() + ':checked' ).val();
 			var shouldBeVisible = ( paymentGatewaySelected && ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) );
-			if (shouldBeVisible) {
+			if ( shouldBeVisible ) {
 				// our gateway was selected
 				$( this.getSubmitButtonTargetSelector() ).show();
 				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
@@ -713,43 +713,42 @@
 	 *
 	 * @type {any}
 	 */
-	(window).jQuery,
+	( window ).jQuery,
 	/**
 	 * Global `wc_checkout_params` reference
 	 *
 	 * @type {any}
 	 */
-	(window).wc_checkout_params || {},
+	( window ).wc_checkout_params || {},
 	/**
 	 * Global `GlobalPayments` reference
 	 *
 	 * @type {any}
 	 */
-	(window).GlobalPayments,
+	( window ).GlobalPayments,
 	/**
 	 * Global `GlobalPayments` reference
 	 *
 	 * @type {any}
 	 */
-	(window).GlobalPayments.ThreeDSecure,
+	( window ).GlobalPayments.ThreeDSecure,
 	/**
 	 * Global `globalpayments_secure_payment_fields_params` reference
 	 *
 	 * @type {any}
 	 */
-	(window).globalpayments_secure_payment_fields_params,
+	( window ).globalpayments_secure_payment_fields_params,
 	/**
 	 * Global `globalpayments_secure_payment_threedsecure_params` reference
 	 *
 	 * @type {any}
 	 */
-	(window).globalpayments_secure_payment_threedsecure_params || {},
+	( window ).globalpayments_secure_payment_threedsecure_params || {},
 
 	/**
      * Global `helpers` reference
      *
      * @type {any}
      */
-	 (window).GlobalPaymentsHelpers
-	 
+	 ( window ).GlobalPaymentsHelpers
 ));
