@@ -48,16 +48,14 @@ class GooglePayGateway extends AbstractGateway {
 
 	public $payment_action;
 
-
 	public function get_first_line_support_email() {
-		return 'onlinepayments@googlepay.us';
+		return 'api.integrations@globalpay.com';
 	}
 
-
 	public function configure_method_settings() {
-		$this->id                 =  self::GATEWAY_ID;
-		$this->method_title       = __( 'GooglePay', 'googlepay-gateway-provider-for-woocommerce' );
-		$this->method_description = __( 'Connect to the Google Pay gateway', 'globalpayments-gateway-provider-for-woocommerce' );
+		$this->id					=  self::GATEWAY_ID;
+		$this->method_title			= __( 'GooglePay', 'googlepay-gateway-provider-for-woocommerce' );
+		$this->method_description	= __( 'Connect to the Google Pay gateway', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 
 	public function get_frontend_gateway_options() {
@@ -72,18 +70,17 @@ class GooglePayGateway extends AbstractGateway {
 		$gpApiGateway = new GpApiGateway();
 
 		return array(
-			'appId'                    => $gpApiGateway->get_credential_setting( 'app_id' ),
-			'appKey'                   => $gpApiGateway->get_credential_setting( 'app_key' ),
-			'channel'                  => Channel::CardNotPresent,
-			'country'                  => wc_get_base_location()['country'],
-			'developerId'              => '',
-			'environment'              => $gpApiGateway->is_production ? Environment::PRODUCTION : Environment::TEST,
-			'methodNotificationUrl'    => WC()->api_request_url('globalpayments_threedsecure_methodnotification'),
-			'challengeNotificationUrl' => WC()->api_request_url('globalpayments_threedsecure_challengenotification'),
-			'merchantContactUrl'       => $gpApiGateway->merchant_contact_url,
-			'dynamicHeaders'           => [
-				'x-gp-platform' => 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
-				'x-gp-extension' => 'globalpayments-woocommerce;version=' . Plugin::VERSION,
+			'appId'						=> $gpApiGateway->get_credential_setting( 'app_id' ),
+			'appKey'					=> $gpApiGateway->get_credential_setting( 'app_key' ),
+			'channel'					=> Channel::CardNotPresent,
+			'country'					=> wc_get_base_location()['country'],
+			'environment'				=> $gpApiGateway->is_production ? Environment::PRODUCTION : Environment::TEST,
+			'methodNotificationUrl'		=> WC()->api_request_url('globalpayments_threedsecure_methodnotification'),
+			'challengeNotificationUrl'	=> WC()->api_request_url('globalpayments_threedsecure_challengenotification'),
+			'merchantContactUrl'		=> $gpApiGateway->merchant_contact_url,
+			'dynamicHeaders'			=> [
+				'x-gp-platform'		=> 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
+				'x-gp-extension'	=> 'globalpayments-woocommerce;version=' . Plugin::VERSION,
 			],
 			'debug'                    => $gpApiGateway->debug,
 		);
@@ -92,34 +89,34 @@ class GooglePayGateway extends AbstractGateway {
 	public function get_gateway_form_fields()  {
 		return array(
 			'global_payments_merchant_id' => array(
-				'title'       => __( 'Global Payments Merchant Id', 'global_payments_merchant_id' ),
-				'type'        => 'text',
-				'default'     => '',
+				'title'		=> __( 'Global Payments Merchant Id', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'		=> 'text',
+				'default'	=> '',
 			),
 			'google_merchant_id' => array(
-				'title'       => __( 'Google Merchant Id', 'google_merchant_id' ),
-				'type'        => 'text',
-				'default'     => '',
+				'title'		=> __( 'Google Merchant Id', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'		=> 'text',
+				'default'	=> '',
 			),
-			'accepted_cards'    => array(
-				'title'       => __( 'Accepted Cards', 'accepted_cards' ),
-				'type'        => 'multiselect',
-				'class'       => 'accepted_cards',
-				'css'         => 'width: 450px',
-				'description' => __( 'Choose for which AVS result codes, the transaction must be auto reversed.'),
-				'options'     => $this->accepted_cards_options(),
-				'default'     => array('JCB'),
+			'accepted_cards'	=> array(
+				'title'			=> __( 'Accepted Cards', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'			=> 'multiselect',
+				'class'			=> 'accepted_cards',
+				'css'			=> 'width: 450px',
+				'description'	=> __( 'Choose for which AVS result codes, the transaction must be auto reversed.' ),
+				'options'		=> $this->accepted_cards_options(),
+				'default'		=> array('JCB'),
 				'custom_attributes' => array( 'required' => 'required' ),
 			),
-			'button_color'    => array(
-				'title'       => __( 'Button Color', 'button_color' ),
-				'type'        => 'select',
-				'description' => __( 'Choose the botton color.', 'button_color' ),
-				'default'     => 'white',
-				'desc_tip'    => true,
-				'options'     => array(
-					'WHITE'	=> __( 'White', 'WHITE' ),
-					'BLACK' => __( 'Black', 'BLACK' ),
+			'button_color'		=> array(
+				'title'			=> __( 'Button Color', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'			=> 'select',
+				'description'	=> __( 'Choose the botton color.', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'default'		=> 'white',
+				'desc_tip'		=> true,
+				'options'		=> array(
+					'WHITE'	=> __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'BLACK' => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
 				),
 			),
 		);
@@ -127,36 +124,37 @@ class GooglePayGateway extends AbstractGateway {
 
 	 public function init_form_fields() {
 		$this->form_fields = array_merge(
-	 	 array(
-			'enabled' => array(
-				'title'   => __( 'Enable/Disable', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'    => 'checkbox',
-				'label'   => __( 'Enable Gateway', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default' => 'no',
-			),
-			'payment_action' => array(
-				'title'			=> __( 'Payment Action', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'select',
-				'description'	=> __( 'Choose whether you wish to capture funds immediately or authorize payment only for a delayed capture.', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default'		=> self::TXN_TYPE_SALE,
-				'desc_tip'		=> true,
-				'options'		=> array(
-					self::TXN_TYPE_SALE			=> __( 'Authorize + Capture', 'globalpayments-gateway-provider-for-woocommerce' ),
-					self::TXN_TYPE_AUTHORIZE	=> __( 'Authorize only', 'globalpayments-gateway-provider-for-woocommerce' ),
+			array(
+				'enabled' => array(
+					'title'		=> __( 'Enable/Disable', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'type'		=> 'checkbox',
+					'label'		=> __( 'Enable Gateway', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'default'	=> 'no',
 				),
-			),
-			'title'	=> array(
-				'title'			=> __( 'Title', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'text',
-				'description'	=> __( 'This controls the title which the user sees during checkout.', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default'		=> __( 'Credit Card', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'desc_tip'		=> true,
-			),
-		), $this->get_gateway_form_fields() );
+				'payment_action' => array(
+					'title'			=> __( 'Payment Action', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'type'			=> 'select',
+					'description'	=> __( 'Choose whether you wish to capture funds immediately or authorize payment only for a delayed capture.', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'default'		=> self::TXN_TYPE_SALE,
+					'desc_tip'		=> true,
+					'options'		=> array(
+						self::TXN_TYPE_SALE			=> __( 'Authorize + Capture', 'globalpayments-gateway-provider-for-woocommerce' ),
+						self::TXN_TYPE_AUTHORIZE	=> __( 'Authorize only', 'globalpayments-gateway-provider-for-woocommerce' ),
+					),
+				),
+				'title'	=> array(
+					'title'			=> __( 'Title', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'type'			=> 'text',
+					'description'	=> __( 'This controls the title which the user sees during checkout.', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'default'		=> __( 'Credit Card', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'desc_tip'		=> true,
+				),
+			), 
+			$this->get_gateway_form_fields() 
+		);
 	 }
 
-	public function accepted_cards_options()
-	{
+	public function accepted_cards_options() {
 		return array(
 			'VISA'			=> 'Visa',
 			'MASTERCARD'	=> 'MasterCard',
@@ -167,7 +165,7 @@ class GooglePayGateway extends AbstractGateway {
 	}
 
 	public function payment_fields() {
-		echo '<div>Pay with Google </div>';
+		echo '<div>'.__( 'Pay with Google Pay', 'globalpayments-gateway-provider-for-woocommerce' ).'</div>';
 		
 		wp_enqueue_script(
 			'google',
@@ -193,16 +191,14 @@ class GooglePayGateway extends AbstractGateway {
 				'gateway_options' => $this->secure_payment_fields_config(),
 			)
 		);
-
-		
 	}
 
 	protected function get_session_amount() {
-		$cart_totals = WC()->session->get('cart_totals');
-		return round($cart_totals['total'], 2);
+		$cart_totals = WC()->session->get( 'cart_totals' );
+		return round( $cart_totals['total'], 2 );
 	}
 
-	public function secure_payment_fields_config(){
+	public function secure_payment_fields_config() {
 		return array(
 			'id' 							=>$this->id,
 			'google_merchant_id' 			=> $this->google_merchant_id,
@@ -221,6 +217,4 @@ class GooglePayGateway extends AbstractGateway {
 
 		return __( 'An error occurred while processing the card.', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
-
-
 }
