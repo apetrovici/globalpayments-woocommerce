@@ -728,7 +728,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 		// hooks only active when the gateway is enabled
-		if ( ! in_array($this->id, $this::DIGITAL_WALLETS ) ) {
+		if ( ! in_array( $this->id, $this::DIGITAL_WALLETS ) ) {
 			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ) );
 		}
 
