@@ -17,7 +17,7 @@
 
 	ApplePayWoocommerce.prototype = {
 		initialize: function ( data ) {
-			if ( false === his.deviceSupported() ) {
+			if ( false === this.deviceSupported() ) {
 				$( '.payment_method_globalpayments_applepay' ).hide();
 				return;
 			}
@@ -36,7 +36,7 @@
 			paymentButton.alt		= 'Pay with Apple Pay';
 			paymentButton.id		= 'globalpayments_applepay';
 
-			paymentButton.addEventListener( 'click', function( e ) {
+			paymentButton.addEventListener( 'click', function ( e ) {
 				e.preventDefault();
 				var applePaySession = self.createApplePaySession();
 				applePaySession.begin();
@@ -75,7 +75,7 @@
 				var applePaySession = new ApplePaySession( 1, self.context.getPaymentRequest() );
 			} catch ( err ) {
 				console.error( 'Unable to create ApplePaySession', err );
-				alert( "We're unable to take your payment through Apple Pay. Please try an again or use an alternative payment method." );
+				alert( "We're unable to take your payment through Apple Pay. Please try again or use an alternative payment method." );
 				return false;
 			}
 
