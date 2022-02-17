@@ -1,4 +1,4 @@
-(function(
+( function (
 	$,
 	globalpayments_google_pay_params,
 	helpers
