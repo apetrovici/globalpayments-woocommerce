@@ -10,7 +10,7 @@
 		 *
 		 * @returns {string}
 		 */
-		getPlaceOrderButtonSelector: function() {
+		getPlaceOrderButtonSelector: function () {
 			return '#place_order';
 		},
 
@@ -20,12 +20,12 @@
 		 * @param {string} id
 		 * @returns {string}
 		 */
-		getSubmitButtonTargetSelector: function( id ) {
+		getSubmitButtonTargetSelector: function ( id ) {
 			return '#' + id + '-card-submit';
 		},
 
 		/**
-		 * Places/submits the order to PrestaShop
+		 * Places/submits the order to Woocommerce
 		 *
 		 * Attempts to click the default 'Place Order' button that is used by payment methods.
 		 * This is to account for other plugins taking action based on that click event, even
@@ -34,7 +34,7 @@
 		 *
 		 * @returns
 		 */
-		placeOrder: function() {
+		placeOrder: function () {
 			try {
 				var originalSubmit = $( this.getPlaceOrderButtonSelector() );
 				if ( originalSubmit ) {
@@ -42,12 +42,12 @@
 					return;
 				}
 			} catch ( e ) {
+				/* om nom nom */
 			}
 		},
-
 	};
 
-	if( !window.GlobalPaymentsHelpers ) {
+	if ( ! window.GlobalPaymentsHelpers ) {
 		window.GlobalPaymentsHelpers = new Helpers();
 	}
 } (
