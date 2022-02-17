@@ -44,6 +44,7 @@
 			} catch ( e ) {
 				/* om nom nom */
 			}
+			$( this.getForm() ).submit();
 		},
 	};
 
