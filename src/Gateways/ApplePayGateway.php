@@ -169,7 +169,6 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function accepted_cards_options() : array {
-
 		return array (
 			'VISA'			=> 'Visa',
 			'MASTERCARD'	=> 'MasterCard',
@@ -215,7 +214,7 @@ class ApplePayGateway extends AbstractGateway {
 
 	public function secure_payment_fields_config() : array {
 		return array(
-			'id' 					=>$this->id,
+			'id' 					=> $this->id,
 			'accepted_cards' 		=> $this->accepted_cards,
 			'apple_merchant_display_name' => $this->apple_merchant_display_name,
 			'currency'				=> get_woocommerce_currency(),
@@ -234,11 +233,11 @@ class ApplePayGateway extends AbstractGateway {
 		$validationUrl = wc_clean( $_POST['validationUrl'] );
 		$activeGateway = new ApplePayGateway();
 		if (
-			!$this->apple_merchant_id ||
-			!$this->apple_merchant_cert_path ||
-			!$this->apple_merchant_key_path ||
-			!$this->apple_merchant_domain ||
-			!$this->apple_merchant_display_name
+			! $this->apple_merchant_id ||
+			! $this->apple_merchant_cert_path ||
+			! $this->apple_merchant_key_path ||
+			! $this->apple_merchant_domain ||
+			! $this->apple_merchant_display_name
 		) {
 			return null;
 		}
@@ -252,33 +251,33 @@ class ApplePayGateway extends AbstractGateway {
 		$validationPayload['initiativeContext'] 	= $this->apple_merchant_domain;
 
 		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $validationUrl);
-		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($validationPayload));
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 300);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-		curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
-		curl_setopt($ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
-		curl_setopt($ch, CURLOPT_SSLCERT, $pemCrtPath);
-		curl_setopt($ch, CURLOPT_SSLKEY, $pemKeyPath);
+		curl_setopt( $ch, CURLOPT_URL, $validationUrl );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json' ) );
+		curl_setopt( $ch, CURLOPT_POST, 1 );
+		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $validationPayload ) );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
+		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 300 );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
+		curl_setopt( $ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 );
+		curl_setopt( $ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
+		curl_setopt( $ch, CURLOPT_SSLCERT, $pemCrtPath );
+		curl_setopt( $ch, CURLOPT_SSLKEY, $pemKeyPath );
 
-		if ($this->apple_merchant_key_passphrase !== null) {
-			curl_setopt($ch, CURLOPT_KEYPASSWD, $this->apple_merchant_key_passphrase);
+		if ( null !== $this->apple_merchant_key_passphrase ) {
+			curl_setopt( $ch, CURLOPT_KEYPASSWD, $this->apple_merchant_key_passphrase );
 		}
 
-		$validationResponse = curl_exec($ch);
+		$validationResponse = curl_exec( $ch );
 
-		if (false == $validationResponse) {
+		if ( false === $validationResponse ) {
 			wp_send_json( [
 				'error'    => true,
-				'message'  => curl_error($ch),
+				'message'  => curl_error( $ch ),
 			] );
 		}
 
-		curl_close($ch);
+		curl_close( $ch );
 
 		wp_send_json( [
 			'error'    => false,
