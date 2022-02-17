@@ -6,19 +6,13 @@
 	function GooglePayWoocommerce ( options )
 	{
 		var google_merchant_id  = options.google_merchant_id;
-		
 		var global_payments_merchant_id = options.global_payments_merchant_id;
-		
 		var accepted_cards		= options.accepted_cards;
-		
 		var button_color		= options.button_color;
-
 		var currencyCode		= options.currency;
-
 		var self				= this;
-
 		// Checkout
-		if ( wc_checkout_params.is_checkout == 1 ) {
+		if ( 1 == wc_checkout_params.is_checkout ) {
 			$( document.body ).on (
 				'updated_checkout',
 				function () {
@@ -39,54 +33,54 @@
 
 			self.paymentsClient.isReadyToPay ( {
 				allowedPaymentMethods: [ 'CARD' ]
-			}).then(function ( response ) {
+			}).then( function ( response ) {
 				if ( response.result ) {
 					self.addGooglePayButton( 'globalpayments_googlepay' );
 				}
-			}).catch(function ( err ) {
+			}).catch( function ( err ) {
 				console.error( err );
 			});
 
 			return self;
 		},
 
-		getBaseRequest: function() {
+		getBaseRequest: function () {
 			return {
-				apiVersion:			2,
-				apiVersionMinor:	0
+				apiVersion		: 2,
+				apiVersionMinor	: 0
 			}
 		},
 
 		/**
 		 * Merchant display name
 		 */
-		getGoogleMerchantId: function() {
+		getGoogleMerchantId: function () {
 			return this.google_merchant_id;
 		},
 
 		/**
 		 * Environment
 		 */
-		getEnvironment: function() {
+		getEnvironment: function () {
 			return this.configData.env;
 		},
 
 		/**
 		 * BTN Color
 		 */
-		getBtnColor: function() {
+		getBtnColor: function () {
 			return this.button_color ;
 		},
 
-		getAllowedCardNetworks: function() {
+		getAllowedCardNetworks: function () {
 			return this.configData.accepted_cards;
 		},
 
-		getAllowedCardAuthMethods: function() {
+		getAllowedCardAuthMethods: function () {
 			return [ 'PAN_ONLY', 'CRYPTOGRAM_3DS' ];
 		},
 
-		getTokenizationSpecification: function() {
+		getTokenizationSpecification: function () {
 			return {
 				type:	'PAYMENT_GATEWAY',
 				parameters: {
@@ -96,17 +90,17 @@
 			}
 		},
 
-		getBaseCardPaymentMethod: function() {
+		getBaseCardPaymentMethod: function () {
 			return {
 				type : 'CARD',
 				parameters: {
-					allowedAuthMethods:		this.getAllowedCardAuthMethods(),
-					allowedCardNetworks:	this.getAllowedCardNetworks()
+					allowedAuthMethods	: this.getAllowedCardAuthMethods(),
+					allowedCardNetworks	: this.getAllowedCardNetworks()
 				}
 			}
 		},
 
-		getCardPaymentMethod: function() {
+		getCardPaymentMethod: function () {
 			return Object.assign(
 				{},
 				this.getBaseCardPaymentMethod(),
@@ -116,7 +110,7 @@
 			);
 		},
 
-		getGoogleIsReadyToPayRequest: function() {
+		getGoogleIsReadyToPayRequest: function () {
 			return Object.assign(
 				{},
 				this.getBaseRequest(),
@@ -126,16 +120,16 @@
 			);
 		},
 
-		getGooglePaymentDataRequest: function() {
-			var paymentDataRequest						= Object.assign({}, this.getBaseRequest());
-			paymentDataRequest.allowedPaymentMethods	= [this.getCardPaymentMethod()];
+		getGooglePaymentDataRequest: function () {
+			var paymentDataRequest						= Object.assign({}, this.getBaseRequest() );
+			paymentDataRequest.allowedPaymentMethods	= [ this.getCardPaymentMethod() ];
 			paymentDataRequest.transactionInfo			= this.getGoogleTransactionInfo();
 			paymentDataRequest.merchantInfo				= { merchantId: this.getGoogleMerchantId() };
 
 			return paymentDataRequest;
 		},
 
-		getGoogleTransactionInfo: function() {
+		getGoogleTransactionInfo: function () {
 			return {
 				totalPriceStatus	: 'FINAL',
 				totalPrice			: this.configData.grandTotalAmount,
@@ -158,7 +152,7 @@
 		/**
 		 * Add the google pay button to the DOM
 		 */
-		addGooglePayButton: function( element ) {
+		addGooglePayButton: function ( element ) {
 			var self	= this;
 			var button	= this.paymentsClient.createButton (
 				{
@@ -174,7 +168,7 @@
 
 			$( '#' + element ).append(button);
 
-			$( 'input[type=radio][name=payment_method]' ).change( function() {
+			$( 'input[type=radio][name=payment_method]' ).change( function () {
 				self.toggleGooglePayButton( this.id, element );
 			});
 
@@ -183,14 +177,13 @@
 			} else {
 				$( '#globalpayments_googlepay' ).hide();
 			}
-			
 		},
 
-		toggleGooglePayButton : function(radioButtonId, googlepayButtonId){
-			if( radioButtonId == 'payment_method_globalpayments_googlepay' ) {
+		toggleGooglePayButton : function ( radioButtonId, googlepayButtonId ){
+			if ( 'payment_method_globalpayments_googlepay' == radioButtonId ) {
 				$( '#' + googlepayButtonId ).show();
 				$( helpers.getPlaceOrderButtonSelector() ).hide();
-			} else if ( radioButtonId == 'payment_method_globalpayments_applepay' ) {
+			} else if ( 'payment_method_globalpayments_applepay' == radioButtonId ) {
 				$( '#' + googlepayButtonId ).hide();
 				$( helpers.getPlaceOrderButtonSelector() ).hide();
 			} else  {
@@ -199,7 +192,7 @@
 			}
 		},
 
-		onGooglePaymentButtonClicked : function() {
+		onGooglePaymentButtonClicked : function () {
 			var self = this;
 			var paymentDataRequest				= this.getGooglePaymentDataRequest();
 			paymentDataRequest.transactionInfo	= this.getGoogleTransactionInfo();
@@ -208,18 +201,13 @@
 				var token = paymentData.paymentMethodData.tokenizationData.token;
 				/**
 				 * Get hidden
-				 *
 				 * @type {HTMLInputElement}
 				 */
-
-				var tokenResponseElement =
-
-				( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
-
+				var tokenResponseElement = ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
 				if ( ! tokenResponseElement ) {
-					tokenResponseElement		= document.createElement('input');
+					tokenResponseElement		= document.createElement( 'input' );
 					tokenResponseElement.id		= self.configData.id + '_digital_wallet_token_response';
-					tokenResponseElement.name	= self.configData.id +  '[digital_wallet_token_response]';
+					tokenResponseElement.name	= self.configData.id + '[digital_wallet_token_response]';
 					tokenResponseElement.type	= 'hidden';
 					$( 'form[name="checkout"]' ).append( tokenResponseElement );
 				}
@@ -235,7 +223,7 @@
 	new GooglePayWoocommerce ( globalpayments_google_pay_params.gateway_options );
 
 } (
-	(window).jQuery,
-	(window).globalpayments_google_pay_params,
-	(window).GlobalPaymentsHelpers
+	( window ).jQuery,
+	( window ).globalpayments_google_pay_params,
+	( window ).GlobalPaymentsHelpers
 ) );
