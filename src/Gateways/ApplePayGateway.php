@@ -202,7 +202,7 @@ class ApplePayGateway extends AbstractGateway {
 
 		wp_localize_script(
 			'globalpayments-applepay',
-			'globalpayments_apple_pay_params',
+			'globalpayments_applepay_params',
 			array(
 				'id'				=> $this->id,
 				'gateway_options'	=> $this->secure_payment_fields_config(),

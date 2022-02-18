@@ -21,7 +21,7 @@
 				$( '.payment_method_globalpayments_applepay' ).hide();
 				return;
 			}
-			this.configData = data;
+			this.configData = data.gateway_options;
 			this.addApplePayButton( 'globalpayments_applepay' );
 		},
 
@@ -163,7 +163,7 @@
 				return false;
 			}
 
-			if ( ( true !== window.ApplePaySession && ApplePaySession.canMakePayments() ) ) {
+			if ( true !== ( window.ApplePaySession && ApplePaySession.canMakePayments() ) ) {
 				console.warn( 'Apple Pay is not supported on this device/browser' );
 				return false;
 			}

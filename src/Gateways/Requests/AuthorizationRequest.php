@@ -7,7 +7,6 @@ use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\Api\Entities\Enums\EncyptedMobileType;
 use GlobalPayments\Api\Entities\Enums\TransactionModifier;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Helper\Helper;
-use Requests;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -18,7 +17,6 @@ class AuthorizationRequest extends AbstractRequest {
 
 	public function get_args() {
 		$token = ( new PaymentTokenData( $this ) )->get_token();
-		$replacedTokenResponse = $this->data[$this->gateway_id]["digital_wallet_token_response"] ? Helper::remove_slashes_from_token( $this->data[$this->gateway_id]["digital_wallet_token_response"] ) : '' ;
 		$response = array(
 			RequestArg::AMOUNT			=> null !== $this->order ? $this->order->get_total() : null,
 			RequestArg::CURRENCY		=> null !== $this->order ? $this->order->get_currency() : null,
@@ -28,7 +26,7 @@ class AuthorizationRequest extends AbstractRequest {
 		);
 
 		if ( isset ( $this->data[$this->gateway_id]['digital_wallet_token_response'] ) ) {
-			$response[RequestArg::DIGITAL_WALLET_TOKEN]	= ! empty( $this->data[$this->gateway_id]['digital_wallet_token_response'] ) ? $replacedTokenResponse  : null;
+			$response[RequestArg::DIGITAL_WALLET_TOKEN]	= Helper::remove_slashes_from_token( $this->data[$this->gateway_id]["digital_wallet_token_response"] );
 			$response[RequestArg::MOBILE_TYPE]			= EncyptedMobileType::GOOGLE_PAY;
 			$response[RequestArg::TRANSACTION_MODIFIER]	= TransactionModifier::ENCRYPTED_MOBILE;
 		}
