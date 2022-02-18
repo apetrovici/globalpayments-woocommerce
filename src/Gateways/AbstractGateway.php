@@ -1029,12 +1029,16 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	}
 
 	/**
-	 * Disable adding new cards via 'My Account', if "Allow Card Saving" option not checked in admin.
+	 * Disable adding new cards via 'My Account', if a Digital Wallet or "Allow Card Saving" option not checked in admin.
 	 *
 	 * @param array $available_gateways
 	 * @return array
 	 */
 	public function woocommerce_available_payment_gateways( $available_gateways ) {
+		if ( in_array ( $this->id, $this::DIGITAL_WALLETS ) ) {
+			unset( $available_gateways[ $this->id ]);
+		}
+
 		if ( 'no' === $this->get_option( 'allow_card_saving' ) ) {
 			unset( $available_gateways[ $this->id ]);
 		}

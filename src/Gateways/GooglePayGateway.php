@@ -174,17 +174,25 @@ class GooglePayGateway extends AbstractGateway {
 			WC()->version,
 			true
 		);
-		
+
 		wp_enqueue_script(
-			'globalpayments-googlepay',
+			'globalpayments-helpers',
+			Plugin::get_url( '/assets/frontend/js/globalpayments-helpers.js' ),
+			array( 'jquery' ),
+			WC()->version,
+			true
+		); 
+
+		wp_enqueue_script(
+			'globalpayments-wc-googlepay',
 			Plugin::get_url( '/assets/frontend/js/googlepay.js' ),
-			array( 'wc-checkout', 'globalpayments-googlepay' ),
+			array( 'wc-checkout', 'globalpayments-googlepay', 'globalpayments-helpers' ),
 			WC()->version,
 			true
 		);
 
 		wp_localize_script(
-			'globalpayments-googlepay',
+			'globalpayments-wc-googlepay',
 			'globalpayments_google_pay_params',
 			array(
 				'id'              => $this->id,
