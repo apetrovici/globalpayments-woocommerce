@@ -5,12 +5,6 @@
 
 namespace GlobalPayments\WooCommercePaymentGatewayProvider;
 
-use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\HeartlandGateway;
-use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\HeartlandGiftCards\HeartlandGiftGateway;
-use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\HeartlandGiftCards\HeartlandGiftCardOrder;
-use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GooglePayGateway;
-use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\ApplePayGateway;
-
 defined( 'ABSPATH' ) || exit;
 
 /**

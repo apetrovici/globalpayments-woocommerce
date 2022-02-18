@@ -4,8 +4,9 @@
 	helpers
 ) {
 	function ApplePayWoocommerce( options ) {
-	   var self = this;
-	   if ( 1 == wc_checkout_params.is_checkout ) {
+		this.id	= options.id;
+		var self = this;
+		if ( 1 == wc_checkout_params.is_checkout ) {
 			$( document.body ).on(
 				'updated_checkout',
 				function() {
@@ -18,11 +19,11 @@
 	ApplePayWoocommerce.prototype = {
 		initialize: function ( data ) {
 			if ( false === this.deviceSupported() ) {
-				$( '.payment_method_globalpayments_applepay' ).hide();
+				$( '.payment_method_' + this.id ).hide();
 				return;
 			}
 			this.configData = data.gateway_options;
-			this.addApplePayButton( 'globalpayments_applepay' );
+			this.addApplePayButton( this.id );
 		},
 
 		/**
@@ -34,7 +35,7 @@
 			paymentButton.className	= 'apple-pay-button apple-pay-button-white-with-line';
 			paymentButton.title		= 'Pay with Apple Pay';
 			paymentButton.alt		= 'Pay with Apple Pay';
-			paymentButton.id		= 'globalpayments_applepay';
+			paymentButton.id		= self.id;
 
 			paymentButton.addEventListener( 'click', function ( e ) {
 				e.preventDefault();
@@ -45,21 +46,21 @@
 			$( helpers.getPlaceOrderButtonSelector() ).after( paymentButton );
 
 			$( 'input[type=radio][name=payment_method]' ).change( function () {
-				self.toggleApplePayButton( this.id, 'globalpayments_applepay' );
+				self.toggleApplePayButton( this.id, self.id );
 			});
 
-			if ( $( '#payment_method_globalpayments_applepay' ).is( ':checked' ) ) {
+			if ( $( '#payment_method_' + self.id ).is( ':checked' ) ) {
 				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
-				$( '#globalpayments_applepay' ).hide();
+				$( '#' + self.id ).hide();
 			}
 		},
 
 		toggleApplePayButton: function ( radioButtonId, applepayButtonId ){
-			if ( 'payment_method_globalpayments_applepay' == radioButtonId ) {
+			if ( 'payment_method_' + this.id == radioButtonId ) {
 				$( '#' + applepayButtonId ).show();
 				$( helpers.getPlaceOrderButtonSelector() ).hide();
-			} else if ( 'payment_method_globalpayments_googlepay' == radioButtonId ) {
+			} else if ( 'payment_method_' + this.googlepay_gateway_id == radioButtonId ) {
 				$( '#' + applepayButtonId ).hide();
 				$( helpers.getPlaceOrderButtonSelector() ).show();
 			}  else {
@@ -101,7 +102,7 @@
 
 			$.ajax({
 				cache	: false,
-				url		: this.configData.validateMerchantUrl,
+				url		: this.configData.validate_merchant_url,
 				data	: {'validationUrl': 'event.validationURL'},
 				dataType: 'json',
 			}).done( function ( response ) {
@@ -144,17 +145,17 @@
 				merchantCapabilities: [ 'supports3DS' ],
 				total: {
 					label	: this.getDisplayName(),
-					amount	: this.configData.grandTotalAmount
+					amount	: this.configData.grand_total_amount
 				},
 			}
 		},
 
 		getCountryId: function () {
-			return this.configData.countryCode;
+			return this.configData.country_code;
 		},
 
 		getDisplayName: function () {
-			return this.configData.merchantDisplayName;
+			return this.configData.apple_merchant_display_name;
 		},
 
 		deviceSupported: function () {

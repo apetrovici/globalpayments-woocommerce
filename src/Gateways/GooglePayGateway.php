@@ -214,7 +214,8 @@ class GooglePayGateway extends AbstractGateway {
 			'accepted_cards' 				=> $this->accepted_cards,
 			'button_color' 					=> $this->button_color,
 			'currency'        				=> get_woocommerce_currency(),
-			'grandTotalAmount'				=> ( string ) $this->get_session_amount(),
+			'grand_total_amount'				=> ( string ) $this->get_session_amount(),
+			'applepay_gateway_id'			=> ApplePayGateway::GATEWAY_ID,
 		);
 	}
 

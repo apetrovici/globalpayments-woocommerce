@@ -230,10 +230,10 @@ class ApplePayGateway extends AbstractGateway {
 			'accepted_cards' 		=> $this->accepted_cards,
 			'apple_merchant_display_name' => $this->apple_merchant_display_name,
 			'currency'				=> get_woocommerce_currency(),
-			'grandTotalAmount'		=> ( string ) $this->get_session_amount(),
-			'merchantDisplayName'	=> $this->apple_merchant_display_name,
-			'countryCode'			=> wc_get_base_location()['country'],
-			'validateMerchantUrl'	=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'grand_total_amount'		=> ( string ) $this->get_session_amount(),
+			'country_code'			=> wc_get_base_location()['country'],
+			'validate_merchant_url'	=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'googlepay_gateway_id'	=> GooglePayGateway::GATEWAY_ID
 		);
 	}
 
