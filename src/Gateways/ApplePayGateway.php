@@ -65,7 +65,7 @@ class ApplePayGateway extends AbstractGateway {
 
 	public function configure_method_settings () {
 		$this->id					=  self::GATEWAY_ID;
-		$this->method_title			= __( 'GlobalPayments - ApplePay', 'globalpayments-gateway-provider-for-woocommerce' );
+		$this->method_title			= __( 'GlobalPayments - Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' );
 		$this->method_description	= __( 'Connect to the Apple Pay gateway via UCP', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 
@@ -147,6 +147,16 @@ class ApplePayGateway extends AbstractGateway {
 					'label'			=> __( 'Enable Gateway', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'default'		=> 'no',
 				),
+				'title'	=> array(
+					'title'			=> __( 'Title', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'type'			=> 'text',
+					'description'	=> __( 'This controls the title which the user sees during checkout.', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'default'		=> __( 'Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'desc_tip'		=> true,
+				),
+			), 
+			$this->get_gateway_form_fields(),
+			array(
 				'payment_action'	=> array(
 					'title'			=> __( 'Payment Action', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'type'			=> 'select',
@@ -158,14 +168,8 @@ class ApplePayGateway extends AbstractGateway {
 						self::TXN_TYPE_AUTHORIZE	=> __( 'Authorize only', 'globalpayments-gateway-provider-for-woocommerce' ),
 					),
 				),
-				'title'	=> array(
-					'title'			=> __( 'Title', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'type'			=> 'text',
-					'description'	=> __( 'This controls the title which the user sees during checkout.', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'default'		=> __( 'Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'desc_tip'		=> true,
-				),
-		), $this->get_gateway_form_fields() );
+			)
+		);
 	}
 
 	public function accepted_cards_options() : array {
@@ -183,7 +187,7 @@ class ApplePayGateway extends AbstractGateway {
 		wp_enqueue_script(
 			'globalpayments-applepay',
 			Plugin::get_url( '/assets/frontend/js/applepay.js' ),
-			array( 'checkout', 'globalpayments-helpers' ),
+			array( 'wc-checkout', 'globalpayments-helpers' ),
 			WC()->version,
 			true
 		);
