@@ -46,6 +46,24 @@
 			}
 			$( this.getForm() ).submit();
 		},
+
+		/**
+		 * Gets the current checkout form
+		 *
+		 * @returns {Element}
+		 */
+		getForm: function () {
+			var checkoutForms = [
+				// Order Pay
+				'form#order_review',
+				// Checkout
+				'form[name="checkout"]',
+				// Add payment method
+				'form#add_payment_method'
+			];
+			var forms = document.querySelectorAll( checkoutForms.join( ',' ) );
+			return forms.item( 0 );
+		},
 	};
 
 	if ( ! window.GlobalPaymentsHelpers ) {
