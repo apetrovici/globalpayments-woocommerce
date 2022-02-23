@@ -7,7 +7,7 @@
 	GlobalPayments3DS,
 	globalpayments_secure_payment_fields_params,
 	globalpayments_secure_payment_threedsecure_params,
-	helpers
+	helper
 ) {
 	/**
 	 * Frontend code for Global Payments in WooCommerce
@@ -88,7 +88,7 @@
 				}
 			);
 
-			$( this.getForm() ).on( 'checkout_place_order_globalpayments_gpapi', this.initThreeDSecure.bind( this ) );
+			$( helper.getForm() ).on( 'checkout_place_order_globalpayments_gpapi', this.initThreeDSecure.bind( this ) );
 			$( document.body ).on( 'checkout_error', function() {
 				$('#globalpayments_gpapi-checkout_validated').remove();
 				$('#globalpayments_gpapi-serverTransId').remove();
@@ -130,7 +130,7 @@
 				return true;
 			}
 
-			$.post( this.threedsecure.ajaxCheckoutUrl, $( this.getForm() ).serialize())
+			$.post( this.threedsecure.ajaxCheckoutUrl, $( helper.getForm() ).serialize())
 				.done( function( result ) {
 					if ( -1 !== result.messages.indexOf( self.id + '_checkout_validated' ) ) {
 						self.createInputElement( 'checkout_validated', 1 );
@@ -145,13 +145,6 @@
 
 			return false;
 		},
-
-		/**
-		 * Convenience function to get CSS selector for the custom 'Place Order' button's parent element
-		 *
-		 * @returns {string}
-		 */
-		getSubmitButtonTargetSelector: function () { return '#' + this.id + '-card-submit'; },
 
 		/**
 		 * Convenience function to get CSS selector for the radio input associated with our payment method
@@ -227,7 +220,7 @@
 
 			// ensure the submit button's parent is on the page as this is added
 			// only after the initial page load
-			if ( $( this.getSubmitButtonTargetSelector() ).length === 0 ) {
+			if ( $( helper.getSubmitButtonTargetSelector( this.id ) ).length === 0 ) {
 				this.createSubmitButtonTarget();
 			}
 
@@ -257,9 +250,9 @@
 		 */
 		createSubmitButtonTarget: function () {
 			var el       = document.createElement( 'div' );
-			el.id        = this.getSubmitButtonTargetSelector().replace( '#', '' );
+			el.id        = helper.getSubmitButtonTargetSelector( this.id ).replace( '#', '' );
 			el.className = 'globalpayments ' + this.id + ' card-submit';
-			$( helpers.getPlaceOrderButtonSelector() ).after( el );
+			$( helper.getPlaceOrderButtonSelector() ).after( el );
 			// match the visibility of our payment form
 			this.toggleSubmitButtons();
 		},
@@ -277,12 +270,12 @@
 			var shouldBeVisible = ( paymentGatewaySelected && ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) );
 			if ( shouldBeVisible ) {
 				// our gateway was selected
-				$( this.getSubmitButtonTargetSelector() ).show();
-				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+				$( helper.getSubmitButtonTargetSelector( this.id ) ).show();
+				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
 				// another gateway was selected
-				$( this.getSubmitButtonTargetSelector() ).hide();
-				$( helpers.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
+				$( helper.getSubmitButtonTargetSelector( this.id ) ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
 			}
 		},
 
@@ -326,12 +319,12 @@
 					tokenResponseElement.id   = that.id + '-token_response';
 					tokenResponseElement.name = that.id + '[token_response]';
 					tokenResponseElement.type = 'hidden';
-					that.getForm().appendChild( tokenResponseElement );
+					helper.getForm().appendChild( tokenResponseElement );
 				}
 
 				response.details.cardSecurityCode = cvvVal;
 				tokenResponseElement.value = JSON.stringify( response );
-				helpers.placeOrder();
+				helper.placeOrder();
 			});
 		},
 
@@ -342,7 +335,7 @@
 			this.blockOnSubmit();
 
 			var self = this;
-			var _form = this.getForm();
+			var _form = helper.getForm();
 			var $form = $( _form );
 
 			GlobalPayments.ThreeDSecure.checkVersion( this.threedsecure.checkEnrollmentUrl, {
@@ -438,7 +431,7 @@
 				inputElement.id   = this.id + '-' + name;
 				inputElement.name = this.id + '[' + name + ']';
 				inputElement.type = 'hidden';
-				this.getForm().appendChild( inputElement );
+				helper.getForm().appendChild( inputElement );
 			}
 
 			inputElement.value = value;
@@ -505,7 +498,7 @@
 		 * @returns
 		 */
 		showPaymentError: function ( message ) {
-			var $form     = $( this.getForm() );
+			var $form     = $( helper.getForm() );
 
 			// Remove notices from all sources
 			$( '.woocommerce-NoticeGroup, .woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-globalpayments-checkout-error' ).remove();
@@ -630,7 +623,7 @@
 				},
 				'submit': {
 					text: this.getSubmitButtonText(),
-					target: this.getSubmitButtonTargetSelector()
+					target: helper.getSubmitButtonTargetSelector( this.id )
 				}
 			};
 		},
@@ -654,24 +647,6 @@
 		},
 
 		/**
-		 * Gets the current checkout form
-		 *
-		 * @returns {Element}
-		 */
-		getForm: function () {
-			var checkoutForms = [
-				// Order Pay
-				'form#order_review',
-				// Checkout
-				'form[name="checkout"]',
-				// Add payment method
-				'form#add_payment_method'
-			];
-			var forms = document.querySelectorAll( checkoutForms.join( ',' ) );
-			return forms.item( 0 );
-		},
-
-		/**
 		 * Blocks checkout UI
 		 *
 		 * Implementation pulled from `woocommerce/assets/js/frontend/checkout.js`
@@ -679,7 +654,7 @@
 		 * @returns
 		 */
 		blockOnSubmit: function () {
-			var $form     = $( this.getForm() );
+			var $form     = $( helper.getForm() );
 			var form_data = $form.data();
 
 			if ( 1 !== form_data['blockUI.isBlocked'] ) {
@@ -701,7 +676,7 @@
 		 * @returns
 		 */
 		unblockOnError: function () {
-			var $form = $( this.getForm() );
+			var $form = $( helper.getForm() );
 			$form.unblock();
 		}
 	};
@@ -746,9 +721,9 @@
 	( window ).globalpayments_secure_payment_threedsecure_params || {},
 
 	/**
-     * Global `helpers` reference
+     * Global `helper` reference
      *
      * @type {any}
      */
-	 ( window ).GlobalPaymentsHelpers
+	 ( window ).GlobalPaymentsHelper
 ));

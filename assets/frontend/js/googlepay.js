@@ -1,18 +1,11 @@
 ( function (
 	$,
-	globalpayments_google_pay_params,
-	helpers
+	globalpayments_googlepay_params,
+	helper
 ) {
-	function GooglePayWoocommerce ( options )
-	{
-		/**
-         * Payment gateway id
-         *
-         * @type {string}
-         */
+	function GooglePayWoocommerce ( options ) {
 		this.id = options.id;
 		var self = this;
-
 		// Checkout
 		if ( 1 == wc_checkout_params.is_checkout ) {
 			$( document.body ).on (
@@ -28,7 +21,7 @@
 
 		initialize: function( data ) {
 			var self			= this;
-			self.configData		= data;
+			self.configData		= data.gateway_options; 
 			self.paymentsClient	= null;
 
 			self.setGooglePaymentsClient();
@@ -53,25 +46,16 @@
 			}
 		},
 
-		/**
-		 * Merchant display name
-		 */
 		getGoogleMerchantId: function () {
-			return this.google_merchant_id;
+			return this.configData.google_merchant_id;
 		},
 
-		/**
-		 * Environment
-		 */
 		getEnvironment: function () {
 			return this.configData.env;
 		},
 
-		/**
-		 * BTN Color
-		 */
 		getBtnColor: function () {
-			return this.button_color ;
+			return this.configData.button_color ;
 		},
 
 		getAllowedCardNetworks: function () {
@@ -166,7 +150,7 @@
 			var el			= document.createElement( 'div' );
 			el.id			= element;
 			el.className	= 'payment_box payment_method_' + self.id ; 
-			$( helpers.getPlaceOrderButtonSelector() ).after( el );
+			$( helper.getPlaceOrderButtonSelector() ).after( el );
 
 			$( '#' + element ).append( button );
 
@@ -175,7 +159,7 @@
 			});
 
 			if ( $( '#payment_method_' + self.id ).is( ':checked' ) ) {
-				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
 				$( '#' + self.id ).hide();
 			}
@@ -184,13 +168,13 @@
 		toggleGooglePayButton : function ( radioButtonId, googlepayButtonId ){
 			if ( 'payment_method_' + this.id == radioButtonId ) {
 				$( '#' + googlepayButtonId ).show();
-				$( helpers.getPlaceOrderButtonSelector() ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).hide();
 			} else if ( 'payment_method_' + this.applepay_gateway_id == radioButtonId ) {
 				$( '#' + googlepayButtonId ).hide();
-				$( helpers.getPlaceOrderButtonSelector() ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).hide();
 			} else  {
 				$( '#' + googlepayButtonId ).hide();
-				$( helpers.getPlaceOrderButtonSelector() ).show();
+				$( helper.getPlaceOrderButtonSelector() ).show();
 			}
 		},
 
@@ -208,24 +192,24 @@
 				var tokenResponseElement = ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
 				if ( ! tokenResponseElement ) {
 					tokenResponseElement		= document.createElement( 'input' );
-					tokenResponseElement.id		= self.configData.id + '_digital_wallet_token_response';
-					tokenResponseElement.name	= self.configData.id + '[digital_wallet_token_response]';
+					tokenResponseElement.id		= self.id + '_digital_wallet_token_response';
+					tokenResponseElement.name	= self.id + '[digital_wallet_token_response]';
 					tokenResponseElement.type	= 'hidden';
 					$( 'form[name="checkout"]' ).append( tokenResponseElement );
 				}
 				tokenResponseElement.value = JSON.stringify( JSON.parse( token ) );
 
-				return helpers.placeOrder();
+				return helper.placeOrder();
 			}).catch( function ( err ) {
 				console.error( err );
 			});
 		},
 	};
 
-	new GooglePayWoocommerce ( globalpayments_google_pay_params.gateway_options );
+	new GooglePayWoocommerce ( globalpayments_googlepay_params );
 
 } (
 	( window ).jQuery,
-	( window ).globalpayments_google_pay_params,
-	( window ).GlobalPaymentsHelpers
+	( window ).globalpayments_googlepay_params,
+	( window ).GlobalPaymentsHelper
 ) );

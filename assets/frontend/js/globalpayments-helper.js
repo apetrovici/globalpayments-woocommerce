@@ -1,9 +1,9 @@
 (function (
 	$
 ) {
-	function Helpers() {};
+	function Helper() {};
 
-	Helpers.prototype = {
+	Helper.prototype = {
 
 		/**
 		 * Convenience function to get CSS selector for the built-in 'Place Order' button
@@ -66,8 +66,8 @@
 		},
 	};
 
-	if ( ! window.GlobalPaymentsHelpers ) {
-		window.GlobalPaymentsHelpers = new Helpers();
+	if ( ! window.GlobalPaymentsHelper ) {
+		window.GlobalPaymentsHelper = new Helper();
 	}
 } (
 	( window ).jQuery,

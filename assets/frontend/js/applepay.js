@@ -1,11 +1,12 @@
  ( function (
 	$,
 	globalpayments_applepay_params,
-	helpers
+	helper
 ) {
 	function ApplePayWoocommerce( options ) {
 		this.id	= options.id;
 		var self = this;
+		// Checkout
 		if ( 1 == wc_checkout_params.is_checkout ) {
 			$( document.body ).on(
 				'updated_checkout',
@@ -43,14 +44,14 @@
 				applePaySession.begin();
 			});
 
-			$( helpers.getPlaceOrderButtonSelector() ).after( paymentButton );
+			$( helper.getPlaceOrderButtonSelector() ).after( paymentButton );
 
 			$( 'input[type=radio][name=payment_method]' ).change( function () {
 				self.toggleApplePayButton( this.id, self.id );
 			});
 
 			if ( $( '#payment_method_' + self.id ).is( ':checked' ) ) {
-				$( helpers.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
 				$( '#' + self.id ).hide();
 			}
@@ -59,13 +60,13 @@
 		toggleApplePayButton: function ( radioButtonId, applepayButtonId ){
 			if ( 'payment_method_' + this.id == radioButtonId ) {
 				$( '#' + applepayButtonId ).show();
-				$( helpers.getPlaceOrderButtonSelector() ).hide();
+				$( helper.getPlaceOrderButtonSelector() ).hide();
 			} else if ( 'payment_method_' + this.googlepay_gateway_id == radioButtonId ) {
 				$( '#' + applepayButtonId ).hide();
-				$( helpers.getPlaceOrderButtonSelector() ).show();
+				$( helper.getPlaceOrderButtonSelector() ).show();
 			}  else {
 				$( '#' + applepayButtonId ).hide();
-				$( helpers.getPlaceOrderButtonSelector() ).show();
+				$( helper.getPlaceOrderButtonSelector() ).show();
 			}
 		},
 
@@ -98,7 +99,6 @@
 		},
 
 		onApplePayValidateMerchant: function ( event, session ) {
-			var self = this;
 
 			$.ajax({
 				cache	: false,
@@ -125,14 +125,14 @@
 				var tokenResponseElement = ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
 				if ( ! tokenResponseElement ) {
 					tokenResponseElement		= document.createElement('input');
-					tokenResponseElement.id		= self.configData.id + '_digital_wallet_token_response';
-					tokenResponseElement.name	= self.configData.id + '[digital_wallet_token_response]';
+					tokenResponseElement.id		= self.id + '_digital_wallet_token_response';
+					tokenResponseElement.name	= self.id + '[digital_wallet_token_response]';
 					tokenResponseElement.type	= 'hidden';
 					$( 'form[name="checkout"]' ).append( tokenResponseElement );
 				}
 				tokenResponseElement.value = JSON.stringify( event.payment.token.paymentData );
 
-				return helpers.placeOrder();
+				return helper.placeOrder();
 			} catch ( e ) {
 				session.completePayment( ApplePaySession.STATUS_FAILURE );
 			}
@@ -177,5 +177,5 @@
 }(
 	( window ).jQuery,
 	( window ).globalpayments_applepay_params,
-	( window ).GlobalPaymentsHelpers
+	( window ).GlobalPaymentsHelper
 ));

@@ -176,8 +176,8 @@ class GooglePayGateway extends AbstractGateway {
 		);
 
 		wp_enqueue_script(
-			'globalpayments-helpers',
-			Plugin::get_url( '/assets/frontend/js/globalpayments-helpers.js' ),
+			'globalpayments-helper',
+			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
 			array( 'jquery' ),
 			WC()->version,
 			true
@@ -186,14 +186,14 @@ class GooglePayGateway extends AbstractGateway {
 		wp_enqueue_script(
 			'globalpayments-wc-googlepay',
 			Plugin::get_url( '/assets/frontend/js/googlepay.js' ),
-			array( 'wc-checkout', 'globalpayments-googlepay', 'globalpayments-helpers' ),
+			array( 'wc-checkout', 'globalpayments-googlepay', 'globalpayments-helper' ),
 			WC()->version,
 			true
 		);
 
 		wp_localize_script(
 			'globalpayments-wc-googlepay',
-			'globalpayments_google_pay_params',
+			'globalpayments_googlepay_params',
 			array(
 				'id'              => $this->id,
 				'gateway_options' => $this->secure_payment_fields_config(),
@@ -208,7 +208,6 @@ class GooglePayGateway extends AbstractGateway {
 
 	public function secure_payment_fields_config() {
 		return array(
-			'id' 							=>$this->id,
 			'google_merchant_id' 			=> $this->google_merchant_id,
 			'global_payments_merchant_id' 	=> $this->global_payments_merchant_id,
 			'accepted_cards' 				=> $this->accepted_cards,
