@@ -21,7 +21,7 @@ class GooglePayGateway extends AbstractGateway {
 	 * @var string
 	 */
 	public $gateway_provider = GatewayProvider::GP_API;
-	
+
 	/**
 	 * @var string
 	 */
@@ -31,7 +31,7 @@ class GooglePayGateway extends AbstractGateway {
 	 * @var int
 	 */
 	public $google_merchant_id;
-	
+
 	/**
 	 * @var string
 	 */
@@ -59,30 +59,22 @@ class GooglePayGateway extends AbstractGateway {
 	}
 
 	public function get_frontend_gateway_options() {
-		return array(
-			'btnColor'	=> $this->button_color,
-		);
+        return array(
+            'google_merchant_id' 			=> $this->google_merchant_id,
+            'global_payments_merchant_id' 	=> $this->global_payments_merchant_id,
+            'accepted_cards' 				=> $this->accepted_cards,
+            'button_color' 					=> $this->button_color,
+            'currency'        				=> get_woocommerce_currency(),
+            'grand_total_amount'				=> ( string ) $this->get_session_amount(),
+            'applepay_gateway_id'			=> ApplePayGateway::GATEWAY_ID,
+            'btnColor'	=> $this->button_color,
+        );
 	}
 
     public function get_backend_gateway_options() {
 		global $wp_version;
 		$gpApiGateway = new GpApiGateway();
-
-		return array(
-			'appId'						=> $gpApiGateway->get_credential_setting( 'app_id' ),
-			'appKey'					=> $gpApiGateway->get_credential_setting( 'app_key' ),
-			'channel'					=> Channel::CardNotPresent,
-			'country'					=> wc_get_base_location()['country'],
-			'environment'				=> $gpApiGateway->is_production ? Environment::PRODUCTION : Environment::TEST,
-			'methodNotificationUrl'		=> WC()->api_request_url('globalpayments_threedsecure_methodnotification'),
-			'challengeNotificationUrl'	=> WC()->api_request_url('globalpayments_threedsecure_challengenotification'),
-			'merchantContactUrl'		=> $gpApiGateway->merchant_contact_url,
-			'dynamicHeaders'			=> [
-				'x-gp-platform'		=> 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
-				'x-gp-extension'	=> 'globalpayments-woocommerce;version=' . Plugin::VERSION,
-			],
-			'debug'                    => $gpApiGateway->debug,
-		);
+        return $gpApiGateway->get_backend_gateway_options();
 	}
 
 	public function get_gateway_form_fields()  {
@@ -91,18 +83,26 @@ class GooglePayGateway extends AbstractGateway {
 				'title'		=> __( 'Global Payments Merchant Id', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'		=> 'text',
 				'default'	=> '',
+                'custom_attributes' => array( 'required' => 'required' ),
 			),
 			'google_merchant_id' => array(
 				'title'		=> __( 'Google Merchant Id', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'		=> 'text',
 				'default'	=> '',
+                'custom_attributes' => array( 'required' => 'required' ),
 			),
 			'accepted_cards'	=> array(
 				'title'			=> __( 'Accepted Cards', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'			=> 'multiselect',
 				'class'			=> 'accepted_cards',
 				'css'			=> 'width: 450px',
-				'options'		=> $this->accepted_cards_options(),
+				'options'		=> array(
+                                    'VISA'			=> 'Visa',
+                                    'MASTERCARD'	=> 'MasterCard',
+                                    'AMEX'			=> 'AMEX',
+                                    'DISCOVER'		=>  'Discover',
+                                    'JCB'			=> 'JCB'
+                                ),
 				'default'		=> array( 'JCB' ),
 				'custom_attributes' => array( 'required' => 'required' ),
 			),
@@ -136,9 +136,9 @@ class GooglePayGateway extends AbstractGateway {
 					'default'		=> __( 'Credit Card', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'desc_tip'		=> true,
 				),
-			), 
+			),
 			$this->get_gateway_form_fields(),
-			array( 
+			array(
 				'payment_action' => array(
 					'title'			=> __( 'Payment Action', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'type'			=> 'select',
@@ -150,72 +150,53 @@ class GooglePayGateway extends AbstractGateway {
 						self::TXN_TYPE_AUTHORIZE	=> __( 'Authorize only', 'globalpayments-gateway-provider-for-woocommerce' ),
 					),
 				),
-			) 
+			)
 		);
 	 }
 
-	public function accepted_cards_options() {
-		return array(
-			'VISA'			=> 'Visa',
-			'MASTERCARD'	=> 'MasterCard',
-			'AMEX'			=> 'AMEX',
-			'DISCOVER'		=>  'Discover',
-			'JCB'			=> 'JCB'
-		);
-	}
+	 public function tokenization_script()
+     {
+         wp_enqueue_script(
+             'globalpayments-googlepay',
+             ( 'https://pay.google.com/gp/p/js/pay.js' ),
+             array(),
+             WC()->version,
+             true
+         );
 
-	public function payment_fields() {
+         wp_enqueue_script(
+             'globalpayments-helper',
+             Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
+             array( 'jquery' ),
+             WC()->version,
+             true
+         );
+
+         wp_enqueue_script(
+             'globalpayments-wc-googlepay',
+             Plugin::get_url( '/assets/frontend/js/googlepay.js' ),
+             array( 'wc-checkout', 'globalpayments-googlepay', 'globalpayments-helper' ),
+             WC()->version,
+             true
+         );
+
+         wp_localize_script(
+             'globalpayments-wc-googlepay',
+             'globalpayments_googlepay_params',
+             array(
+                 'id'              => $this->id,
+                 'gateway_options' => $this->get_frontend_gateway_options(),
+             )
+         );
+     }
+
+    public function payment_fields() {
 		echo '<div>'.__( 'Pay with Google Pay', 'globalpayments-gateway-provider-for-woocommerce' ).'</div>';
-		
-		wp_enqueue_script(
-			'globalpayments-googlepay',
-			( 'https://pay.google.com/gp/p/js/pay.js' ),
-			array(),
-			WC()->version,
-			true
-		);
-
-		wp_enqueue_script(
-			'globalpayments-helper',
-			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
-			array( 'jquery' ),
-			WC()->version,
-			true
-		); 
-
-		wp_enqueue_script(
-			'globalpayments-wc-googlepay',
-			Plugin::get_url( '/assets/frontend/js/googlepay.js' ),
-			array( 'wc-checkout', 'globalpayments-googlepay', 'globalpayments-helper' ),
-			WC()->version,
-			true
-		);
-
-		wp_localize_script(
-			'globalpayments-wc-googlepay',
-			'globalpayments_googlepay_params',
-			array(
-				'id'              => $this->id,
-				'gateway_options' => $this->secure_payment_fields_config(),
-			)
-		);
 	}
 
 	protected function get_session_amount() {
 		$cart_totals = WC()->session->get( 'cart_totals' );
 		return round( $cart_totals['total'], 2 );
-	}
-
-	public function secure_payment_fields_config() {
-		return array(
-			'google_merchant_id' 			=> $this->google_merchant_id,
-			'global_payments_merchant_id' 	=> $this->global_payments_merchant_id,
-			'accepted_cards' 				=> $this->accepted_cards,
-			'button_color' 					=> $this->button_color,
-			'currency'        				=> get_woocommerce_currency(),
-			'grand_total_amount'				=> ( string ) $this->get_session_amount(),
-			'applepay_gateway_id'			=> ApplePayGateway::GATEWAY_ID,
-		);
 	}
 
 	public function mapResponseCodeToFriendlyMessage( $responseCode ) {
