@@ -70,46 +70,43 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function get_frontend_gateway_options () : array {
-		return array();
+		return array(
+			'accepted_cards'				=> $this->accepted_cards,
+			'apple_merchant_display_name'	=> $this->apple_merchant_display_name,
+			'currency'						=> get_woocommerce_currency(),
+			'grand_total_amount'			=> ( string ) $this->get_session_amount(),
+			'country_code'					=> wc_get_base_location()['country'],
+			'validate_merchant_url'			=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'googlepay_gateway_id'			=> GooglePayGateway::GATEWAY_ID
+		);
 	}
 
 	public function get_backend_gateway_options () : array {
 		global $wp_version;
 		$gpApiGateway = new GpApiGateway();
 
-		return array(
-			'appId'						=> $gpApiGateway->get_credential_setting( 'app_id' ),
-			'appKey'					=> $gpApiGateway->get_credential_setting( 'app_key' ),
-			'channel'					=> Channel::CardNotPresent,
-			'country'					=> wc_get_base_location()['country'],
-			'environment'				=> $gpApiGateway->is_production ? Environment::PRODUCTION : Environment::TEST,
-			'methodNotificationUrl'		=> WC()->api_request_url( 'globalpayments_threedsecure_methodnotification' ),
-			'challengeNotificationUrl'	=> WC()->api_request_url( 'globalpayments_threedsecure_challengenotification' ),
-			'merchantContactUrl'		=> $gpApiGateway->merchant_contact_url,
-			'dynamicHeaders'			=> [
-				'x-gp-platform'		=> 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
-				'x-gp-extension'		=> 'globalpayments-woocommerce;version=' . Plugin::VERSION,
-			],
-			'debug'						=> $gpApiGateway->debug,
-		);
+		return $gpApiGateway->get_backend_gateway_options();
 	}
 
     public function get_gateway_form_fields () : array {
         return array(
 			'apple_merchant_id' => array(
-				'title'			=> __( 'Apple Merchant ID', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'text',
-				'default'		=> '',
+				'title'				=> __( 'Apple Merchant ID', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'				=> 'text',
+				'default'			=> '',
+				'custom_attributes'	=> array( 'required' => 'required' ),
 			),
 			'apple_merchant_cert_path' => array(
-				'title'			=> __( 'Apple Merchant Cert Path', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'text',
-				'default'		=> '',
+				'title'				=> __( 'Apple Merchant Cert Path', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'				=> 'text',
+				'default'			=> '',
+				'custom_attributes'	=> array( 'required' => 'required' ),
 			),
 			'apple_merchant_key_path' => array(
-				'title'			=> __( 'Apple Merchant Key Path', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'text',
-				'default'		=> '',
+				'title'				=> __( 'Apple Merchant Key Path', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'				=> 'text',
+				'default'			=> '',
+				'custom_attributes'	=> array( 'required' => 'required' ),
 			),
 			'apple_merchant_key_passphrase' => array(
 				'title'			=> __( 'Apple Merchant Key Passphrase', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -120,18 +117,25 @@ class ApplePayGateway extends AbstractGateway {
 				'title'			=> __( 'Apple Merchant Domain', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'			=> 'text',
 				'default'		=> '',
+				'custom_attributes'	=> array( 'required' => 'required' ),
 			),
 			'apple_merchant_display_name' => array(
 				'title'			=> __( 'Apple Merchant Display Name', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'			=> 'text',
 				'default'		=> '',
+				'custom_attributes'	=> array( 'required' => 'required' ),
 			),
 			'accepted_cards'	=> array(
 				'title'			=> __( 'Accepted Cards', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'			=> 'multiselect',
 				'class'			=> 'accepted_cards',
 				'css'			=> 'width: 450px',
-				'options'		=> $this->accepted_cards_options(),
+				'options'		=> array (
+									'VISA'			=> 'Visa',
+									'MASTERCARD'	=> 'MasterCard',
+									'AMEX'			=> 'AMEX',
+									'DISCOVER'		=> 'Discover',
+									),
 				'default'		=> array( 'VISA' ),
 				'custom_attributes'	=> array( 'required' => 'required' ),
 			)
@@ -172,49 +176,10 @@ class ApplePayGateway extends AbstractGateway {
 		);
 	}
 
-	public function accepted_cards_options() : array {
-		return array (
-			'VISA'			=> 'Visa',
-			'MASTERCARD'	=> 'MasterCard',
-			'AMEX'			=> 'AMEX',
-			'DISCOVER'		=> 'Discover',
-		);
-	}
+
 
 	public function payment_fields() {
 		echo '<div>' . __( 'Pay with Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
-
-		wp_enqueue_script(
-			'globalpayments-helper',
-			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
-			array( 'jquery' ),
-			WC()->version,
-			true
-		); 
-		
-		wp_enqueue_script(
-			'globalpayments-applepay',
-			Plugin::get_url( '/assets/frontend/js/applepay.js' ),
-			array( 'wc-checkout', 'globalpayments-helper' ),
-			WC()->version,
-			true
-		);
-
-		wp_localize_script(
-			'globalpayments-applepay',
-			'globalpayments_applepay_params',
-			array(
-				'id'				=> $this->id,
-				'gateway_options'	=> $this->secure_payment_fields_config(),
-			)
-		);
-
-		wp_enqueue_style(
-			'globalpayments-applepay',
-			Plugin::get_url( '/assets/frontend/css/globalpayments-applepay.css' ),
-			array(),
-			WC()->version
-		);
 
 	}
 
@@ -222,18 +187,6 @@ class ApplePayGateway extends AbstractGateway {
 		$cart_totals = WC()->session->get( 'cart_totals' );
 
 		return round( $cart_totals['total'], 2 );
-	}
-
-	public function secure_payment_fields_config() : array {
-		return array(
-			'accepted_cards' 		=> $this->accepted_cards,
-			'apple_merchant_display_name' => $this->apple_merchant_display_name,
-			'currency'				=> get_woocommerce_currency(),
-			'grand_total_amount'		=> ( string ) $this->get_session_amount(),
-			'country_code'			=> wc_get_base_location()['country'],
-			'validate_merchant_url'	=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
-			'googlepay_gateway_id'	=> GooglePayGateway::GATEWAY_ID
-		);
 	}
 
 	public function get_first_line_support_email () : string {
@@ -307,5 +260,46 @@ class ApplePayGateway extends AbstractGateway {
 		}
 
 		return __( 'An error occurred while processing the card.', 'globalpayments-gateway-provider-for-woocommerce' );
+	}
+
+	/**
+	 * Enqueues tokenization scripts from Global Payments and WooCommerce
+	 *
+	 * @return
+	 */
+	public function tokenization_script() {
+
+		wp_enqueue_script(
+			'globalpayments-helper',
+			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
+			array( 'jquery' ),
+			WC()->version,
+			true
+		); 
+		
+		wp_enqueue_script(
+			'globalpayments-applepay',
+			Plugin::get_url( '/assets/frontend/js/applepay.js' ),
+			array( 'wc-checkout', 'globalpayments-helper' ),
+			WC()->version,
+			true
+		);
+
+		wp_localize_script(
+			'globalpayments-applepay',
+			'globalpayments_applepay_params',
+			array(
+				'id'				=> $this->id,
+				'gateway_options'	=> $this->get_frontend_gateway_options(),
+			)
+		);
+
+		wp_enqueue_style(
+			'globalpayments-applepay',
+			Plugin::get_url( '/assets/frontend/css/globalpayments-applepay.css' ),
+			array(),
+			WC()->version
+		);
+
 	}
 }
