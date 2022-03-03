@@ -12,6 +12,8 @@ defined( 'ABSPATH' ) || exit;
 class GooglePayGateway extends AbstractGateway {
 	/**
 	 * Gateway ID
+     *
+     * @var string
 	 */
 	const GATEWAY_ID = 'globalpayments_googlepay';
 
@@ -22,27 +24,42 @@ class GooglePayGateway extends AbstractGateway {
 	 */
 	public $gateway_provider = GatewayProvider::GP_API;
 
-	/**
+    /**
+     * @inheritdoc
+     */
+    public $is_digital_wallet = true;
+
+    /**
+     * Google pay button color
+     *
 	 * @var string
 	 */
 	public $button_color;
 
 	/**
+     * Google Merchant Id
+     *
 	 * @var int
 	 */
 	public $google_merchant_id;
 
 	/**
+     * * Global Payments Merchant Id
+     *
 	 * @var string
 	 */
 	public $global_payments_merchant_id;
 
 	/**
+     * Accepted cards
+     *
 	 * @var array
 	 */
 	public $accepted_cards;
 
 	/**
+     * Payments action
+     *
 	 *  @var string
 	 */
 
@@ -65,14 +82,13 @@ class GooglePayGateway extends AbstractGateway {
             'accepted_cards' 				=> $this->accepted_cards,
             'button_color' 					=> $this->button_color,
             'currency'        				=> get_woocommerce_currency(),
-            'grand_total_amount'				=> ( string ) $this->get_session_amount(),
+            'grand_total_amount'			=> ( string ) $this->get_session_amount(),
             'applepay_gateway_id'			=> ApplePayGateway::GATEWAY_ID,
             'btnColor'	=> $this->button_color,
         );
 	}
 
     public function get_backend_gateway_options() {
-		global $wp_version;
 		$gpApiGateway = new GpApiGateway();
         return $gpApiGateway->get_backend_gateway_options();
 	}
@@ -97,12 +113,12 @@ class GooglePayGateway extends AbstractGateway {
 				'class'			=> 'accepted_cards',
 				'css'			=> 'width: 450px',
 				'options'		=> array(
-                                    'VISA'			=> 'Visa',
-                                    'MASTERCARD'	=> 'MasterCard',
-                                    'AMEX'			=> 'AMEX',
-                                    'DISCOVER'		=>  'Discover',
-                                    'JCB'			=> 'JCB'
-                                ),
+                    'VISA'			=> 'Visa',
+                    'MASTERCARD'	=> 'MasterCard',
+                    'AMEX'			=> 'AMEX',
+                    'DISCOVER'		=>  'Discover',
+                    'JCB'			=> 'JCB'
+                ),
 				'default'		=> array( 'JCB' ),
 				'custom_attributes' => array( 'required' => 'required' ),
 			),
@@ -154,8 +170,7 @@ class GooglePayGateway extends AbstractGateway {
 		);
 	 }
 
-	 public function tokenization_script()
-     {
+	 public function tokenization_script() {
          wp_enqueue_script(
              'globalpayments-googlepay',
              ( 'https://pay.google.com/gp/p/js/pay.js' ),
@@ -203,7 +218,6 @@ class GooglePayGateway extends AbstractGateway {
 		if ( 'DECLINED' === $responseCode ) {
 			return __( 'Your card has been declined by the bank.', 'globalpayments-gateway-provider-for-woocommerce' );
 		}
-
 		return __( 'An error occurred while processing the card.', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 }

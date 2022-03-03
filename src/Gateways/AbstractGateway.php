@@ -75,6 +75,13 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public $enabled;
 
 	/**
+     * Indicates if the gateway is digital wallet
+     *
+     * @var boolean
+     */
+    public $is_digital_wallet = false;
+
+	/**
 	 * Payment method title shown to consumer
 	 *
 	 * @var string
@@ -114,21 +121,21 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @var Clients\ClientInterface
 	 */
 	protected $client;
-	
+
 	/**
 	 * AVS CVN auto reverse condition
 	 *
 	 * @var bool
 	 */
 	public $check_avs_cvv;
-	
+
 	/**
 	 * AVS result codes
 	 *
 	 * @var array
 	 */
 	public $avs_reject_conditions;
-	
+
 	/**
 	 * CVN result codes
 	 *
@@ -307,7 +314,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
             array( 'jquery' ),
             WC()->version,
             true
-        ); 
+        );
 
 		// Global Payments scripts for handling client-side tokenization
 		wp_enqueue_script(
@@ -455,7 +462,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			        'description' => __( 'Choose for which CVN result codes, the transaction must be auto reversed.'),
 			        'options'     => $this->cvn_rejection_conditions(),
 			        'default'     => array("P", "?", "N"),
-			    ),			    
+			    ),
 			)
 		);
 	}
@@ -961,7 +968,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 			return false;
 		}
-		
+
 		//reverse incase of AVS/CVN failure
 		if(!empty($response->transactionReference->transactionId) && $this->get_option('check_avs_cvv') === 'yes'){
 		    if(!empty($response->avsResponseCode) || !empty($response->cvnResponseCode)){
@@ -971,7 +978,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		                Transaction::fromId( $response->transactionReference->transactionId )
 		                ->reverse( $request->order->data[ 'total' ] )
 		                ->execute();
-		                
+
 		                return false;
 		        }
 		    }
@@ -1045,7 +1052,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		return $available_gateways;
 	}
-	
+
 	public function avs_rejection_conditions()
 	{
 	    return array(
@@ -1067,7 +1074,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	        'P'  => 'P - Address and Zip not verified'
 	    );
 	}
-	
+
 	public function cvn_rejection_conditions()
 	{
 	    return array(

@@ -24,41 +24,62 @@ class ApplePayGateway extends AbstractGateway {
 	public $gateway_provider = GatewayProvider::GP_API;
 
 	/**
+     * @inheritdoc
+     */
+    public $is_digital_wallet = true;
+
+	/**
+     * Accepted Cards
+     *
 	 * @var array
 	 */
 	public $accepted_cards;
 
 	/**
+     * Payment Action
+     *
 	 * @var string
 	*/
 	public $payment_action;
-	
+
 	/**
+     * Apple Merchant Id
+     *
 	 * @var string
 	*/
 	public $apple_merchant_id;
 
 	/**
+     * Apple Merchant Cert Path
+     *
 	 * @var string
 	*/
 	public $apple_merchant_cert_path;
 
 	/**
+     * Apple Merchant Key Path
+     *
 	 * @var string
 	*/
 	public $apple_merchant_key_path;
 
 	/**
+     * Apple Merchant Key PassPhrase
+     *
 	 * @var string
 	*/
 	public $apple_merchant_key_passphrase;
 
 	/**
+     * Apple Merchant Domain
+     *
 	 * @var string
 	*/
 	public $apple_merchant_domain;
 
 	/**
+     * Apple Merchant Display Name
+     *
 	 * @var string
 	*/
 	public $apple_merchant_display_name;
@@ -82,9 +103,7 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function get_backend_gateway_options () : array {
-		global $wp_version;
 		$gpApiGateway = new GpApiGateway();
-
 		return $gpApiGateway->get_backend_gateway_options();
 	}
 
@@ -131,11 +150,11 @@ class ApplePayGateway extends AbstractGateway {
 				'class'			=> 'accepted_cards',
 				'css'			=> 'width: 450px',
 				'options'		=> array (
-									'VISA'			=> 'Visa',
-									'MASTERCARD'	=> 'MasterCard',
-									'AMEX'			=> 'AMEX',
-									'DISCOVER'		=> 'Discover',
-									),
+                    'VISA'			=> 'Visa',
+                    'MASTERCARD'	=> 'MasterCard',
+                    'AMEX'			=> 'AMEX',
+                    'DISCOVER'		=> 'Discover',
+				),
 				'default'		=> array( 'VISA' ),
 				'custom_attributes'	=> array( 'required' => 'required' ),
 			)
@@ -158,7 +177,7 @@ class ApplePayGateway extends AbstractGateway {
 					'default'		=> __( 'Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'desc_tip'		=> true,
 				),
-			), 
+			),
 			$this->get_gateway_form_fields(),
 			array(
 				'payment_action'	=> array(
@@ -180,7 +199,6 @@ class ApplePayGateway extends AbstractGateway {
 
 	public function payment_fields() {
 		echo '<div>' . __( 'Pay with Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
-
 	}
 
 	protected function get_session_amount() : float {
@@ -268,15 +286,14 @@ class ApplePayGateway extends AbstractGateway {
 	 * @return
 	 */
 	public function tokenization_script() {
-
 		wp_enqueue_script(
 			'globalpayments-helper',
 			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
 			array( 'jquery' ),
 			WC()->version,
 			true
-		); 
-		
+		);
+
 		wp_enqueue_script(
 			'globalpayments-applepay',
 			Plugin::get_url( '/assets/frontend/js/applepay.js' ),
@@ -300,6 +317,5 @@ class ApplePayGateway extends AbstractGateway {
 			array(),
 			WC()->version
 		);
-
 	}
 }
