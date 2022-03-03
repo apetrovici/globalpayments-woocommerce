@@ -24,62 +24,62 @@ class ApplePayGateway extends AbstractGateway {
 	public $gateway_provider = GatewayProvider::GP_API;
 
 	/**
-     * @inheritdoc
-     */
-    public $is_digital_wallet = true;
+	 * @inheritdoc
+	 */
+	public $is_digital_wallet = true;
 
 	/**
-     * Accepted Cards
-     *
+	 * Accepted Cards
+	 *
 	 * @var array
 	 */
 	public $accepted_cards;
 
 	/**
-     * Payment Action
-     *
+	 * Payment Action
+	 *
 	 * @var string
 	*/
 	public $payment_action;
 
 	/**
-     * Apple Merchant Id
-     *
+	 * Apple Merchant Id
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_id;
 
 	/**
-     * Apple Merchant Cert Path
-     *
+	 * Apple Merchant Cert Path
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_cert_path;
 
 	/**
-     * Apple Merchant Key Path
-     *
+	 * Apple Merchant Key Path
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_key_path;
 
 	/**
-     * Apple Merchant Key PassPhrase
-     *
+	 * Apple Merchant Key PassPhrase
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_key_passphrase;
 
 	/**
-     * Apple Merchant Domain
-     *
+	 * Apple Merchant Domain
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_domain;
 
 	/**
-     * Apple Merchant Display Name
-     *
+	 * Apple Merchant Display Name
+	 *
 	 * @var string
 	*/
 	public $apple_merchant_display_name;

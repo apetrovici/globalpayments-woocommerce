@@ -12,8 +12,8 @@ defined( 'ABSPATH' ) || exit;
 class GooglePayGateway extends AbstractGateway {
 	/**
 	 * Gateway ID
-     *
-     * @var string
+	 *
+	 * @var string
 	 */
 	const GATEWAY_ID = 'globalpayments_googlepay';
 
@@ -24,44 +24,44 @@ class GooglePayGateway extends AbstractGateway {
 	 */
 	public $gateway_provider = GatewayProvider::GP_API;
 
-    /**
-     * @inheritdoc
-     */
+	 /**
+	 * @inheritdoc
+	 */
     public $is_digital_wallet = true;
 
-    /**
-     * Google pay button color
-     *
+	 /**
+	 * Google pay button color
+	 *
 	 * @var string
 	 */
 	public $button_color;
 
 	/**
-     * Google Merchant Id
-     *
+	 * Google Merchant Id
+
 	 * @var int
 	 */
 	public $google_merchant_id;
 
 	/**
-     * * Global Payments Merchant Id
-     *
-	 * @var string
-	 */
+	* Global Payments Merchant Id
+	* @var string
+	*
+	*/
 	public $global_payments_merchant_id;
 
 	/**
-     * Accepted cards
-     *
-	 * @var array
-	 */
+	* Accepted cards
+	* @var array
+	*
+	*/
 	public $accepted_cards;
 
 	/**
-     * Payments action
-     *
-	 *  @var string
-	 */
+	* Payments action
+	*
+	*  @var string
+	*/
 
 	public $payment_action;
 

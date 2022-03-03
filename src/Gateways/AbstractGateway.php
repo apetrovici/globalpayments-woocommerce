@@ -75,11 +75,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public $enabled;
 
 	/**
-     * Indicates if the gateway is digital wallet
-     *
-     * @var boolean
-     */
-    public $is_digital_wallet = false;
+	* Indicates if the gateway is digital wallet
+	 *
+	 * @var boolean
+	 */
+	public $is_digital_wallet = false;
 
 	/**
 	 * Payment method title shown to consumer
