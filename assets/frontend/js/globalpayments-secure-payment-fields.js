@@ -75,7 +75,7 @@
 		 * @returns
 		 */
 		attachEventHandlers: function () {
-			var that = this;
+			var self = this;
 
 			// General
 			$( '#order_review, #add_payment_method' ).on( 'click', '.payment_methods input.input-radio', this.toggleSubmitButtons.bind( this ) );
@@ -84,7 +84,7 @@
 			$( document.body ).on(
 				'updated_checkout wc-credit-card-form-init',
 				function () {
-					$( '.payment_method_' + that.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', that.toggleSubmitButtons.bind( that ) );
+					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', self.toggleSubmitButtons.bind( self ) );
 				}
 			);
 
@@ -133,7 +133,7 @@
 			$.post( this.threedsecure.ajaxCheckoutUrl, $( helper.getForm() ).serialize())
 				.done( function( result ) {
 					if ( -1 !== result.messages.indexOf( self.id + '_checkout_validated' ) ) {
-						self.createInputElement( 'checkout_validated', 1 );
+						helper.createInputElement( self.id, 'checkout_validated', 1 );
 						self.threeDSecure();
 					} else {
 						self.showPaymentError( result.messages );
@@ -144,6 +144,16 @@
 				});
 
 			return false;
+		},
+
+		/**
+		 * Convenience function to get CSS selector for the custom 'Place Order' button's parent element
+		 *
+		 * @param {string} id
+		 * @returns {string}
+		 */
+		getSubmitButtonTargetSelector: function () {
+			return '#' + this.id + '-card-submit';
 		},
 
 		/**
@@ -220,7 +230,7 @@
 
 			// ensure the submit button's parent is on the page as this is added
 			// only after the initial page load
-			if ( $( helper.getSubmitButtonTargetSelector( this.id ) ).length === 0 ) {
+			if ( $( this.getSubmitButtonTargetSelector() ).length === 0 ) {
 				this.createSubmitButtonTarget();
 			}
 
@@ -241,6 +251,7 @@
 			this.cardForm.ready( function () {
 				this.toggleSubmitButtons();
 			} );
+
 		},
 
 		/**
@@ -250,7 +261,7 @@
 		 */
 		createSubmitButtonTarget: function () {
 			var el       = document.createElement( 'div' );
-			el.id        = helper.getSubmitButtonTargetSelector( this.id ).replace( '#', '' );
+			el.id        = this.getSubmitButtonTargetSelector().replace( '#', '' );
 			el.className = 'globalpayments ' + this.id + ' card-submit';
 			$( helper.getPlaceOrderButtonSelector() ).after( el );
 			// match the visibility of our payment form
@@ -259,7 +270,7 @@
 
 		/**
 		 * Swaps the default WooCommerce 'Place Order' button for our iframe-d button
-		 * when one of our gateways is selected.
+		 * or digital wallet buttons when one of our gateways is selected.
 		 *
 		 * @returns
 		 */
@@ -270,11 +281,11 @@
 			var shouldBeVisible = ( paymentGatewaySelected && ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) );
 			if ( shouldBeVisible ) {
 				// our gateway was selected
-				$( helper.getSubmitButtonTargetSelector( this.id ) ).show();
+				$( this.getSubmitButtonTargetSelector() ).show();
 				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
 				// another gateway was selected
-				$( helper.getSubmitButtonTargetSelector( this.id ) ).hide();
+				$( this.getSubmitButtonTargetSelector() ).hide();
 				$( helper.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
 			}
 		},
@@ -296,9 +307,9 @@
 
 			this.tokenResponse = JSON.stringify(response);
 
-			var that = this;
+			var self = this;
 
-			this.cardForm.frames["card-cvv"].getCvv().then(function (c) {
+			this.cardForm.frames["card-cvv"].getCvv().then( function ( c ) {
 				
 				/**
 				 * CVV; needed for TransIT gateway processing only
@@ -313,11 +324,11 @@
 					 *
 					 * @type {HTMLInputElement}
 					 */
-					(document.getElementById( that.id + '-token_response' ));
+					(document.getElementById( self.id + '-token_response' ));
 				if ( ! tokenResponseElement) {
 					tokenResponseElement      = document.createElement( 'input' );
-					tokenResponseElement.id   = that.id + '-token_response';
-					tokenResponseElement.name = that.id + '[token_response]';
+					tokenResponseElement.id   = self.id + '-token_response';
+					tokenResponseElement.name = self.id + '[token_response]';
 					tokenResponseElement.type = 'hidden';
 					helper.getForm().appendChild( tokenResponseElement );
 				}
@@ -362,8 +373,8 @@
 						return true;
 					}
 					if ( "ONE" === versionCheckData.version ) {
-						self.createInputElement( 'serverTransId', versionCheckData.challenge.response.data.MD || versionCheckData.serverTransactionId );
-						self.createInputElement( 'PaRes', versionCheckData.challenge.response.data.PaRes || '');
+						helper.createInputElement( self.id, 'serverTransId', versionCheckData.challenge.response.data.MD || versionCheckData.serverTransactionId );
+						helper.createInputElement( self.id, 'PaRes', versionCheckData.challenge.response.data.PaRes || '');
 						$form.submit();
 						return false;
 					}
@@ -394,7 +405,7 @@
 								self.showPaymentError( authenticationData.message );
 								return false;
 							}
-							self.createInputElement( 'serverTransId', authenticationData.serverTransactionId || authenticationData.challenge.response.data.threeDSServerTransID || versionCheckData.serverTransactionId );
+							helper.createInputElement( self.id, 'serverTransId', authenticationData.serverTransactionId || authenticationData.challenge.response.data.threeDSServerTransID || versionCheckData.serverTransactionId );
 							$form.submit();
 							return true;
 						})
@@ -423,20 +434,6 @@
 			window.parent.postMessage({ data: { "transStatus":"N" }, event: "challengeNotification" }, window.location.origin );
 		},
 
-		createInputElement: function ( name, value ) {
-			var inputElement = (document.getElementById( this.id + '-' + name ));
-
-			if ( ! inputElement) {
-				inputElement      = document.createElement( 'input' );
-				inputElement.id   = this.id + '-' + name;
-				inputElement.name = this.id + '[' + name + ']';
-				inputElement.type = 'hidden';
-				helper.getForm().appendChild( inputElement );
-			}
-
-			inputElement.value = value;
-		},
-
 		/**
 		 * Validates the tokenization response
 		 *
@@ -451,8 +448,8 @@
 
 			if (response.details) {
 				var expirationDate = new Date( response.details.expiryYear, response.details.expiryMonth - 1 );
-				var now            = new Date();
-				var thisMonth      = new Date( now.getFullYear(), now.getMonth() );
+				var now = new Date();
+				var thisMonth = new Date( now.getFullYear(), now.getMonth() );
 
 				if ( ! response.details.expiryYear || ! response.details.expiryMonth || expirationDate < thisMonth ) {
 					this.showValidationError( 'card-expiration' );
@@ -498,7 +495,7 @@
 		 * @returns
 		 */
 		showPaymentError: function ( message ) {
-			var $form     = $( helper.getForm() );
+			var $form = $( helper.getForm() );
 
 			// Remove notices from all sources
 			$( '.woocommerce-NoticeGroup, .woocommerce-NoticeGroup-checkout, .woocommerce-error, .woocommerce-globalpayments-checkout-error' ).remove();
@@ -625,7 +622,7 @@
 				},
 				'submit': {
 					text: this.getSubmitButtonText(),
-					target: helper.getSubmitButtonTargetSelector( this.id )
+					target: this.getSubmitButtonTargetSelector()
 				}
 			};
 		},
@@ -656,9 +653,8 @@
 		 * @returns
 		 */
 		blockOnSubmit: function () {
-			var $form     = $( helper.getForm() );
+			var $form = $( helper.getForm() );
 			var form_data = $form.data();
-
 			if ( 1 !== form_data['blockUI.isBlocked'] ) {
 				$form.block(
 					{
@@ -714,18 +710,17 @@
 	 *
 	 * @type {any}
 	 */
-	( window ).globalpayments_secure_payment_fields_params,
+	( window ).globalpayments_secure_payment_fields_params || {},
 	/**
 	 * Global `globalpayments_secure_payment_threedsecure_params` reference
 	 *
 	 * @type {any}
 	 */
 	( window ).globalpayments_secure_payment_threedsecure_params || {},
-
 	/**
-     * Global `helper` reference
-     *
-     * @type {any}
-     */
-	 ( window ).GlobalPaymentsHelper
+	 * Global `helper` reference
+	 *
+	 * @type {any}
+	 */
+	( window ).GlobalPaymentsHelper
 ));

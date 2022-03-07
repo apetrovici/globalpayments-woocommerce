@@ -15,13 +15,36 @@
 		},
 
 		/**
-		 * Convenience function to get CSS selector for the custom 'Place Order' button's parent element
+		 * Gets the current checkout form
 		 *
-		 * @param {string} id
-		 * @returns {string}
+		 * @returns {Element}
 		 */
-		getSubmitButtonTargetSelector: function ( id ) {
-			return '#' + id + '-card-submit';
+		getForm: function () {
+			var checkoutForms = [
+				// Order Pay
+				'form#order_review',
+				// Checkout
+				'form[name="checkout"]',
+				// Add payment method
+				'form#add_payment_method'
+			];
+			var forms = document.querySelectorAll( checkoutForms.join( ',' ) );
+
+			return forms.item( 0 );
+		},
+
+		createInputElement: function ( id, name, value ) {
+			var inputElement = (document.getElementById( id + '-' + name ));
+
+			if ( ! inputElement) {
+				inputElement      = document.createElement( 'input' );
+				inputElement.id   = id + '-' + name;
+				inputElement.name = id + '[' + name + ']';
+				inputElement.type = 'hidden';
+				this.getForm().appendChild( inputElement );
+			}
+
+			inputElement.value = value;
 		},
 
 		/**
@@ -45,24 +68,6 @@
 				/* om nom nom */
 			}
 			$( this.getForm() ).submit();
-		},
-
-		/**
-		 * Gets the current checkout form
-		 *
-		 * @returns {Element}
-		 */
-		getForm: function () {
-			var checkoutForms = [
-				// Order Pay
-				'form#order_review',
-				// Checkout
-				'form[name="checkout"]',
-				// Add payment method
-				'form#add_payment_method'
-			];
-			var forms = document.querySelectorAll( checkoutForms.join( ',' ) );
-			return forms.item( 0 );
 		},
 	};
 
