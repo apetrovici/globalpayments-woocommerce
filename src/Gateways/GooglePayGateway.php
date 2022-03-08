@@ -95,16 +95,6 @@ class GooglePayGateway extends AbstractGateway {
 		return $this->gateway->get_backend_gateway_options();
 	}
 
-	protected function add_hooks() {
-		parent::add_hooks();
-
-		if ( is_checkout() && ! empty( is_wc_endpoint_url( 'order-received' ) ) ) {
-			return;
-		}
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'tokenization_script' ) );
-	}
-
 	public function get_gateway_form_fields() {
 		return array(
 			'global_payments_merchant_id' => array(
@@ -223,7 +213,10 @@ class GooglePayGateway extends AbstractGateway {
 	}
 
 	public function payment_fields() {
-		echo '<div>' . __( 'Pay with Google Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
+		if ( is_checkout() ) {
+			$this->tokenization_script();
+			echo '<div>' . __( 'Pay with Google Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
+		}
 	}
 
 	protected function get_session_amount() {

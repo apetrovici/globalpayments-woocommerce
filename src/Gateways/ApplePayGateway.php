@@ -115,11 +115,6 @@ class ApplePayGateway extends AbstractGateway {
 		parent::add_hooks();
 
 		add_action( 'woocommerce_api_globalpayments_validate_merchant', array( $this, 'validate_merchant' ) );
-
-		if ( is_checkout() && ! empty( is_wc_endpoint_url( 'order-received' ) ) ) {
-			return;
-		}
-		add_action( 'wp_enqueue_scripts', array( $this, 'tokenization_script' ) );
 	}
 
 	public function get_gateway_form_fields() {
@@ -204,7 +199,10 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function payment_fields() {
-		echo '<div>' . __( 'Pay with Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
+		if ( is_checkout() ) {
+			$this->tokenization_script();
+			echo '<div>' . __( 'Pay with Apple Pay', 'globalpayments-gateway-provider-for-woocommerce' ) . '</div>';
+		}
 	}
 
 	protected function get_session_amount() {
