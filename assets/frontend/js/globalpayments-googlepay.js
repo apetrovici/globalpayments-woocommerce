@@ -42,6 +42,9 @@
 		 * @returns
 		 */
 		attachEventHandlers: function () {
+			// General
+			$( '#order_review' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper, this.id ) );
+
 			// Checkout
 			if ( 1 == wc_checkout_params.is_checkout ) {
 				$( document.body ).on( 'updated_checkout', this.initialize.bind( this ) );
@@ -175,6 +178,8 @@
 		 * Add the google pay button to the DOM
 		 */
 		addGooglePayButton: function (element) {
+			helper.createSubmitButtonTarget( this.id );
+
 			var self = this
 			var button = this.paymentsClient.createButton( {
 					buttonColor: self.getBtnColor(),
@@ -183,22 +188,7 @@
 					}
 				} );
 
-			var el = document.createElement('div');
-			el.id = element;
-			el.className = 'payment_box payment_method_' + self.id;
-			$( helper.getPlaceOrderButtonSelector() ).after( el );
-
-			$( '#' + element ).append( button );
-
-			$( 'input[type=radio][name=payment_method]' ).change( function () {
-				self.toggleGooglePayButton( this.id, element );
-			} );
-
-			if ( $( '#payment_method_' + self.id ).is( ':checked' ) ) {
-				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
-			} else {
-				$( '#' + self.id ).hide();
-			}
+			$( helper.getSubmitButtonTargetSelector( this.id ) ).append( button );
 		},
 
 		onGooglePaymentButtonClicked: function () {
@@ -219,19 +209,6 @@
 				.catch( function ( err ) {
 					console.error( err );
 				})
-		},
-
-		toggleGooglePayButton: function ( radioButtonId, googlepayButtonId ) {
-			if ( 'payment_method_' + this.id == radioButtonId ) {
-				$( '#' + googlepayButtonId ).show();
-				$( helper.getPlaceOrderButtonSelector() ).hide();
-			} else if ( 'payment_method_' + this.applepay_gateway_id == radioButtonId ) {
-				$( '#' + googlepayButtonId ).hide();
-				$( helper.getPlaceOrderButtonSelector() ).hide();
-			} else {
-				$( '#' + googlepayButtonId ).hide();
-				$( helper.getPlaceOrderButtonSelector() ).show();
-			}
 		},
 	}
 

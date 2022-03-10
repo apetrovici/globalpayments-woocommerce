@@ -36,6 +36,9 @@
 		 * @returns
 		 */
 		attachEventHandlers: function () {
+			// General
+			$( '#order_review' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper, this.id ) );
+
 			// Checkout
 			if ( 1 == wc_checkout_params.is_checkout ) {
 				$( document.body ).on( 'updated_checkout', this.initialize.bind( this ) );
@@ -55,6 +58,8 @@
 		 * Add the apple pay button to the DOM
 		 */
 		addApplePayButton: function () {
+			helper.createSubmitButtonTarget(this.id);
+
 			var self = this
 			var paymentButton = document.createElement( 'div' );
 			paymentButton.className = 'apple-pay-button apple-pay-button-white-with-line';
@@ -68,35 +73,12 @@
 				applePaySession.begin();
 			} );
 
-			$( helper.getPlaceOrderButtonSelector() ).after( paymentButton );
-
-			$( 'input[type=radio][name=payment_method]' ).change( function () {
-				self.toggleApplePayButton( this.id, self.id );
-			} );
-
-			if ( $( '#payment_method_' + self.id ).is( ':checked' ) ) {
-				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
-			} else {
-				$( '#' + self.id ).hide();
-			}
-		},
-
-		toggleApplePayButton: function ( radioButtonId, applepayButtonId ) {
-			if ( 'payment_method_' + this.id == radioButtonId ) {
-				$( '#' + applepayButtonId ).show();
-				$( helper.getPlaceOrderButtonSelector() ).hide();
-			} else if ( 'payment_method_' + this.googlepay_gateway_id == radioButtonId ) {
-				$( '#' + applepayButtonId ).hide();
-				$( helper.getPlaceOrderButtonSelector() ).show();
-			} else {
-				$( '#' + applepayButtonId ).hide();
-				$( helper.getPlaceOrderButtonSelector() ).show();
-			}
+			$( helper.getSubmitButtonTargetSelector( this.id ) ).append( paymentButton );
 		},
 
 		createApplePaySession: function () {
 			var self = this;
-			self.onApplePayValidateMerchant();
+
 			try {
 				var applePaySession = new ApplePaySession( 1, self.context.getPaymentRequest() );
 			} catch ( err ) {
@@ -107,7 +89,7 @@
 
 			// Handle validate merchant event
 			applePaySession.onvalidatemerchant = function ( event ) {
-				self.onApplePayValidateMerchant(event, applePaySession);
+				self.onApplePayValidateMerchant( event, applePaySession );
 			}
 
 			// Attach payment auth event
@@ -144,18 +126,11 @@
 		},
 
 		onApplePayPaymentAuthorize: function ( event, session ) {
+			var paymentToken = JSON.stringify( event.payment.token.paymentData );
 			try {
-				var tokenResponseElement = ( document.getElementById( 'gp_googlepay_digital_wallet_token_response' ) );
-				if ( ! tokenResponseElement ) {
-					tokenResponseElement = document.createElement( 'input' );
-					tokenResponseElement.id = self.id + '_digital_wallet_token_response';
-					tokenResponseElement.name = self.id + '[digital_wallet_token_response]';
-					tokenResponseElement.type = 'hidden'
-					$( 'form[name="checkout"]' ).append( tokenResponseElement );
-				}
-				tokenResponseElement.value = JSON.stringify( event.payment.token.paymentData );
-
-				return helper.placeOrder();
+				helper.createInputElement( this.id, 'digital_wallet_token_response', paymentToken );
+				helper.placeOrder();
+				session.completePayment( ApplePaySession.STATUS_SUCCESS );
 			} catch ( e ) {
 				session.completePayment( ApplePaySession.STATUS_FAILURE );
 			}

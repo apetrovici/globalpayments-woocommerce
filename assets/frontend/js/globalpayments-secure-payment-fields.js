@@ -78,13 +78,13 @@
 			var self = this;
 
 			// General
-			$( '#order_review, #add_payment_method' ).on( 'click', '.payment_methods input.input-radio', this.toggleSubmitButtons.bind( this ) );
+			$( '#order_review, #add_payment_method' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper, this.id ) );
 
 			// Saved payment methods
 			$( document.body ).on(
 				'updated_checkout wc-credit-card-form-init',
 				function () {
-					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', self.toggleSubmitButtons.bind( self ) );
+					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', helper.toggleSubmitButtons.bind( helper, self.id ) );
 				}
 			);
 
@@ -147,30 +147,6 @@
 		},
 
 		/**
-		 * Convenience function to get CSS selector for the custom 'Place Order' button's parent element
-		 *
-		 * @param {string} id
-		 * @returns {string}
-		 */
-		getSubmitButtonTargetSelector: function () {
-			return '#' + this.id + '-card-submit';
-		},
-
-		/**
-		 * Convenience function to get CSS selector for the radio input associated with our payment method
-		 *
-		 * @returns {string}
-		 */
-		getPaymentMethodRadioSelector: function () { return '.payment_methods input.input-radio[value="' + this.id + '"]'; },
-
-		/**
-		 * Convenience function to get CSS selector for stored card radio inputs
-		 *
-		 * @returns {string}
-		 */
-		getStoredPaymentMethodsRadioSelector: function () { return '.payment_method_' + this.id + ' .wc-saved-payment-methods input'; },
-
-		/**
 		 * Checks if an order has input for the shipping address
 		 *
 		 * @returns {boolean|*|jQuery}
@@ -230,8 +206,8 @@
 
 			// ensure the submit button's parent is on the page as this is added
 			// only after the initial page load
-			if ( $( this.getSubmitButtonTargetSelector() ).length === 0 ) {
-				this.createSubmitButtonTarget();
+			if ( $( helper.getSubmitButtonTargetSelector( this.id ) ).length === 0 ) {
+				helper.createSubmitButtonTarget( this.id );
 			}
 
 			GlobalPayments.configure( gatewayConfig );
@@ -247,47 +223,12 @@
 			this.cardForm.on( 'error', this.handleErrors.bind( this ) );
 			GlobalPayments.on( 'error', this.handleErrors.bind( this ) );
 
+			var self = this;
 			// match the visibility of our payment form
 			this.cardForm.ready( function () {
-				this.toggleSubmitButtons();
+				helper.toggleSubmitButtons( self.id );
 			} );
 
-		},
-
-		/**
-		 * Creates the parent for the submit button
-		 *
-		 * @returns
-		 */
-		createSubmitButtonTarget: function () {
-			var el       = document.createElement( 'div' );
-			el.id        = this.getSubmitButtonTargetSelector().replace( '#', '' );
-			el.className = 'globalpayments ' + this.id + ' card-submit';
-			$( helper.getPlaceOrderButtonSelector() ).after( el );
-			// match the visibility of our payment form
-			this.toggleSubmitButtons();
-		},
-
-		/**
-		 * Swaps the default WooCommerce 'Place Order' button for our iframe-d button
-		 * or digital wallet buttons when one of our gateways is selected.
-		 *
-		 * @returns
-		 */
-		toggleSubmitButtons: function () {
-			var paymentGatewaySelected = $( this.getPaymentMethodRadioSelector() ).is( ':checked' );
-			var savedCardsAvailable    = $( this.getStoredPaymentMethodsRadioSelector() + '[value!="new"]' ).length > 0;
-			var newSavedCardSelected   = 'new' === $( this.getStoredPaymentMethodsRadioSelector() + ':checked' ).val();
-			var shouldBeVisible = ( paymentGatewaySelected && ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) );
-			if ( shouldBeVisible ) {
-				// our gateway was selected
-				$( this.getSubmitButtonTargetSelector() ).show();
-				$( helper.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
-			} else {
-				// another gateway was selected
-				$( this.getSubmitButtonTargetSelector() ).hide();
-				$( helper.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
-			}
 		},
 
 		/**
@@ -622,7 +563,7 @@
 				},
 				'submit': {
 					text: this.getSubmitButtonText(),
-					target: this.getSubmitButtonTargetSelector()
+					target: helper.getSubmitButtonTargetSelector( this.id )
 				}
 			};
 		},
