@@ -4,7 +4,6 @@
 	function Helper() {};
 
 	Helper.prototype = {
-
 		/**
 		 * Convenience function to get CSS selector for the built-in 'Place Order' button
 		 *
@@ -48,34 +47,34 @@
 		 *
 		 * @returns
 		 */
-		toggleSubmitButtons: function ( id ) {
-			// 1. GlobalPayments gateway selected
-			var paymentGatewaySelected = $( this.getPaymentMethodRadioSelector( id ) ).is( ':checked' );
-			// 2. Stored Cards available (registered user selects stored card as payment method)
-			var savedCardsAvailable    = $( this.getStoredPaymentMethodsRadioSelector( id ) + '[value!="new"]' ).length > 0;
-			// 3. User selects (new) card as payment method
-			var newSavedCardSelected   = 'new' === $( this.getStoredPaymentMethodsRadioSelector( id ) + ':checked' ).val();
-			// 4. Place Order button already hidden by another GlobalPayments gateway
-			var placeOrderBtnIsHidden = $( this.getPlaceOrderButtonSelector() ).hasClass( 'woocommerce-globalpayments-hidden' );
+		toggleSubmitButtons: function () {
+			var selectedPaymentGatewayId = $( '.payment_methods input.input-radio:checked' ).val();
+			var isGPGateway = selectedPaymentGatewayId.search( 'globalpayments' ) >= 0;
 
-			if ( paymentGatewaySelected ) {
-				// our gateway was selected
-				// selected payment method is card or digital wallet
-				if ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) {
-					$( this.getSubmitButtonTargetSelector( id ) ).show();
-					$( this.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
-				} else {
-					// selected payment method is stored card
-					$( this.getSubmitButtonTargetSelector( id ) ).hide();
-					// show platform `Place Order` button
-					$( this.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
-				}
+			$( '.globalpayments.card-submit' ).hide();
+
+			// another payment method was selected
+			if ( ! isGPGateway ) {
+				$( this.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
+				return;
+			}
+
+			// our gateway was selected
+
+			// stored Cards available (registered user selects stored card as payment method)
+			var savedCardsAvailable    = $( this.getStoredPaymentMethodsRadioSelector( selectedPaymentGatewayId ) + '[value!="new"]' ).length > 0;
+			// user selects (new) card as payment method
+			var newSavedCardSelected   = 'new' === $( this.getStoredPaymentMethodsRadioSelector( selectedPaymentGatewayId ) + ':checked' ).val();
+
+			// selected payment method is card or digital wallet
+			if ( ! savedCardsAvailable  || savedCardsAvailable && newSavedCardSelected ) {
+				$( this.getSubmitButtonTargetSelector( selectedPaymentGatewayId ) ).show();
+				$( this.getPlaceOrderButtonSelector() ).addClass( 'woocommerce-globalpayments-hidden' ).hide();
 			} else {
-				$( this.getSubmitButtonTargetSelector( id ) ).hide();
-				// show platform `Place Order` button if it wasn't hidden by one of our gateways
-				if ( ! placeOrderBtnIsHidden ) {
-					$( this.getPlaceOrderButtonSelector() ).show();
-				}
+				// selected payment method is stored card
+				$( this.getSubmitButtonTargetSelector( selectedPaymentGatewayId ) ).hide();
+				// show platform `Place Order` button
+				$( this.getPlaceOrderButtonSelector() ).removeClass( 'woocommerce-globalpayments-hidden' ).show();
 			}
 		},
 

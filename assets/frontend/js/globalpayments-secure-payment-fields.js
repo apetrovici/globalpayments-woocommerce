@@ -78,13 +78,13 @@
 			var self = this;
 
 			// General
-			$( '#order_review, #add_payment_method' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper, this.id ) );
+			$( '#order_review, #add_payment_method' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper ) );
 
 			// Saved payment methods
 			$( document.body ).on(
 				'updated_checkout wc-credit-card-form-init',
 				function () {
-					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', helper.toggleSubmitButtons.bind( helper, self.id ) );
+					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', helper.toggleSubmitButtons.bind( helper ) );
 				}
 			);
 
@@ -226,7 +226,7 @@
 			var self = this;
 			// match the visibility of our payment form
 			this.cardForm.ready( function () {
-				helper.toggleSubmitButtons( self.id );
+				helper.toggleSubmitButtons();
 			} );
 
 		},

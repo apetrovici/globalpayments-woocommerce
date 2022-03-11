@@ -43,7 +43,7 @@
 		 */
 		attachEventHandlers: function () {
 			// General
-			$( '#order_review' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper, this.id ) );
+			$( '#order_review' ).on( 'click', '.payment_methods input.input-radio', helper.toggleSubmitButtons.bind( helper ) );
 
 			// Checkout
 			if ( 1 == wc_checkout_params.is_checkout ) {
