@@ -56,9 +56,9 @@
 
 			self.setGooglePaymentsClient();
 
-			self.paymentsClient.isReadyToPay( {
-				allowedPaymentMethods: ['CARD']
-			} ).then( function ( response ) {
+			self.paymentsClient.isReadyToPay(
+				self.getGoogleIsReadyToPayRequest()
+			).then( function ( response ) {
 				if ( response.result ) {
 					self.addGooglePayButton( self.id );
 				}
