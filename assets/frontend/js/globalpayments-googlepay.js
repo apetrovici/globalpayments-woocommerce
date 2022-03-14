@@ -53,7 +53,6 @@
 
 		initialize: function () {
 			var self = this
-
 			self.setGooglePaymentsClient();
 
 			self.paymentsClient.isReadyToPay(
@@ -177,7 +176,7 @@
 		/**
 		 * Add the google pay button to the DOM
 		 */
-		addGooglePayButton: function (element) {
+		addGooglePayButton: function () {
 			helper.createSubmitButtonTarget( this.id );
 
 			var self = this
@@ -208,7 +207,7 @@
 				} )
 				.catch( function ( err ) {
 					console.error( err );
-				})
+				} );
 		},
 	}
 
