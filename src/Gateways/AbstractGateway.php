@@ -858,6 +858,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				$gateway = new GeniusGateway();
 				break;
 			case GpApiGateway::GATEWAY_ID:
+			case GooglePayGateway::GATEWAY_ID:
+			case ApplePayGateway::GATEWAY_ID:
 				$gateway = new GpApiGateway();
 				break;
 		};
