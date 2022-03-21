@@ -26,7 +26,7 @@ if ( is_readable( $autoloader ) ) {
 }
 
 function globalpayments_update_v110_v111( WP_Upgrader $wp_upgrader, $hook_extra ) {
-	if ( 'plugin' !== $hook_extra[ 'type' ] || ! in_array( plugin_basename( __FILE__ ), $hook_extra[ 'plugins' ] ) ) {
+	if ( empty( $hook_extra )  || 'plugin' !== $hook_extra[ 'type' ] || ! in_array( plugin_basename( __FILE__ ), $hook_extra[ 'plugins' ] ) ) {
 		return;
 	}
 	if ( 'update' === $hook_extra[ 'action' ] || 'install' === $hook_extra[ 'action' ] ) {
@@ -79,7 +79,7 @@ function globalpayments_update_v110_v111( WP_Upgrader $wp_upgrader, $hook_extra 
 add_action( 'upgrader_process_complete', 'globalpayments_update_v110_v111', 9, 2 );
 
 function globalpayments_update_plugin_version( WP_Upgrader $wp_upgrader, $hook_extra ) {
-	if ( 'plugin' !== $hook_extra[ 'type' ] || ! in_array( plugin_basename( __FILE__ ), $hook_extra[ 'plugins' ] ) ) {
+	if ( empty( $hook_extra ) || 'plugin' !== $hook_extra[ 'type' ] || ! in_array( plugin_basename( __FILE__ ), $hook_extra[ 'plugins' ] ) ) {
 		return;
 	}
 	if ( 'update' === $hook_extra[ 'action' ] || 'install' === $hook_extra[ 'action' ] ) {
