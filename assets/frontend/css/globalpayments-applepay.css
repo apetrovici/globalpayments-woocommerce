@@ -1,5 +1,6 @@
 @supports (-webkit-appearance: -apple-pay-button) {
     .apple-pay-button {
+        cursor: pointer;
         display: inline-block;
         -webkit-appearance: -apple-pay-button;
     }
@@ -16,6 +17,7 @@
 
 @supports not (-webkit-appearance: -apple-pay-button) {
     .apple-pay-button {
+        cursor: pointer;
         display: inline-block;
         background-size: 100% 60%;
         background-repeat: no-repeat;
