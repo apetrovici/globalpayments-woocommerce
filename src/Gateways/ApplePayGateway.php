@@ -212,7 +212,12 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function validate_merchant() {
-		$validationUrl = wc_clean( $_POST['validationUrl'] );
+	    $responseValidationUrl = json_decode( file_get_contents( 'php://input' ) );
+		if ( empty($responseValidationUrl) ) {
+		    return null;
+        }
+	    $validationUrl = $responseValidationUrl->validationUrl;
+
 		if (
 			! $this->apple_merchant_id ||
 			! $this->apple_merchant_cert_path ||
