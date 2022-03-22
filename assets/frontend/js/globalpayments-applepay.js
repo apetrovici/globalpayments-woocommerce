@@ -143,6 +143,7 @@
 				merchantCapabilities: [
 					'supports3DS'
 				],
+				supportedNetworks: this.getAllowedCardNetworks(),
 				total: {
 					label: this.getDisplayName(),
 					amount: this.order.amount
@@ -156,6 +157,10 @@
 
 		getDisplayName: function () {
 			return this.gatewayOptions.apple_merchant_display_name;
+		},
+
+		getAllowedCardNetworks: function () {
+			return this.gatewayOptions.cc_types;
 		},
 
 		deviceSupported: function () {
