@@ -227,8 +227,8 @@ class ApplePayGateway extends AbstractGateway {
 		) {
 			return null;
 		}
-		$pemCrtPath = ABSPATH . '/' . $this->apple_merchant_cert_path;
-		$pemKeyPath = ABSPATH . '/' . $this->apple_merchant_key_path;
+		$pemCrtPath = ABSPATH  . $this->apple_merchant_cert_path;
+		$pemKeyPath = ABSPATH  . $this->apple_merchant_key_path;
 
 		$validationPayload                       = array();
 		$validationPayload['merchantIdentifier'] = $this->apple_merchant_id;
