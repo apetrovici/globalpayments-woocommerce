@@ -80,10 +80,10 @@
 			var self = this;
 
 			try {
-				var applePaySession = new ApplePaySession( 1, self.context.getPaymentRequest() );
+				var applePaySession = new ApplePaySession( 1, self.getPaymentRequest() );
 			} catch ( err ) {
 				console.error( 'Unable to create ApplePaySession', err )
-				alert( $t( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' ) );
+				alert( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' );
 				return false;
 			}
 
@@ -98,7 +98,7 @@
 			}
 
 			applePaySession.oncancel = function ( event ) {
-				alert( $t( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' ) );
+				alert( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' );
 			}.bind( this );
 
 			return applePaySession;
@@ -114,14 +114,14 @@
 				if ( response.error ) {
 					console.log( 'response', response );
 					session.abort();
-					alert( $t( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' ) );
+					alert( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' );
 				} else {
 					session.completeMerchantValidation( JSON.parse( response.message ) );
 				}
 			} ).fail( function ( response ) {
 				console.log( 'response', response );
 				session.abort();
-				alert( $t( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' ) );
+				alert( 'We\'re unable to take your payment through Apple Pay. Please try again or use an alternative payment method.' );
 			} );
 		},
 
