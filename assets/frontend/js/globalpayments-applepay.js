@@ -129,11 +129,17 @@
 			var paymentToken = JSON.stringify( event.payment.token.paymentData );
 			try {
 				helper.createInputElement( this.id, 'digital_wallet_token_response', paymentToken );
-				helper.placeOrder();
-				session.completePayment( ApplePaySession.STATUS_SUCCESS );
+				var originalSubmit = $( this.getPlaceOrderButtonSelector() );
+				if ( originalSubmit ) {
+					originalSubmit.click();
+					session.completePayment( ApplePaySession.STATUS_SUCCESS );
+					return;
+				}
 			} catch ( e ) {
 				session.completePayment( ApplePaySession.STATUS_FAILURE );
 			}
+			session.completePayment( ApplePaySession.STATUS_SUCCESS );
+			$( this.getForm() ).submit();
 		},
 
 		getPaymentRequest: function () {
