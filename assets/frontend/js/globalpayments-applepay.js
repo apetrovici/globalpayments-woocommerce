@@ -129,7 +129,7 @@
 			var paymentToken = JSON.stringify( event.payment.token.paymentData );
 			try {
 				helper.createInputElement( this.id, 'digital_wallet_token_response', paymentToken );
-				var originalSubmit = $( this.getPlaceOrderButtonSelector() );
+				var originalSubmit = $( helper.getPlaceOrderButtonSelector() );
 				if ( originalSubmit ) {
 					originalSubmit.click();
 					session.completePayment( ApplePaySession.STATUS_SUCCESS );
