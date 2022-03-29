@@ -108,8 +108,9 @@
 			$.ajax({
 				cache: false,
 				url: this.gatewayOptions.validate_merchant_url,
-				data: { 'validationUrl': event.validationURL },
+				data: JSON.stringify( { 'validationUrl': event.validationURL } ),
 				dataType: 'json',
+				type: 'POST'
 			} ).done( function ( response ) {
 				if ( response.error ) {
 					console.log( 'response', response );

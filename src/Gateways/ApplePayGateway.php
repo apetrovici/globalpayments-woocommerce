@@ -159,6 +159,7 @@ class ApplePayGateway extends AbstractGateway {
 					'AMEX'       => 'AMEX',
 					'DISCOVER'   => 'Discover',
 				),
+                'custom_attributes' => array( 'showCheckbox' => true)
 			)
 		);
 	}
@@ -243,8 +244,8 @@ class ApplePayGateway extends AbstractGateway {
 		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $validationPayload ) );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
 		curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 300 );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
-		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, true );
+		curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, 2 );
 		curl_setopt( $ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2 );
 		curl_setopt( $ch, CURLOPT_DNS_USE_GLOBAL_CACHE, false );
 		curl_setopt( $ch, CURLOPT_SSLCERT, $pemCrtPath );
