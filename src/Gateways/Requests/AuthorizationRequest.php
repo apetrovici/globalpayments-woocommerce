@@ -3,6 +3,8 @@
 namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests;
 
 use GlobalPayments\WooCommercePaymentGatewayProvider\Data\PaymentTokenData;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\ApplePayGateway;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GooglePayGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\Api\Entities\Enums\EncyptedMobileType;
 use GlobalPayments\Api\Entities\Enums\TransactionModifier;
@@ -26,7 +28,13 @@ class AuthorizationRequest extends AbstractRequest {
 
 		if ( isset ( $this->data[ $this->gateway_id ]['digital_wallet_token_response'] ) ) {
 			$response[ RequestArg::DIGITAL_WALLET_TOKEN ] = $this->remove_slashes_from_token( $this->data[ $this->gateway_id ]['digital_wallet_token_response'] );
-			$response[ RequestArg::MOBILE_TYPE ]          = EncyptedMobileType::GOOGLE_PAY;
+
+			if ( $this->gateway_id === ApplePayGateway::GATEWAY_ID ) {
+				$response[ RequestArg::MOBILE_TYPE ] = EncyptedMobileType::APPLE_PAY;
+			} else if ( $this->gateway_id === GooglePayGateway::GATEWAY_ID ) {
+				$response[ RequestArg::MOBILE_TYPE ] = EncyptedMobileType::GOOGLE_PAY;
+			}
+
 			$response[ RequestArg::TRANSACTION_MODIFIER ] = TransactionModifier::ENCRYPTED_MOBILE;
 		}
 
