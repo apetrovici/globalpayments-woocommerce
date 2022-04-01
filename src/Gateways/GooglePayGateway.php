@@ -110,7 +110,7 @@ class GooglePayGateway extends AbstractGateway {
 			),
 			'cc_types'                    => array(
 				'title'   => __( 'Accepted Cards*', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'    => 'multiselect',
+				'type'    => 'multiselectcheckbox',
 				'class'   => 'accepted_cards',
 				'css'     => 'width: 450px; height: 110px',
 				'options' => array(
