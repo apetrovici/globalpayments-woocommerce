@@ -1176,6 +1176,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'gateway_id' => $section,
 			)
 		);
+		wp_enqueue_style(
+			'globalpayments-admin',
+			Plugin::get_url( '/assets/admin/css/globalpayments-admin.css' ),
+			array(),
+			WC()->version
+		);
 	}
 
 	/**
@@ -1215,7 +1221,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-                    <ul>
+                    <ul class="ul-multicheckbox">
 					<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
 						<?php if ( is_array( $option_value ) ) : ?>
 							<optgroup label="<?php echo esc_attr( $option_key ); ?>">
