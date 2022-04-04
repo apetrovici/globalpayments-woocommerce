@@ -1215,7 +1215,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			<td class="forminp">
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
-
+                    <ul>
 					<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
 						<?php if ( is_array( $option_value ) ) : ?>
 							<optgroup label="<?php echo esc_attr( $option_key ); ?>">
@@ -1225,12 +1225,14 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 								<?php endforeach; ?>
 							</optgroup>
 						<?php else : ?>
-							<?php echo esc_html( $option_value ); ?>
-							<input type="checkbox" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
+							<li>
+                           <input type="checkbox" id="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
 								<?php checked( in_array( (string) $option_key, $value, true ), true  ); ?> />
+                                <label style="font-weight: bold" for="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>"><?php echo esc_html( $option_value ); ?></label>
+                            </li>
 						<?php endif; ?>
 					<?php endforeach; ?>
-
+                    </ul>
 					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
 					<?php if ( $data['select_buttons'] ) : ?>
 						<br/><a class="select_all button" href="#"><?php esc_html_e( 'Select all', 'woocommerce' ); ?></a> <a class="select_none button" href="#"><?php esc_html_e( 'Select none', 'woocommerce' ); ?></a>
