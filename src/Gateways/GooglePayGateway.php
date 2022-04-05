@@ -120,6 +120,7 @@ class GooglePayGateway extends AbstractGateway {
 					'DISCOVER'   => 'Discover',
 					'JCB'        => 'JCB',
 				),
+				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' , 'JCB' )
 			),
 			'button_color'                => array(
 				'title'   => __( 'Button Color', 'globalpayments-gateway-provider-for-woocommerce' ),

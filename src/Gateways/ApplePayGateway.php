@@ -159,7 +159,7 @@ class ApplePayGateway extends AbstractGateway {
 					'AMEX'       => 'AMEX',
 					'DISCOVER'   => 'Discover',
 				),
-                'custom_attributes' => array( 'showCheckbox' => true)
+				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' )
 			)
 		);
 	}

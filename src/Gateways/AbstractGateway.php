@@ -1210,7 +1210,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		$data  = wp_parse_args( $data, $defaults );
 		$value = (array) $this->get_option( $key, array() );
-
 		ob_start();
 
 		?>
@@ -1222,22 +1221,13 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
                     <ul class="ul-multicheckbox">
-					<?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
-						<?php if ( is_array( $option_value ) ) : ?>
-							<optgroup label="<?php echo esc_attr( $option_key ); ?>">
-								<?php foreach ( $option_value as $option_key_inner => $option_value_inner ) : ?>
-									<input type="checkbox" name="<?php echo esc_attr( $option_key_inner ); ?>[]" value="<?php echo esc_attr( $option_key_inner ); ?>"
-										<?php checked( in_array( (string) $option_key_inner, $value, true ), true  ); ?> />
-								<?php endforeach; ?>
-							</optgroup>
-						<?php else : ?>
-							<li>
-                                <input type="checkbox" id="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
-								<?php checked( in_array( (string) $option_key, $value, true ), true  ); ?> />
-                                <label class="multicheckbox-label" for="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>"><?php echo esc_html( $option_value ); ?></label>
-                            </li>
-						<?php endif; ?>
-					<?php endforeach; ?>
+                        <?php foreach ( (array) $data['options'] as $option_key => $option_value ) : ?>
+                                <li>
+                                    <input type="checkbox" id="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
+                                    <?php checked( in_array( (string) $option_key, $value, true ), true  ); ?> />
+                                    <label class="multicheckbox-label" for="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>"><?php echo esc_html( $option_value ); ?></label>
+                                </li>
+                        <?php endforeach; ?>
                     </ul>
 					<?php echo $this->get_description_html( $data ); // WPCS: XSS ok. ?>
 					<?php if ( $data['select_buttons'] ) : ?>
