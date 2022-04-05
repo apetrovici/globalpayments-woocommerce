@@ -1232,9 +1232,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 							</optgroup>
 						<?php else : ?>
 							<li>
-                           <input type="checkbox" id="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
+                                <input type="checkbox" id="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>" name="<?php echo esc_attr( $field_key ); ?>[]" value="<?php echo esc_attr( $option_key ); ?>"
 								<?php checked( in_array( (string) $option_key, $value, true ), true  ); ?> />
-                                <label style="font-weight: bold" for="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>"><?php echo esc_html( $option_value ); ?></label>
+                                <label class="multicheckbox-label" for="<?php echo esc_attr( $field_key );echo esc_attr( $option_key ); ?>"><?php echo esc_html( $option_value ); ?></label>
                             </li>
 						<?php endif; ?>
 					<?php endforeach; ?>
