@@ -51,6 +51,9 @@ Access to our Unified Commerce Platform (UCP) requires sandbox credentials which
 * Added Digital Wallets - Google Pay
 * Added Digital Wallets - Apple Pay
 
+= 1.1.6 =
+* Split-tender - added functionality
+
 = 1.1.5 =
 * Bug fix - Heartland gift card error
 
