@@ -2,7 +2,7 @@
 Contributors: globalpayments
 Tags: woocommerce, woo, unified, commerce, platform, global, payments, ucp, heartland, payment, systems, tsys, genius, 3DS, gateway, token, tokenize, save cards
 Requires at least: 5.4
-Tested up to: 5.9.0
+Tested up to: 5.9.3
 Stable tag: 1.2.0
 License: MIT
 License URI: https://github.com/globalpayments/globalpayments-woocommerce/blob/main/LICENSE
@@ -42,7 +42,7 @@ Access to our Unified Commerce Platform (UCP) requires sandbox credentials which
 
 1. First go to the Developer Portal and make sure the green GP-API button is selected in the top right corner.
 2. Click on the icon in the top right and click Register.
-3. Once registered, click on the same icon in top right corner and click MyApps. Here we are going to create an app which is a set of GP API credentials used to access the API and generate access tokens.
+3. Once registered, click on the same icon in top right corner and click GP API Apps. Here we are going to create an app which is a set of GP API credentials used to access the API and generate access tokens.
 4. Click ‘Create
 
 == Changelog ==
