@@ -819,7 +819,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$order        = new WC_Order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
 		$request_args = $request->get_args();
-		if ( empty( $request_args[ RequestArg::AMOUNT ] ) ) {
+		if ( 0 >= (float)$request_args[ RequestArg::AMOUNT ] ) {
 			throw new Exception( __( 'Refund amount must be greater than zero.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		$response      = $this->submit_request( $request );
