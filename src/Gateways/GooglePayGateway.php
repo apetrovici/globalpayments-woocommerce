@@ -5,10 +5,14 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways;
 use GlobalPayments\Api\Entities\Enums\Environment;
 use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\MulticheckboxTrait;
 
 defined( 'ABSPATH' ) || exit;
 
 class GooglePayGateway extends AbstractGateway {
+
+	use MulticheckboxTrait;
+
 	/**
 	 * Gateway ID
 	 *

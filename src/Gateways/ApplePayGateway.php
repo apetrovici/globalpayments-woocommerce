@@ -4,10 +4,14 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways;
 
 use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\MulticheckboxTrait;
 
 defined( 'ABSPATH' ) || exit;
 
 class ApplePayGateway extends AbstractGateway {
+
+	use MulticheckboxTrait;
+
 	/**
 	 * Gateway ID
 	 */
