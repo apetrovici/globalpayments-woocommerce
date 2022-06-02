@@ -57,7 +57,7 @@
 		/**
 		 * Order info
 		 */
-		this.order = threeDSecureOptions.order;
+		this.order = {};
 
 		/**
 		 *
@@ -87,7 +87,7 @@
 					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', helper.toggleSubmitButtons.bind( helper ) );
 				}
 			);
-
+			
 			$( helper.getForm() ).on( 'checkout_place_order_globalpayments_gpapi', this.initThreeDSecure.bind( this ) );
 			$( document.body ).on( 'checkout_error', function() {
 				$('#globalpayments_gpapi-checkout_validated').remove();
@@ -134,7 +134,15 @@
 				.done( function( result ) {
 					if ( -1 !== result.messages.indexOf( self.id + '_checkout_validated' ) ) {
 						helper.createInputElement( self.id, 'checkout_validated', 1 );
-						self.threeDSecure();
+
+						$.get( self.threedsecure.orderInfoUrl )
+							.done( function( result ) {
+								self.order = result.message;
+								self.threeDSecure();
+							})
+							.fail( function( jqXHR, textStatus, errorThrown ) {
+								console.log( errorThrown );
+							});
 					} else {
 						self.showPaymentError( result.messages );
 					}
