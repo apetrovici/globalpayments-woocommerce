@@ -87,7 +87,7 @@
 					$( '.payment_method_' + self.id + ' .wc-saved-payment-methods' ).on( 'change', ':input.woocommerce-SavedPaymentMethods-tokenInput', helper.toggleSubmitButtons.bind( helper ) );
 				}
 			);
-			
+
 			$( helper.getForm() ).on( 'checkout_place_order_globalpayments_gpapi', this.initThreeDSecure.bind( this ) );
 			$( document.body ).on( 'checkout_error', function() {
 				$('#globalpayments_gpapi-checkout_validated').remove();

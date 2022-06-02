@@ -236,8 +236,8 @@ class GpApiGateway extends AbstractGateway {
 			$this,
 			'process_threeDSecure_challengeNotification'
 		) );
-		add_action( 'woocommerce_api_globalpayments_threedsecure_order_info', array(
-		    $this,
+        add_action( 'woocommerce_api_globalpayments_threedsecure_order_info', array(
+            $this,
             'get_threeDSecure_order_info'
         ) );
 	}
