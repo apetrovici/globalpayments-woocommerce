@@ -49,6 +49,7 @@ Access to our Unified Payments requires sandbox credentials which you can retrie
 
 = 1.2.2 =
 * Bug fix - 3DS/Digital Wallets amount not updated when a customer added/removed a coupon
+* Bug fix - Refund issue when create_refund is called programmatically
 
 = 1.2.1 =
 * Renamed Unified Commerce Platform (UCP) to Unified Payments
