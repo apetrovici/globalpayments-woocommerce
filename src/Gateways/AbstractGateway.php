@@ -769,6 +769,60 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'woocommerce_available_payment_gateways'
 			) );
 		}
+
+		add_action( 'woocommerce_api_globalpayments_test_refund', array(
+			$this,
+			'test_refund_programmatically'
+		) );
+	}
+
+	/**
+	 * Test endpoint for testing a programmatically refund instead of using admin
+	 *
+	 * URL ENDPOINT www.domain.com/?wc-api=globalpayments_test_refund&order-id=100
+	 *
+	 * @param int $order-id // valid order-id from a refundable order.
+	 *
+	 * @return array
+	 */
+	public function test_refund_programmatically () {
+
+		$getvar  = wc_clean( $_GET );
+
+		if ( empty( $getvar[ 'order-id'] )) {
+			die( 'order-id parameter needed' );
+		}
+
+		if ( (int) $getvar[ 'order-id'] != $getvar[ 'order-id'] ) {
+			die( 'order-id must be integer' );
+		}
+
+		$date = date_create();
+		var_dump('Function starts' );
+		try {
+			$randomFloat = rand( 1, 9 ) / 10;
+			$data = array(
+				'amount'         => $randomFloat,
+				'reason'         => 'Any_test_reason : date: '. date_format($date,"d/m/Y H:i:s"),
+				'order_id'       => $getvar[ 'order-id'], // 136, // set any order ready for refund
+				'refund_payment' => true
+			);
+
+			echo '<pre>';
+				print_r( $data );
+			echo '</pre>';
+
+			$refund = wc_create_refund( $data );
+			if ( isset( $refund ) && is_a( $refund, 'WC_Order_Refund' ) ) {
+				die( 'Refund is OK' );
+			}
+			var_dump('Something is wrong.' );
+			var_dump( $refund );
+			die();
+		}
+		catch ( Exception $e ){
+			die( $e->getMessage() );
+		}
 	}
 
 	/**
@@ -831,6 +885,10 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		$order        = new WC_Order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
+		$request->set_request_data( array(
+			'refund_amount' => $amount,
+			'refund_reason' => $reason,
+		));
 		$request_args = $request->get_args();
 		if ( 0 >= (float)$request_args[ RequestArg::AMOUNT ] ) {
 			throw new Exception( __( 'Refund amount must be greater than zero.', 'globalpayments-gateway-provider-for-woocommerce' ) );
