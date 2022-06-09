@@ -315,7 +315,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			WC()->version,
 			true
 		);
-		
+
 		wp_localize_script(
 			'globalpayments-helper',
 			'globalpayments_helper_params',
@@ -779,9 +779,13 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	/**
 	 * Test endpoint for testing a programmatically refund instead of using admin
 	 *
-	 * URL ENDPOINT www.domain.com/?wc-api=globalpayments_test_refund&order-id=100
+	 * URL ENDPOINT www.domain.com/?wc-api=globalpayments_test_refund&order-id=136&reason=something&amount=1
 	 *
 	 * @param int $order-id // valid order-id from a refundable order.
+	 *
+	 * @param string $reason // reason of refund.
+	 *
+	 * @param int $amount // amount of refund , only integer for testing.
 	 *
 	 * @return array
 	 */
@@ -793,18 +797,29 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			die( 'order-id parameter needed' );
 		}
 
+		if ( empty( $getvar[ 'reason'] )) {
+			die( 'reason parameter needed' );
+		}
+
+		if ( empty( $getvar[ 'amount'] )) {
+			die( 'amount parameter needed' );
+		}
+
 		if ( (int) $getvar[ 'order-id'] != $getvar[ 'order-id'] ) {
 			die( 'order-id must be integer' );
 		}
 
-		$date = date_create();
+		if ( (int) $getvar[ 'amount'] != $getvar[ 'amount'] ) {
+			die( 'amount must be integer' );
+		}
+
 		var_dump('Function starts' );
+
 		try {
-			$randomFloat = rand( 1, 9 ) / 10;
 			$data = array(
-				'amount'         => $randomFloat,
-				'reason'         => 'Any_test_reason : date: '. date_format($date,"d/m/Y H:i:s"),
-				'order_id'       => $getvar[ 'order-id'], // 136, // set any order ready for refund
+				'amount'         => $getvar[ 'amount'],
+				'reason'         => $getvar[ 'reason'],
+				'order_id'       => $getvar[ 'order-id'],
 				'refund_payment' => true
 			);
 
