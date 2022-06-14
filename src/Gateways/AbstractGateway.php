@@ -315,7 +315,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			WC()->version,
 			true
 		);
-		
+
 		wp_localize_script(
 			'globalpayments-helper',
 			'globalpayments_helper_params',
@@ -769,6 +769,51 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'woocommerce_available_payment_gateways'
 			) );
 		}
+
+		// woocommerce_create_order woocommerce_new_order save_post_shop_order woocommerce_update_order
+		add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
+		// woocommerce_order_note_added
+	}
+
+	/**
+	 * Add order note when creating an order from admin with transaction ID
+	 *
+	 * @param int $order_id
+	 *
+	 * @return bool
+	 */
+	public function admin_add_order_note_after_order_created( $order_id ) {
+
+		if ( !$order_id ) {
+			return;
+		}
+
+		// $order = new WC_Order( $order_id );
+		$order = wc_get_order(  $order_id );
+
+		if ( empty( $order) ) {
+			return;
+		}
+
+		if ( empty( $order->get_transaction_id() )) {
+			return;
+		}
+
+		/*
+		 *
+		 * $order_notes = $order->get_customer_order_notes();
+
+			if ( !empty($order_notes)) {
+				var_dump($order_notes);
+				die();
+			}
+		*/
+
+		$note = __("Added transaction ID: ") . $order->get_transaction_id();
+
+		// Add the note
+		$order->add_order_note( $note );
+
 	}
 
 	/**
