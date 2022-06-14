@@ -745,6 +745,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'admin_enforce_single_gateway'
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
+
+			// woocommerce_create_order woocommerce_new_order save_post_shop_order woocommerce_update_order
+			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
+
+			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created_1' ), 100 , 1);
+			// woocommerce_order_note_added
 		}
 
 		if ( 'no' === $this->enabled ) {
@@ -770,9 +776,22 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			) );
 		}
 
-		// woocommerce_create_order woocommerce_new_order save_post_shop_order woocommerce_update_order
-		add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
-		// woocommerce_order_note_added
+	}
+
+	public function admin_add_order_note_after_order_created_1( $order_id ) {
+
+		if ( !$order_id ) {
+			return;
+		}
+
+		$order = wc_get_order(  $order_id );
+
+		var_dump('<br><br>------------------ - finalhook ---------------------------------------------');
+		echo "<pre>";
+		print_r($order);
+		echo "</pre>";
+
+		die();
 	}
 
 	/**
@@ -784,14 +803,18 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 */
 	public function admin_add_order_note_after_order_created( $order_id ) {
 
-		if ( !$order_id ) {
+		if ( ! $order_id ) {
 			return;
 		}
 
-		// $order = new WC_Order( $order_id );
-		$order = wc_get_order(  $order_id );
+		$order = wc_get_order( $order_id );
 
 		if ( empty( $order) ) {
+			return;
+		}
+
+
+		if ( $this->id != $order->get_payment_method() ) {
 			return;
 		}
 
@@ -799,15 +822,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 
-		/*
-		 *
-		 * $order_notes = $order->get_customer_order_notes();
 
-			if ( !empty($order_notes)) {
-				var_dump($order_notes);
-				die();
-			}
-		*/
+		echo '<pre>';
+		print_r($this->id);
+		echo '</pre>';
+		print_r("---------------------end gateway---------------------------------------------------------------------<br><br>");
+
 
 		$note = __("Added transaction ID: ") . $order->get_transaction_id();
 
