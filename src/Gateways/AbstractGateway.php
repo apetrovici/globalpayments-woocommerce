@@ -746,11 +746,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
-			// woocommerce_create_order woocommerce_new_order save_post_shop_order woocommerce_update_order
 			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
-
-			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created_1' ), 100 , 1);
-			// woocommerce_order_note_added
 		}
 
 		if ( 'no' === $this->enabled ) {
@@ -778,22 +774,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 	}
 
-	public function admin_add_order_note_after_order_created_1( $order_id ) {
-
-		if ( !$order_id ) {
-			return;
-		}
-
-		$order = wc_get_order(  $order_id );
-
-		var_dump('<br><br>------------------ - finalhook ---------------------------------------------');
-		echo "<pre>";
-		print_r($order);
-		echo "</pre>";
-
-		die();
-	}
-
 	/**
 	 * Add order note when creating an order from admin with transaction ID
 	 *
@@ -813,7 +793,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 
-
 		if ( $this->id != $order->get_payment_method() ) {
 			return;
 		}
@@ -822,18 +801,17 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 
-
-		echo '<pre>';
-		print_r($this->id);
-		echo '</pre>';
-		print_r("---------------------end gateway---------------------------------------------------------------------<br><br>");
-
-
-		$note = __("Added transaction ID: ") . $order->get_transaction_id();
-
-		// Add the note
-		$order->add_order_note( $note );
-
+		$note = __("Order created with Transaction ID: ") . $order->get_transaction_id();
+		$order_notes = wc_get_order_notes( [ 'order_id' => $order_id] );
+		$order_note_exist = true;
+		foreach ( $order_notes as $on ) {
+			if ( $on->content == $note ) {
+				$order_note_exist = false;
+			}
+		}
+		if ( $order_note_exist ) {
+			$order->add_order_note( $note );
+		}
 	}
 
 	/**
