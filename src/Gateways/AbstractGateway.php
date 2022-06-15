@@ -793,26 +793,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		$getvar  = wc_clean( $_GET );
 
-		if ( empty( $getvar[ 'order-id'] )) {
-			die( 'order-id parameter needed' );
-		}
-
-		if ( empty( $getvar[ 'reason'] )) {
-			die( 'reason parameter needed' );
-		}
-
-		if ( empty( $getvar[ 'amount'] )) {
-			die( 'amount parameter needed' );
-		}
-
-		if ( (int) $getvar[ 'order-id'] != $getvar[ 'order-id'] ) {
-			die( 'order-id must be integer' );
-		}
-
-		if ( (int) $getvar[ 'amount'] != $getvar[ 'amount'] ) {
-			die( 'amount must be integer' );
-		}
-
 		var_dump('Function starts' );
 
 		try {
