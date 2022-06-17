@@ -790,34 +790,20 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @return array
 	 */
 	public function test_refund_programmatically () {
+		$data = array(
+			'amount'         => $_GET[ 'amount'] ?? null,
+			'reason'         => $_GET[ 'reason'] ?? null,
+			'order_id'       => $_GET[ 'order-id'] ?? null,
+			'refund_payment' => true
+		);
 
-		$getvar  = wc_clean( $_GET );
-
-		var_dump('Function starts' );
-
-		try {
-			$data = array(
-				'amount'         => $getvar[ 'amount'],
-				'reason'         => $getvar[ 'reason'],
-				'order_id'       => $getvar[ 'order-id'],
-				'refund_payment' => true
-			);
-
+		$refund = wc_create_refund( $data );
+		if ( is_wp_error( $refund ) ) {
 			echo '<pre>';
-				print_r( $data );
+			print_r( $refund->get_error_message() );
 			echo '</pre>';
-
-			$refund = wc_create_refund( $data );
-			if ( isset( $refund ) && is_a( $refund, 'WC_Order_Refund' ) ) {
-				die( 'Refund is OK' );
-			}
-			var_dump('Something is wrong.' );
-			var_dump( $refund );
-			die();
 		}
-		catch ( Exception $e ){
-			die( $e->getMessage() );
-		}
+		die;
 	}
 
 	/**
