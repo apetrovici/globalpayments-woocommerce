@@ -88,7 +88,7 @@ class ApplePayGateway extends AbstractGateway {
 	public function __construct() {
 		parent::__construct();
 
-		$this->gateway = new GpApiGateway();
+		$this->gateway = new GpApiGateway( true );
 	}
 
 	public function configure_method_settings() {

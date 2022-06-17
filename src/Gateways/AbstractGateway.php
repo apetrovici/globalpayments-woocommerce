@@ -9,11 +9,10 @@ use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
 use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests\RequestArg;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
 use WC_Payment_Gateway_CC;
 use WC_Order;
 use GlobalPayments\Api\Entities\Transaction;
-
-use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
 
 /**
  * Shared gateway method implementations
@@ -140,8 +139,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 */
 	public $cvn_reject_conditions;
 
-	public function __construct() {
+	public function __construct( $is_provider = false ) {
+		if ( $is_provider ) {
+			return;
+		}
 		$this->client     = new Clients\SdkClient();
+
 		$this->has_fields = true;
 		$this->supports   = array(
 			'products',
@@ -165,8 +168,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$this->init_settings();
 		$this->configure_merchant_settings();
 		$this->add_hooks();
-
-
 	}
 
 	/**
@@ -745,7 +746,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'admin_enforce_single_gateway'
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-
 			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
 		}
 
@@ -782,36 +782,22 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @return bool
 	 */
 	public function admin_add_order_note_after_order_created( $order_id ) {
-
 		if ( ! $order_id ) {
 			return;
 		}
 
 		$order = wc_get_order( $order_id );
-
 		if ( empty( $order) ) {
 			return;
 		}
-
 		if ( $this->id != $order->get_payment_method() ) {
 			return;
 		}
-
 		if ( empty( $order->get_transaction_id() )) {
 			return;
 		}
 
-		$note = __("Order created with Transaction ID: ") . $order->get_transaction_id();
-		$order_notes = wc_get_order_notes( [ 'order_id' => $order_id] );
-		$order_note_exist = true;
-		foreach ( $order_notes as $on ) {
-			if ( $on->content == $note ) {
-				$order_note_exist = false;
-			}
-		}
-		if ( $order_note_exist ) {
-			$order->add_order_note( $note );
-		}
+		$order->add_order_note( __( 'Order created with Transaction ID: ' ) . $order->get_transaction_id() );
 	}
 
 	/**
@@ -1265,7 +1251,5 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				WC()->version
 			);
 		}
-
 	}
-
 }

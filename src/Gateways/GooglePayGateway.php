@@ -71,7 +71,7 @@ class GooglePayGateway extends AbstractGateway {
 	public function __construct() {
 		parent::__construct();
 
-		$this->gateway = new GpApiGateway();
+		$this->gateway = new GpApiGateway( true );
 	}
 
 	public function get_first_line_support_email() {
