@@ -866,6 +866,14 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		$order        = new WC_Order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
+
+		if ( null != $amount ) {
+			$amount = str_replace(',', '.', $amount);
+			$amount = number_format((float)round($amount, 2, PHP_ROUND_HALF_UP), 2, '.', '');
+			if ( ! is_numeric($amount)) {
+				throw new Exception( __( 'Refund amount must be a valid number', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+		}
 		$request->set_request_data( array(
 			'refund_amount' => $amount,
 			'refund_reason' => $reason,
