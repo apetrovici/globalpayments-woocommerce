@@ -71,7 +71,7 @@ class GooglePayGateway extends AbstractGateway {
 	public function __construct() {
 		parent::__construct();
 
-		$this->gateway = new GpApiGateway();
+		$this->gateway = new GpApiGateway( true );
 	}
 
 	public function get_first_line_support_email() {
@@ -188,6 +188,18 @@ class GooglePayGateway extends AbstractGateway {
 			array( 'jquery' ),
 			WC()->version,
 			true
+		);
+
+		wp_localize_script(
+			'globalpayments-helper',
+			'globalpayments_helper_params',
+			array(
+				'orderInfoUrl' => WC()->api_request_url( 'globalpayments_order_info' ),
+				'order'        => array(
+					'amount' 	=> $this->get_session_amount(),
+					'currency'	=> get_woocommerce_currency(),
+				)
+			)
 		);
 
 		wp_enqueue_script(
