@@ -772,6 +772,41 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			) );
 		}
 
+		add_action( 'woocommerce_api_globalpayments_test_refund', array(
+			$this,
+			'test_refund_programmatically'
+		) );
+	}
+
+	/**
+	 * Test endpoint for testing a programmatically refund instead of using admin
+	 *
+	 * URL ENDPOINT www.domain.com/?wc-api=globalpayments_test_refund&order-id=136&reason=something&amount=1
+	 *
+	 * @param int $order-id // valid order-id from a refundable order.
+	 *
+	 * @param string $reason // reason of refund.
+	 *
+	 * @param int $amount // amount of refund , only integer for testing.
+	 *
+	 * @return array
+	 */
+	public function test_refund_programmatically () {
+		$data = array(
+			'amount'         => $_GET[ 'amount'] ?? null,
+			'reason'         => $_GET[ 'reason'] ?? null,
+			'order_id'       => $_GET[ 'order-id'] ?? null,
+			'refund_payment' => true
+		);
+
+		$refund = wc_create_refund( $data );
+		if ( is_wp_error( $refund ) ) {
+			echo '<pre>';
+			print_r( $refund->get_error_message() );
+			echo '</pre>';
+		}
+		die;
+
 	}
 
 	/**
@@ -798,6 +833,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		}
 
 		$order->add_order_note( __( 'Order created with Transaction ID: ' ) . $order->get_transaction_id() );
+
 	}
 
 	/**
@@ -860,6 +896,18 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 		$order        = new WC_Order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
+
+		if ( null != $amount ) {
+			$amount = str_replace( ',', '.', $amount );
+			$amount = number_format( (float)round( $amount, 2, PHP_ROUND_HALF_UP ), 2, '.', '' );
+			if ( ! is_numeric( $amount ) ) {
+				throw new Exception( __( 'Refund amount must be a valid number', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+		}
+		$request->set_request_data( array(
+			'refund_amount' => $amount,
+			'refund_reason' => $reason,
+		));
 		$request_args = $request->get_args();
 		if ( 0 >= (float)$request_args[ RequestArg::AMOUNT ] ) {
 			throw new Exception( __( 'Refund amount must be greater than zero.', 'globalpayments-gateway-provider-for-woocommerce' ) );
