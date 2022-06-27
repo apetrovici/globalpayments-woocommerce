@@ -17,11 +17,6 @@ class ApplePayGateway extends AbstractGateway {
 	 */
 	const GATEWAY_ID = 'globalpayments_applepay';
 
-	// Button style
-	const APPLE_BUTTON_BLACK				= 'apple-pay-button-black';
-	const APPLE_BUTTON_WHITE				= 'apple-pay-button-white';
-	const APPLE_PAY_BUTTON_WHITE_WITH_LINE	= 'apple-pay-button-white-with-line';
-
 	/**
 	 * SDK gateway provider
 	 *
@@ -91,11 +86,11 @@ class ApplePayGateway extends AbstractGateway {
 	public $payment_action;
 
 	/**
-	 * Button style
+	 * Button color
 	 *
 	 * @var string
 	 */
-	public $button_style;
+	public $button_color;
 
 	public function __construct() {
 		parent::__construct();
@@ -120,7 +115,7 @@ class ApplePayGateway extends AbstractGateway {
 			'country_code'					=> wc_get_base_location()['country'],
 			'validate_merchant_url'			=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
 			'googlepay_gateway_id'			=> GooglePayGateway::GATEWAY_ID,
-			'button_style'					=> $this->button_style
+			'button_color'					=> $this->button_color
 		);
 	}
 
@@ -178,16 +173,16 @@ class ApplePayGateway extends AbstractGateway {
 				),
 				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' )
 			),
-			'button_style'        => array(
-				'title'			=> __( 'Apple button Style', 'globalpayments-gateway-provider-for-woocommerce' ),
+			'button_color'        => array(
+				'title'			=> __( 'Apple button color', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'			=> 'select',
 				'description'	=> __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default'		=> self::APPLE_BUTTON_WHITE,
+				'default'		=> 'apple-pay-button-white',
 				'desc_tip'		=> true,
 				'options'		=> array(
-					self::APPLE_BUTTON_BLACK				=> __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
-					self::APPLE_BUTTON_WHITE				=> __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
-					self::APPLE_PAY_BUTTON_WHITE_WITH_LINE	=> __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'apple-pay-button-black'           => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'apple-pay-button-white'           => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'apple-pay-button-white-with-line' => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
 				),
 			),
 		);
