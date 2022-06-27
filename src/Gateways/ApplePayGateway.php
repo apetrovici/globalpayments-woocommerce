@@ -18,9 +18,9 @@ class ApplePayGateway extends AbstractGateway {
 	const GATEWAY_ID = 'globalpayments_applepay';
 
 	// Button style
-	const APPLE_BUTTON_BLACK 				 = 'apple-pay-button-black';
-	const APPLE_BUTTON_WHITE     			 = 'apple-pay-button-white';
-	const APPLE_PAY_BUTTON_WHITE_WITH_LINE   = 'apple-pay-button-white-with-line';
+	const APPLE_BUTTON_BLACK				= 'apple-pay-button-black';
+	const APPLE_BUTTON_WHITE				= 'apple-pay-button-white';
+	const APPLE_PAY_BUTTON_WHITE_WITH_LINE	= 'apple-pay-button-white-with-line';
 
 	/**
 	 * SDK gateway provider
@@ -179,17 +179,17 @@ class ApplePayGateway extends AbstractGateway {
 				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' )
 			),
 			'button_style'        => array(
-			'title'       => __( 'Apple button Style', 'globalpayments-gateway-provider-for-woocommerce' ),
-			'type'        => 'select',
-			'description' => __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
-			'default'     => self::APPLE_BUTTON_WHITE,
-			'desc_tip'    => true,
-			'options'     => array(
-				self::APPLE_BUTTON_BLACK     			 => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
-				self::APPLE_BUTTON_WHITE 				 => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
-				self::APPLE_PAY_BUTTON_WHITE_WITH_LINE   => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'title'       => __( 'Apple button Style', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'        => 'select',
+				'description' => __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'default'     => self::APPLE_BUTTON_WHITE,
+				'desc_tip'    => true,
+				'options'     => array(
+					self::APPLE_BUTTON_BLACK				=> __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
+					self::APPLE_BUTTON_WHITE				=> __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
+					self::APPLE_PAY_BUTTON_WHITE_WITH_LINE	=> __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
+				),
 			),
-		),
 		);
 	}
 
