@@ -115,12 +115,12 @@ class ApplePayGateway extends AbstractGateway {
 
 	public function get_frontend_gateway_options() {
 		return array(
-			'apple_merchant_display_name' => $this->apple_merchant_display_name,
-			'cc_types'                    => $this->cc_types,
-			'country_code'                => wc_get_base_location()['country'],
-			'validate_merchant_url'       => WC()->api_request_url( 'globalpayments_validate_merchant' ),
-			'googlepay_gateway_id'        => GooglePayGateway::GATEWAY_ID,
-			'button_style' 				  => $this->button_style
+			'apple_merchant_display_name'	=> $this->apple_merchant_display_name,
+			'cc_types'                   	=> $this->cc_types,
+			'country_code'                	=> wc_get_base_location()['country'],
+			'validate_merchant_url'       	=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'googlepay_gateway_id'        	=> GooglePayGateway::GATEWAY_ID,
+			'button_style'					=> $this->button_style
 		);
 	}
 
