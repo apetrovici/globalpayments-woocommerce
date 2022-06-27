@@ -116,10 +116,10 @@ class ApplePayGateway extends AbstractGateway {
 	public function get_frontend_gateway_options() {
 		return array(
 			'apple_merchant_display_name'	=> $this->apple_merchant_display_name,
-			'cc_types'                   	=> $this->cc_types,
-			'country_code'                	=> wc_get_base_location()['country'],
-			'validate_merchant_url'       	=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
-			'googlepay_gateway_id'        	=> GooglePayGateway::GATEWAY_ID,
+			'cc_types'						=> $this->cc_types,
+			'country_code'					=> wc_get_base_location()['country'],
+			'validate_merchant_url'			=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'googlepay_gateway_id'			=> GooglePayGateway::GATEWAY_ID,
 			'button_style'					=> $this->button_style
 		);
 	}
@@ -179,12 +179,12 @@ class ApplePayGateway extends AbstractGateway {
 				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' )
 			),
 			'button_style'        => array(
-				'title'       => __( 'Apple button Style', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'        => 'select',
-				'description' => __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default'     => self::APPLE_BUTTON_WHITE,
-				'desc_tip'    => true,
-				'options'     => array(
+				'title'			=> __( 'Apple button Style', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'			=> 'select',
+				'description'	=> __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'default'		=> self::APPLE_BUTTON_WHITE,
+				'desc_tip'		=> true,
+				'options'		=> array(
 					self::APPLE_BUTTON_BLACK				=> __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
 					self::APPLE_BUTTON_WHITE				=> __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
 					self::APPLE_PAY_BUTTON_WHITE_WITH_LINE	=> __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
