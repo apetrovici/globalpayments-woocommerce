@@ -180,9 +180,9 @@ class ApplePayGateway extends AbstractGateway {
 				'default'		=> 'apple-pay-button-white',
 				'desc_tip'		=> true,
 				'options'		=> array(
-					'apple-pay-button-black'           => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'apple-pay-button-white'           => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'apple-pay-button-white-with-line' => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'black'           => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'white'           => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'white-with-line' => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
 				),
 			),
 		);
