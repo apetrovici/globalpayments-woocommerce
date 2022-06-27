@@ -110,12 +110,12 @@ class ApplePayGateway extends AbstractGateway {
 
 	public function get_frontend_gateway_options() {
 		return array(
-			'apple_merchant_display_name'	=> $this->apple_merchant_display_name,
-			'cc_types'						=> $this->cc_types,
-			'country_code'					=> wc_get_base_location()['country'],
-			'validate_merchant_url'			=> WC()->api_request_url( 'globalpayments_validate_merchant' ),
-			'googlepay_gateway_id'			=> GooglePayGateway::GATEWAY_ID,
-			'button_color'					=> $this->button_color
+			'apple_merchant_display_name' => $this->apple_merchant_display_name,
+			'cc_types'                    => $this->cc_types,
+			'country_code'                => wc_get_base_location()['country'],
+			'validate_merchant_url'       => WC()->api_request_url( 'globalpayments_validate_merchant' ),
+			'googlepay_gateway_id'        => GooglePayGateway::GATEWAY_ID,
+			'button_color'                => $this->button_color
 		);
 	}
 
@@ -171,15 +171,15 @@ class ApplePayGateway extends AbstractGateway {
 					'AMEX'       => 'AMEX',
 					'DISCOVER'   => 'Discover',
 				),
-				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' )
+				'default' => array( 'VISA', 'MASTERCARD', 'AMEX', 'DISCOVER' )
 			),
-			'button_color'        => array(
-				'title'			=> __( 'Apple button color', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'type'			=> 'select',
-				'description'	=> __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'default'		=> 'apple-pay-button-white',
-				'desc_tip'		=> true,
-				'options'		=> array(
+			'button_color'                  => array(
+				'title'       => __( 'Apple button color', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'        => 'select',
+				'description' => __( 'Button styling at checkout', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'default'     => 'apple-pay-button-white',
+				'desc_tip'    => true,
+				'options'     => array(
 					'black'           => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'white'           => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'white-with-line' => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -231,11 +231,11 @@ class ApplePayGateway extends AbstractGateway {
 	}
 
 	public function validate_merchant() {
-	    $responseValidationUrl = json_decode( file_get_contents( 'php://input' ) );
-		if ( empty($responseValidationUrl) ) {
-		    return null;
-        }
-	    $validationUrl = $responseValidationUrl->validationUrl;
+		$responseValidationUrl = json_decode( file_get_contents( 'php://input' ) );
+		if ( empty( $responseValidationUrl ) ) {
+			return null;
+		}
+		$validationUrl = $responseValidationUrl->validationUrl;
 
 		if (
 			! $this->apple_merchant_id ||
@@ -246,8 +246,8 @@ class ApplePayGateway extends AbstractGateway {
 		) {
 			return null;
 		}
-		$pemCrtPath = ABSPATH  . $this->apple_merchant_cert_path;
-		$pemKeyPath = ABSPATH  . $this->apple_merchant_key_path;
+		$pemCrtPath = ABSPATH . $this->apple_merchant_cert_path;
+		$pemKeyPath = ABSPATH . $this->apple_merchant_key_path;
 
 		$validationPayload                       = array();
 		$validationPayload['merchantIdentifier'] = $this->apple_merchant_id;
@@ -318,8 +318,8 @@ class ApplePayGateway extends AbstractGateway {
 			array(
 				'orderInfoUrl' => WC()->api_request_url( 'globalpayments_order_info' ),
 				'order'        => array(
-					'amount' 	=> $this->get_session_amount(),
-					'currency'	=> get_woocommerce_currency(),
+					'amount'   => $this->get_session_amount(),
+					'currency' => get_woocommerce_currency(),
 				)
 			)
 		);
