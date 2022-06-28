@@ -61,7 +61,8 @@
 
 			var self = this
 			var paymentButton = document.createElement( 'div' );
-			paymentButton.className = 'apple-pay-button apple-pay-button-white-with-line';
+
+			paymentButton.className = 'apple-pay-button apple-pay-button-' + this.gatewayOptions.button_color;
 			paymentButton.title = 'Pay with Apple Pay';
 			paymentButton.alt = 'Pay with Apple Pay';
 			paymentButton.id = self.id;
