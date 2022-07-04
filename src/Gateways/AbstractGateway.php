@@ -140,9 +140,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public $cvn_reject_conditions;
 
 	public function __construct( $is_provider = false ) {
-		if ( $is_provider ) {
-			return;
-		}
+
 		$this->client     = new Clients\SdkClient();
 
 		$this->has_fields = true;
@@ -167,6 +165,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$this->init_form_fields();
 		$this->init_settings();
 		$this->configure_merchant_settings();
+
+		if ( $is_provider ) {
+			return;
+		}
+		
 		$this->add_hooks();
 	}
 
