@@ -195,7 +195,7 @@ class ApplePayGateway extends AbstractGateway {
 					'default'     => self::TXN_TYPE_SALE,
 					'desc_tip'    => true,
 					'options'     => array(
-						self::TXN_TYPE_SALE      => __( 'Charge', 'globalpayments-gateway-provider-for-woocommerce' ),
+						self::TXN_TYPE_SALE      => __( 'Authorize + Capture', 'globalpayments-gateway-provider-for-woocommerce' ),
 						self::TXN_TYPE_AUTHORIZE => __( 'Authorize only', 'globalpayments-gateway-provider-for-woocommerce' ),
 					),
 				),
