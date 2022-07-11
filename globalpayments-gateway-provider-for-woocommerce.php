@@ -5,7 +5,7 @@
  * Description: This extension allows WooCommerce to use the available Global Payments payment gateways. All card data is tokenized using the respective gateway's tokenization service.
  * Version: 1.2.3
  * Requires PHP: 5.5.9
- * WC tested up to: 6.3.1
+ * WC tested up to: 6.6.0
  * Author: Global Payments
 */
 
