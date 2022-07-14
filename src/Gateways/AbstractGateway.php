@@ -1103,6 +1103,15 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public static function addCaptureOrderAction( $actions ) {
 		global $theorder;
 
+		if (
+			$theorder->get_payment_method() == 'globalpayments_gpapi' &&
+			$theorder->get_status() == 'pending' &&
+			! empty( $theorder->get_transaction_id() )
+		) {
+			$actions['capture_credit_card_authorization'] = 'Capture credit card authorization';
+			return $actions;
+		}
+
 		if ( AbstractGateway::TXN_TYPE_AUTHORIZE !== $theorder->get_meta( '_globalpayments_payment_action' ) ) {
 			return $actions;
 		}
