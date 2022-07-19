@@ -760,21 +760,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				}
 				$order = wc_get_order($post_id);
 
-				if ($this->id !== $order->get_payment_method()) {
-
-					update_post_meta( $post_id, '_globalpayments_payment_action' , 'borrar' );
-
-				} else {
-
-					$result = update_post_meta( $post_id, '_globalpayments_payment_action' , $this->payment_action );
-
+				if ($this->id == $order->get_payment_method() ) {
+					update_post_meta( $post_id, '_globalpayments_payment_action' , $this->payment_action );
 				}
-
-				/*echo "<pre>";
-				print_r($this->payment_action);
-				echo "</pre";*/
-				//die();
-
 			}, 10, 2);
 		}
 
@@ -1128,32 +1116,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 */
 	public static function addCaptureOrderAction( $actions ) {
 		global $theorder;
-		/*$capture_description =
-
-		if (
-			GpApiGateway::GATEWAY_ID == $theorder->get_payment_method()  &&
-			'pending' == $theorder->get_status() &&
-			! empty( $theorder->get_transaction_id() )
-		) {
-			$actions['capture_credit_card_authorization'] = $capture_description;
-			return $actions;
-		}*/
-echo "<pre>javi <br><br>";
-print_r('get_meta( globalpayments_payment_action)');
-print_r( $theorder->get_meta( '_globalpayments_payment_action' ) );
-
-echo "<br><br>";
-		print_r(' AbstractGateway::TXN_TYPE_AUTHORIZE'  );
-		print_r( AbstractGateway::TXN_TYPE_AUTHORIZE  );
-echo "</pre>";
-//die();
-
 
 		if ( AbstractGateway::TXN_TYPE_AUTHORIZE !== $theorder->get_meta( '_globalpayments_payment_action' ) ) {
 			return $actions;
 		}
 
-		$actions['capture_credit_card_authorization'] = 'Capture credit card authorization';;
+		$actions['capture_credit_card_authorization'] = 'Capture credit card authorization';
 		return $actions;
 	}
 
