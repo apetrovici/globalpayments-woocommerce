@@ -17,6 +17,40 @@
          */
         attachEventHandlers: function () {
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
+
+            // Admin Pay for Order
+            $( '.wc-globalpayments-pay-order' ).on( 'click', this.payForOrder );
+            $( document.body ).on('wc_backbone_modal_loaded', this.modalLoaded.bind( this ) );
+        },
+
+        /**
+         * Enable modal template.
+         *
+         * @param e
+         */
+        payForOrder: function( e ) {
+            e.preventDefault();
+            $( this ).WCGlobalPaymentsPayOrderBackboneModal({
+                template: 'wc-globalpayments-pay-order-modal',
+                variable: {
+                    customer_id: $( '#customer_user' ).val(),
+                }
+            });
+        },
+
+        /**
+         * Render modal content.
+         *
+         * @param e
+         * @param target
+         */
+        modalLoaded: function ( e, target ) {
+            switch ( target ) {
+                case 'wc-globalpayments-pay-order-modal':
+                    $( document.body ).trigger( 'globalpayments_pay_order_modal_loaded' );
+                    $( document.body ).trigger( 'wc-credit-card-form-init' );
+                    break;
+            }
         },
 
         /**

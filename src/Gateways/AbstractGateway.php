@@ -341,7 +341,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		wp_enqueue_script(
 			'globalpayments-secure-payment-fields',
 			Plugin::get_url( '/assets/frontend/js/globalpayments-secure-payment-fields.js' ),
-			array( 'globalpayments-secure-payment-fields-lib', 'wc-checkout' ),
+			is_admin() ? array( 'globalpayments-secure-payment-fields-lib' ) : array( 'globalpayments-secure-payment-fields-lib', 'wc-checkout' ),
 			WC()->version,
 			true
 		);
@@ -357,7 +357,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		);
 
 		// Global Payments scripts for handling 3DS
-		if ( GatewayProvider::GP_API !== $this->gateway_provider ) {
+		if ( GpApiGateway::GATEWAY_ID !== $this->id || ! is_checkout() ) {
 			return;
 		}
 
@@ -451,7 +451,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 					'label'       => __( 'Check AVS/CVN result codes and reverse transaction.', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'type'        => 'checkbox',
 					'description' => sprintf(
-						__( 'This will check AVS/CVN result codes and reverse transaction.' )
+						__( 'This will check AVS/CVN result codes and reverse transaction.', 'globalpayments-gateway-provider-for-woocommerce' )
 					),
 					'default'     => 'yes'
 				),
@@ -460,7 +460,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 					'type'        => 'multiselect',
 					'class'       => 'wc-enhanced-select',
 					'css'         => 'width: 450px',
-					'description' => __( 'Choose for which AVS result codes, the transaction must be auto reversed.' ),
+					'description' => __( 'Choose for which AVS result codes, the transaction must be auto reversed.', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'options'     => $this->avs_rejection_conditions(),
 					'default'     => array( "N", "S", "U", "P", "R", "G", "C", "I" ),
 				),
@@ -469,7 +469,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 					'type'        => 'multiselect',
 					'class'       => 'wc-enhanced-select',
 					'css'         => 'width: 450px',
-					'description' => __( 'Choose for which CVN result codes, the transaction must be auto reversed.' ),
+					'description' => __( 'Choose for which CVN result codes, the transaction must be auto reversed.', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'options'     => $this->cvn_rejection_conditions(),
 					'default'     => array( "P", "?", "N" ),
 				),
@@ -746,7 +746,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'admin_enforce_single_gateway'
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
-			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
+			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ) );
 		}
 
 		if ( 'no' === $this->enabled ) {
@@ -848,6 +848,18 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$request       = $this->prepare_request( $this->payment_action, $order );
 		$response      = $this->submit_request( $request );
 		$is_successful = $this->handle_response( $request, $response );
+
+		if ( $is_successful ) {
+			$note_text = sprintf(
+				'%1$s%2$s %3$s. Transaction ID: %4$s.',
+				$order->get_total(),
+				$order->get_currency(),
+				$this->payment_action == self::TXN_TYPE_AUTHORIZE ? __( 'authorized', 'woo-payment-gateway' ) : __( 'charged', 'woo-payment-gateway' ),
+				$order->get_transaction_id()
+			);
+
+			$order->add_order_note( $note_text );
+		}
 
 		return array(
 			'result'   => $is_successful ? 'success' : 'failure',
@@ -1160,6 +1172,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	}
 
 	public function get_session_amount() {
+		if ( is_admin() ) {
+			return null;
+		}
 		$cart_totals = WC()->session->get( 'cart_totals' );
 
 		return round( $cart_totals['total'], 2 );
@@ -1274,7 +1289,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		if ( $this->id != $section ) {
 			return;
 		}
-		if ( !$this->is_digital_wallet) {
+		if ( ! $this->is_digital_wallet ) {
 			wp_enqueue_script(
 				'globalpayments-admin',
 				Plugin::get_url( '/assets/admin/js/globalpayments-admin.js' ),

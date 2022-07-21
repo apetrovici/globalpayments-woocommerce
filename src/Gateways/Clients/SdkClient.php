@@ -294,6 +294,10 @@ class SdkClient implements ClientInterface {
 		if ( isset( PaymentTokenData::$tsepCvv ) ) {
 			$this->card_data->cvn = PaymentTokenData::$tsepCvv;
 		}
+
+		if ( $this->has_arg( RequestArg::ENTRY_MODE ) ) {
+			$this->card_data->entryMethod = $this->get_arg( RequestArg::ENTRY_MODE );
+		}
 	}
 
 	protected function threedsecure_is_enabled() {
