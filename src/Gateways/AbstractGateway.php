@@ -5,7 +5,6 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways;
 defined( 'ABSPATH' ) || exit;
 
 use Exception;
-use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
 use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests\RequestArg;
