@@ -57,6 +57,12 @@ trait PayOrderTrait {
 				'payorder_url' => WC()->api_request_url( 'globalpayments_pay_order' ) . '&key=' . $order->get_order_key(),
 			)
 		);
+		wp_enqueue_style(
+			'globalpayments-admin',
+			Plugin::get_url( '/assets/admin/css/globalpayments-admin.css' ),
+			array(),
+			WC()->version
+		);
 	}
 
 	/**
