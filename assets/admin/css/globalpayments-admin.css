@@ -26,3 +26,7 @@
     font-weight: 400;
     text-align: center;
 }
+
+#wc-globalpayments_gpapi-cc-form {
+    margin-bottom: 15px;
+}
