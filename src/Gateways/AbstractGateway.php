@@ -750,7 +750,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ));
-			add_action('save_post', function($post_id, $post) {
+			add_action( 'save_post', function( $post_id, $post ) {
 
 				if ($post->post_type !== 'shop_order'  )  {
 					return;
