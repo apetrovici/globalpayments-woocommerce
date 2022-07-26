@@ -51,6 +51,7 @@ Access to our Unified Payments requires sandbox credentials which you can retrie
 * Added Admin option for Apple Pay button color
 * Bug fix - Refund issue when create_refund is called programmatically
 * Bug fix - Digital Wallets pay buttons on `Pay for Order`
+* Update PHP-SDK to v4.0.4
 
 = 1.2.2 =
 * Bug fix - 3DS/Digital Wallets amount not updated when a customer added/removed a coupon
