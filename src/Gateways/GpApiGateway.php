@@ -218,6 +218,7 @@ class GpApiGateway extends AbstractGateway {
 			add_filter( 'globalpayments_secure_payment_fields_styles', array( $this, 'pay_order_modal_secure_payment_fields_styles' ) );
 		}
 		add_action( 'woocommerce_api_globalpayments_pay_order', array( $this, 'pay_order_modal_process_payment' ), 99 );
+		add_action( 'woocommerce_api_globalpayments_get_payment_methods', array( $this, 'pay_order_modal_get_payment_methods' ) );
 		add_filter( 'pre_update_option_woocommerce_globalpayments_gpapi_settings', array(
 			$this,
 			'woocommerce_globalpayments_gpapi_settings'

@@ -19,8 +19,26 @@
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
 
             // Admin Pay for Order
+            $( '#customer_user' ).on( 'change', this.updatePaymentMethods );
             $( '.wc-globalpayments-pay-order' ).on( 'click', this.payForOrder );
             $( document.body ).on('wc_backbone_modal_loaded', this.modalLoaded.bind( this ) );
+        },
+
+        updatePaymentMethods: function ( e ) {
+            // fetch user payment tokens
+            var customer_id = $( e.target ).val();
+            globalpayments_admin_params.payment_methods = [];
+            if ( customer_id > 0 && typeof globalpayments_admin_params !== "undefined" ) {
+                var data = {
+                    _wpnonce: globalpayments_admin_params._wpnonce,
+                    customer_id: customer_id
+                };
+                $( '.wc-globalpayments-pay-order' ).prop( 'disabled', true );
+                $.get( globalpayments_admin_params.payment_methods_url, data, function ( response ) {
+                    globalpayments_admin_params.payment_methods = response;
+                    $( '.wc-globalpayments-pay-order' ).prop( 'disabled', false );
+                }, 'json' );
+            }
         },
 
         /**
@@ -34,6 +52,7 @@
                 template: 'wc-globalpayments-pay-order-modal',
                 variable: {
                     customer_id: $( '#customer_user' ).val(),
+                    payment_methods: globalpayments_admin_params.payment_methods,
                 }
             });
         },
