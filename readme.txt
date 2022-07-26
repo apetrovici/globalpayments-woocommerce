@@ -24,6 +24,7 @@ This extension allows WooCommerce to use the available Global Payments payment g
 - 3D Secure 1
 - Digital Wallets - Google Pay
 - Digital Wallets - Apple Pay
+- Payments over the phone
 
 = Support =
 For more information or questions, please email <a href="mailto:developers@globalpay.com">developers@globalpay.com </a>.
@@ -47,7 +48,7 @@ Access to our Unified Payments requires sandbox credentials which you can retrie
 
 == Changelog ==
 = 1.3.0 =
-* Added Admin Pay for Order (process payments over the phone)
+* Unified Payments - Added Admin Pay for Order (process payments over the phone)
 * Added Admin option for Apple Pay button color
 * Bug fix - Refund issue when create_refund is called programmatically
 * Bug fix - Digital Wallets pay buttons on `Pay for Order`
