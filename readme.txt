@@ -48,7 +48,9 @@ Access to our Unified Payments requires sandbox credentials which you can retrie
 == Changelog ==
 = 1.3.0 =
 * Added Admin Pay for Order (process payments over the phone)
+* Added Admin option for Apple Pay button color
 * Bug fix - Refund issue when create_refund is called programmatically
+* Bug fix - Digital Wallets pay buttons on `Pay for Order`
 
 = 1.2.2 =
 * Bug fix - 3DS/Digital Wallets amount not updated when a customer added/removed a coupon
