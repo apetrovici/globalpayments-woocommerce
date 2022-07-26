@@ -54,7 +54,7 @@ trait PayOrderTrait {
 			array(
 				'_wpnonce'            => wp_create_nonce( 'woocommerce-globalpayments-pay' ),
 				'gateway_id'          => $this->id,
-				'payorder_url'        => WC()->api_request_url( 'globalpayments_pay_order' ) . '&key=' . $order->get_order_key(),
+				'payorder_url'        => WC()->api_request_url( 'globalpayments_pay_order' ),
 				'payment_methods'     => $this->get_payment_methods( $order->get_customer_id() ),
 				'payment_methods_url' => WC()->api_request_url( 'globalpayments_get_payment_methods' ),
 			)
@@ -110,8 +110,8 @@ trait PayOrderTrait {
 	public function pay_order_modal_process_payment() {
 		try {
 			// Validate modal request
-			if ( ! isset( $_POST['woocommerce_globalpayments_pay'], $_GET['key'] ) ) {
-				throw new Exception( __( 'Invalid payment request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			if ( ! isset( $_POST['woocommerce_globalpayments_pay'] ) ) {
+				throw new \Exception( __( 'Invalid payment request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 			}
 
 			wc_nocache_headers();
@@ -121,7 +121,7 @@ trait PayOrderTrait {
 				throw new \Exception( __( 'Invalid payment request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 			}
 
-			$order_key = wp_unslash( $_GET['key'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
+			$order_key = wc_get_post_data_by_key( 'order_key' );
 			$order_id  = (int) wc_get_post_data_by_key( 'order_id' );
 			$order     = wc_get_order( $order_id );
 			if ( $order_id !== $order->get_id() || ! hash_equals( $order->get_order_key(), $order_key ) ) {

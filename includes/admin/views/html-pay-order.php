@@ -20,6 +20,7 @@
                         <input type="hidden" name="entry_mode"
                                value="<?php echo \GlobalPayments\Api\Entities\Enums\ManualEntryMethod::MOTO; ?>"/>
                         <input type="hidden" name="order_id" value="<?php echo $order->get_id(); ?>"/>
+                        <input type="hidden" name="order_key" value="<?php echo $order->get_order_key(); ?>"/>
                         <div class="payment_methods" style="display: none">
                             <input type="radio" class="input-radio" name="payment_method"
                                    value="<?php echo $this->id; ?>" checked="checked">
