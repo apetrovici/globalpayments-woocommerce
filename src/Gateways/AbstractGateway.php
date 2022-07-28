@@ -231,6 +231,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * Get the current gateway provider
 	 *
 	 * @return string
+	 * @throws Exception
 	 */
 	public function get_gateway_provider() {
 		if ( ! $this->gateway_provider ) {
@@ -808,6 +809,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @param int $order_id
 	 *
 	 * @return array
+	 * @throws ApiException
 	 */
 	public function process_payment( $order_id ) {
 		$order         = new WC_Order( $order_id );
@@ -839,6 +841,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * Handle adding new cards via 'My Account'
 	 *
 	 * @return array
+	 * @throws Exception
 	 */
 	public function add_payment_method() {
 		$request  = $this->prepare_request( self::TXN_TYPE_VERIFY );
@@ -864,10 +867,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * Handle online refund requests via WP Admin > WooCommerce > Edit Order
 	 *
 	 * @param int $order_id
-	 * @param null|number $amount
+	 * @param null $amount
 	 * @param string $reason
 	 *
-	 * @return array
+	 * @return bool
+	 * @throws ApiException
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
 		$details                = $this->get_transaction_details( $order_id );
@@ -910,9 +914,10 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	/**
 	 * Handle capture auth requests via WP Admin > WooCommerce > Edit Order
 	 *
-	 * @param int $order_id
+	 * @param $order
 	 *
-	 * @return array
+	 * @return Transaction
+	 * @throws Exception
 	 */
 	public static function capture_credit_card_authorization( $order ) {
 		switch ( $order->get_payment_method() ) {
@@ -960,9 +965,10 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	/**
 	 * Handle online refund requests via WP Admin > WooCommerce > Edit Order > Order actions
 	 *
-	 * @param int $order_id
+	 * @param $order_id
 	 *
-	 * @return TransactionSummary
+	 * @return Transaction
+	 * @throws Exception
 	 */
 	public function get_transaction_details( $order_id ) {
 		$order    = new WC_Order( $order_id );
@@ -975,10 +981,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	/**
 	 * Creates the necessary request based on the transaction type
 	 *
-	 * @param WC_Order $order
-	 * @param string $txn_type
+	 * @param $txn_type
+	 * @param WC_Order|null $order
 	 *
 	 * @return Requests\RequestInterface
+	 * @throws Exception
 	 */
 	protected function prepare_request( $txn_type, WC_Order $order = null ) {
 		$map = array(
@@ -1027,6 +1034,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @param Transaction $response
 	 *
 	 * @return bool
+	 * @throws ApiException
 	 */
 	protected function handle_response( Requests\RequestInterface $request, Transaction $response ) {
 		if ( $response->responseCode !== '00' && 'SUCCESS' !== $response->responseCode || $response->responseMessage === 'Partially Approved' ) {
