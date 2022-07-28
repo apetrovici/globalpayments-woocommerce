@@ -182,7 +182,7 @@ class ApplePayGateway extends AbstractGateway {
 				'options'     => array(
 					'black'           => __( 'Black', 'globalpayments-gateway-provider-for-woocommerce' ),
 					'white'           => __( 'White', 'globalpayments-gateway-provider-for-woocommerce' ),
-					'white-with-line' => __( 'White with line', 'globalpayments-gateway-provider-for-woocommerce' ),
+					'white-with-line' => __( 'White with Outline', 'globalpayments-gateway-provider-for-woocommerce' ),
 				),
 			),
 		);
