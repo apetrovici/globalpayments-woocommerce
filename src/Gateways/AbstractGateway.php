@@ -818,9 +818,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		if ( $is_successful ) {
 			$note_text = sprintf(
 				'%1$s%2$s %3$s. Transaction ID: %4$s.',
+				get_woocommerce_currency_symbol( $order->get_currency() ),
 				$order->get_total(),
-				$order->get_currency(),
-				$this->payment_action == self::TXN_TYPE_AUTHORIZE ? __( 'authorized', 'woo-payment-gateway' ) : __( 'charged', 'woo-payment-gateway' ),
+				$this->payment_action == self::TXN_TYPE_AUTHORIZE ?
+					__( 'authorized', 'globalpayments-gateway-provider-for-woocommerce' ) :
+					__( 'charged', 'globalpayments-gateway-provider-for-woocommerce' ),
 				$order->get_transaction_id()
 			);
 
@@ -912,9 +914,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return array
 	 */
-	public static function capture_credit_card_authorization( $order_id ) {
-		$order = new WC_Order( $order_id );
-
+	public static function capture_credit_card_authorization( $order ) {
 		switch ( $order->get_payment_method() ) {
 			case "globalpayments_heartland":
 				$gateway = new HeartlandGateway();
@@ -939,6 +939,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 
 			if ( "00" === $response->responseCode && "Success" === $response->responseMessage
 			     || 'SUCCESS' === $response->responseCode && "CAPTURED" === $response->responseMessage ) {
+				delete_post_meta( $order->get_id(), '_globalpayments_payment_action' );
 				$order->add_order_note(
 					"Transaction captured. Transaction ID for the capture: " . $response->transactionReference->transactionId
 				);
@@ -1111,7 +1112,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return array
 	 */
-	public static function addCaptureOrderAction( $actions ) {
+	public static function add_capture_order_action( $actions ) {
 		global $theorder;
 
 		if ( AbstractGateway::TXN_TYPE_AUTHORIZE !== $theorder->get_meta( '_globalpayments_payment_action' ) ) {
