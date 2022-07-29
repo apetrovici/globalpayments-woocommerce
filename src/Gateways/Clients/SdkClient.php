@@ -96,6 +96,9 @@ class SdkClient implements ClientInterface {
 	public function execute() {
 		$this->configure_sdk();
 		$builder = $this->get_transaction_builder();
+		if ( ! isset( $builder ) ) {
+			throw new \Exception( __( 'Unable to perform request.' ) );
+		}
 		if ( 'transactionDetail' === $this->args['TXN_TYPE'] ) {
 			return $builder->execute();
 		}
@@ -165,8 +168,9 @@ class SdkClient implements ClientInterface {
 		$subject =
 			in_array( $this->get_arg( RequestArg::TXN_TYPE ), $this->auth_transactions, true )
 				? $this->card_data : $this->previous_transaction;
-
-		return $subject->{$this->get_arg( RequestArg::TXN_TYPE )}();
+		if ( isset( $subject ) ) {
+			return $subject->{$this->get_arg( RequestArg::TXN_TYPE )}();
+		}
 	}
 
 	protected function prepare_request_args( RequestInterface $request ) {
