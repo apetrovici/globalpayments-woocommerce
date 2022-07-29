@@ -18,10 +18,10 @@
 }
 
 #place_order {
-    width:100%;
+    width:300px;
 }
 
 .globalpayments.card-submit iframe {
     min-height:32px;
-    width:100%;
+    width:auto;
 }
