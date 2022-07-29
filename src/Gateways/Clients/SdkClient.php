@@ -13,6 +13,8 @@ use GlobalPayments\Api\Entities\Enums\StoredCredentialInitiator;
 use GlobalPayments\Api\Entities\StoredCredential;
 use GlobalPayments\Api\Gateways\IPaymentGateway;
 use GlobalPayments\Api\PaymentMethods\CreditCardData;
+use GlobalPayments\Api\PaymentMethods\Interfaces\IAuthable;
+use GlobalPayments\Api\PaymentMethods\Interfaces\IChargable;
 use GlobalPayments\Api\ServiceConfigs\AcceptorConfig;
 use GlobalPayments\Api\ServiceConfigs\Gateways\GeniusConfig;
 use GlobalPayments\Api\ServiceConfigs\Gateways\GpApiConfig;
@@ -168,7 +170,7 @@ class SdkClient implements ClientInterface {
 		$subject =
 			in_array( $this->get_arg( RequestArg::TXN_TYPE ), $this->auth_transactions, true )
 				? $this->card_data : $this->previous_transaction;
-		if ( isset( $subject ) ) {
+		if ( $subject instanceof IChargable || $subject instanceof IAuthable ) {
 			return $subject->{$this->get_arg( RequestArg::TXN_TYPE )}();
 		}
 	}
