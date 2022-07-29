@@ -557,6 +557,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'body'                          => array(),
 			'#secure-payment-field-wrapper' => array(
 				'position' => 'relative',
+				'display' => 'block',
+				'text-align' => 'right'
 			),
 			'#secure-payment-field'         => array(
 				'background-color' => '#fff',
