@@ -167,6 +167,9 @@ trait PayOrderTrait {
 	public function pay_order_modal_secure_payment_fields_styles( $secure_payment_fields_styles ) {
 		$secure_payment_fields_styles = json_decode( $secure_payment_fields_styles, true );
 
+		$secure_payment_fields_styles['#secure-payment-field-wrapper'] = array(
+			'justify-content' => 'flex-end',
+		);
 		$secure_payment_fields_styles['#secure-payment-field'] = array(
 			'background-color' => '#fff',
 			'border'           => '1px solid #ccc',
@@ -176,14 +179,7 @@ trait PayOrderTrait {
 			'font-weight'      => '400',
 			'height'           => '35px',
 			'padding'          => '6px 12px',
-			'width'            => '94%',
 			'font-family'      => '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important',
-		);
-
-		$secure_payment_fields_styles['#secure-payment-field-wrapper'] = array(
-			'position' => 'relative',
-			'display' => 'block',
-			'text-align' => 'right'
 		);
 
 		$secure_payment_fields_styles['#secure-payment-field[type=button]:focus'] = array(
@@ -200,11 +196,10 @@ trait PayOrderTrait {
 			'background'      => '#2271b1',
 			'border-color'    => '#2271b1',
 			'border-radius'   => '3px',
-			'box-sizing'      => 'border-box',
 			'color'           => '#fff',
 			'cursor'          => 'pointer',
 			'display'         => 'inline-block',
-			'flex'            => 'auto',
+			'flex'            => '0',
 			'line-height'     => '23px',
 			'margin-bottom'   => '0',
 			'min-height'      => '32px',
@@ -212,7 +207,6 @@ trait PayOrderTrait {
 			'text-align'      => 'center',
 			'text-decoration' => 'none',
 			'text-shadow'     => 'none',
-			'width'           => 'auto',
 			'white-space'     => 'nowrap',
 		);
 
