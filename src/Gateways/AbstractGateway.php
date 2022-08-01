@@ -168,7 +168,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		if ( $is_provider ) {
 			return;
 		}
-		
+
 		$this->add_hooks();
 	}
 
@@ -558,6 +558,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'body'                          => array(),
 			'#secure-payment-field-wrapper' => array(
 				'position' => 'relative',
+				'display' => 'flex',
 			),
 			'#secure-payment-field'         => array(
 				'background-color' => '#fff',
@@ -567,7 +568,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'font-size'        => '14px',
 				'height'           => '35px',
 				'padding'          => '6px 12px',
-				'width'            => '100%',
+				'width'            => '94%',
 			),
 			'#secure-payment-field:focus'   => array(
 				'border'     => '1px solid lightblue',

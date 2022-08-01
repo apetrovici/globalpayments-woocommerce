@@ -176,9 +176,16 @@ trait PayOrderTrait {
 			'font-weight'      => '400',
 			'height'           => '35px',
 			'padding'          => '6px 12px',
-			'width'            => '100%',
+			'width'            => '94%',
 			'font-family'      => '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif !important',
 		);
+
+		$secure_payment_fields_styles['#secure-payment-field-wrapper'] = array(
+			'position' => 'relative',
+			'display' => 'block',
+			'text-align' => 'right'
+		);
+
 		$secure_payment_fields_styles['#secure-payment-field[type=button]:focus'] = array(
 			'color'        => '#fff',
 			'background'   => '#135e96',

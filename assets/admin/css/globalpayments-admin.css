@@ -17,11 +17,7 @@
     font-size:14px;
 }
 
-#place_order {
-    width:100%;
-}
-
 .globalpayments.card-submit iframe {
     min-height:32px;
-    width:100%;
+    width:auto;
 }
