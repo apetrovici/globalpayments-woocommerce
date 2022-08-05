@@ -403,6 +403,10 @@
 					this.showValidationError( 'card-expiration' );
 					result = false;
 				}
+				if ( ! response.details.cardholderName || '' == response.details.cardholderName ) {
+					this.showValidationError( 'card-holder-name' );
+					result = false;
+				}
 			}
 
 			if ( response.details && ! response.details.cardSecurityCode ) {
@@ -492,6 +496,10 @@
 					case 'INVALID_CARD_SECURITY_CODE':
 						this.showValidationError( 'card-cvv' );
 						break;
+					case 'INVALID_CARD_HOLDER_NAME':
+					case 'TOO_LONG_DATA':
+						this.showValidationError('card-holder-name');
+						break;
 					case 'MANDATORY_DATA_MISSING':
 						var n = reason.message.search( "card type" );
 						if ( n>=0 ) {
@@ -574,6 +582,10 @@
 				'card-cvv': {
 					placeholder: this.fieldOptions['card-cvc-field'].placeholder,
 					target: '#' + this.id + '-' + this.fieldOptions['card-cvc-field'].class
+				},
+				'card-holder-name': {
+					placeholder: this.fieldOptions['card-holder-name-field'].placeholder,
+					target: '#' + this.id + '-' + this.fieldOptions['card-holder-name-field'].class
 				},
 				'submit': {
 					text: this.getSubmitButtonText(),
