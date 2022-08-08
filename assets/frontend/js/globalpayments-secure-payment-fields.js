@@ -258,7 +258,6 @@
 			var self = this;
 
 			this.cardForm.frames["card-cvv"].getCvv().then( function ( c ) {
-				
 				/**
 				 * CVV; needed for TransIT gateway processing only
 				 *
@@ -570,7 +569,7 @@
 		 * @returns {object}
 		 */
 		getFieldConfiguration: function () {
-			return {
+			var fields = {
 				'card-number': {
 					placeholder: this.fieldOptions['card-number-field'].placeholder,
 					target: '#' + this.id + '-' + this.fieldOptions['card-number-field'].class
@@ -583,15 +582,18 @@
 					placeholder: this.fieldOptions['card-cvc-field'].placeholder,
 					target: '#' + this.id + '-' + this.fieldOptions['card-cvc-field'].class
 				},
-				'card-holder-name': {
-					placeholder: this.fieldOptions['card-holder-name-field'].placeholder,
-					target: '#' + this.id + '-' + this.fieldOptions['card-holder-name-field'].class
-				},
 				'submit': {
 					text: this.getSubmitButtonText(),
 					target: helper.getSubmitButtonTargetSelector( this.id )
 				}
 			};
+			if ( 'globalpayments_gpapi' == this.id ) {
+				fields["card-holder-name"] = {
+						placeholder: this.fieldOptions['card-holder-name-field'].placeholder,
+						target: '#' + this.id + '-' + this.fieldOptions['card-holder-name-field'].class
+				}
+			}
+			return fields;
 		},
 
 		/**
