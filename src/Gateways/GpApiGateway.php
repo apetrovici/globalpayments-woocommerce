@@ -210,41 +210,16 @@ class GpApiGateway extends AbstractGateway {
 	}
 
 	protected function secure_payment_fields() {
-
-		return array(
-			'card-number-field' => array(
-				'class'       => 'card-number',
-				'label'       => esc_html__( 'Credit Card Number', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'placeholder' => esc_html__( '•••• •••• •••• ••••', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'messages'    => array(
-					'validation' => esc_html__( 'Please enter a valid Credit Card Number', 'globalpayments-gateway-provider-for-woocommerce' ),
-				),
-			),
-			'card-expiry-field' => array(
-				'class'       => 'card-expiration',
-				'label'       => esc_html__( 'Credit Card Expiration Date', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'placeholder' => esc_html__( 'MM / YYYY', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'messages'    => array(
-					'validation' => esc_html__( 'Please enter a valid Credit Card Expiration Date', 'globalpayments-gateway-provider-for-woocommerce' ),
-				),
-			),
-			'card-cvc-field'    => array(
-				'class'       => 'card-cvv',
-				'label'       => esc_html__( 'Credit Card Security Code', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'placeholder' => esc_html__( '•••', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'messages'    => array(
-					'validation' => esc_html__( 'Please enter a valid Credit Card Security Code', 'globalpayments-gateway-provider-for-woocommerce' ),
-				),
-			),
-			'card-holder-name-field' => array(
-				'class'       => 'card-holder-name',
-				'label'       => esc_html__( 'Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'placeholder' => esc_html__( 'Jane Smith (generic)', 'globalpayments-gateway-provider-for-woocommerce' ),
-				'messages'    => array(
-					'validation' => esc_html__( 'Please enter a valid Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
-				),
+		$fields = parent::secure_payment_fields();
+		$fields['card-holder-name-field'] = array(
+			'class'       => 'card-holder-name',
+			'label'       => esc_html__( 'Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
+			'placeholder' => esc_html__( 'Jane Smith (generic)', 'globalpayments-gateway-provider-for-woocommerce' ),
+			'messages'    => array(
+				'validation' => esc_html__( 'Please enter a valid Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
 			),
 		);
+		return $fields;
 	}
 
 
