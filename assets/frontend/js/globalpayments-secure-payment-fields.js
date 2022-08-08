@@ -402,7 +402,11 @@
 					this.showValidationError( 'card-expiration' );
 					result = false;
 				}
-				if ( ! response.details.cardholderName || '' == response.details.cardholderName ) {
+
+				if (
+					'globalpayments_gpapi' == this.id &&
+					( ! response.details.cardholderName || '' == response.details.cardholderName )
+				) {
 					this.showValidationError( 'card-holder-name' );
 					result = false;
 				}
