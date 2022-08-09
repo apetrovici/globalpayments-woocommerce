@@ -175,9 +175,9 @@ class GpApiGateway extends AbstractGateway {
 
 	public function get_frontend_gateway_options() {
 		return array(
-			'accessToken' => $this->get_access_token(),
-			'apiVersion'  => GpApiConnector::GP_API_VERSION,
-			'env'         => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
+			'accessToken'           => $this->get_access_token(),
+			'apiVersion'            => GpApiConnector::GP_API_VERSION,
+			'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
 			'requireCardHolderName' => true,
 		);
 	}
