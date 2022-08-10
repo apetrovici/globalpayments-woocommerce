@@ -215,7 +215,7 @@ class GpApiGateway extends AbstractGateway {
 		$fields['card-holder-name-field'] = array(
 			'class'       => 'card-holder-name',
 			'label'       => esc_html__( 'Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
-			'placeholder' => esc_html__( 'Jane Smith (generic)', 'globalpayments-gateway-provider-for-woocommerce' ),
+			'placeholder' => esc_html__( 'Jane Smith', 'globalpayments-gateway-provider-for-woocommerce' ),
 			'messages'    => array(
 				'validation' => esc_html__( 'Please enter a valid Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
 			),
