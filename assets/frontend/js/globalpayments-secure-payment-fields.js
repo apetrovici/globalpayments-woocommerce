@@ -258,7 +258,7 @@
 			var self = this;
 
 			this.cardForm.frames["card-cvv"].getCvv().then( function ( c ) {
-				
+
 				/**
 				 * CVV; needed for TransIT gateway processing only
 				 *
