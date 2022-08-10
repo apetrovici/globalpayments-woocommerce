@@ -73,7 +73,11 @@ abstract class AbstractRequest implements RequestInterface {
 				'postalCode'     => $this->order->get_billing_postcode(),
 				'country'        => $this->order->get_billing_country(),
 			) : null,
-			RequestArg::CARD_HOLDER_NAME => $this->get_card_holder_name( $this->order->get_formatted_billing_full_name(), $this->data ),
+			RequestArg::CARD_HOLDER_NAME =>
+				$this->get_card_holder_name(
+					null !== $this->order ? $this->order->get_formatted_billing_full_name() : null,
+					$this->data
+				),
 		);
 	}
 
