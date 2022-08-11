@@ -54,12 +54,23 @@ abstract class AbstractRequest implements RequestInterface {
 	 * Retrieve Card Holder Name either from Hosted Fields or Billing Address.
 	 *
 	 * @param $customer_name
-	 * @param $card_data
 	 *
 	 * @return mixed
 	 */
-	private function get_card_holder_name( $customer_name, $card_data ) {
-		return $card_data->details->cardholderName ?? $customer_name;
+	private function get_card_holder_name( $customer_name ) {
+		try {
+			if ( is_array( $this->data ) && isset( $this->data['globalpayments_gpapi'] ) ) {
+
+				$data = str_replace('\\', '', $this->data['globalpayments_gpapi']['token_response']);
+				$data = json_decode( $data );
+
+				return $data->details->cardholderName;
+			}
+
+		} catch ( \Exception $e ) {
+			return $customer_name;
+		}
+		return $customer_name;
 	}
 
 	public function get_default_args() {
@@ -75,8 +86,7 @@ abstract class AbstractRequest implements RequestInterface {
 			) : null,
 			RequestArg::CARD_HOLDER_NAME =>
 				$this->get_card_holder_name(
-					null !== $this->order ? $this->order->get_formatted_billing_full_name() : null,
-					$this->data
+					null !== $this->order ? $this->order->get_formatted_billing_full_name() : null
 				),
 		);
 	}
@@ -113,4 +123,5 @@ abstract class AbstractRequest implements RequestInterface {
 			$this->data = $data;
 		}
 	}
+
 }
