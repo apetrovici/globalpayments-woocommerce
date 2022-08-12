@@ -58,19 +58,10 @@ abstract class AbstractRequest implements RequestInterface {
 	 * @return mixed
 	 */
 	private function get_card_holder_name( $customer_name ) {
-		try {
-			if ( is_array( $this->data ) && isset( $this->data[$this->gateway_id] ) ) {
-
-				$data = str_replace('\\', '', $this->data[$this->gateway_id]['token_response']);
-				$data = json_decode( $data );
-
-				return $data->details->cardholderName;
-			}
-
-		} catch ( \Exception $e ) {
-			return $customer_name;
+		if ( is_array( $this->data ) && isset( $this->data[$this->gateway_id] ) ) {
+			$data = json_decode( stripslashes( $this->data[$this->gateway_id]['token_response'] ) );
 		}
-		return $customer_name;
+		return $data->details->cardholderName ?? $customer_name;
 	}
 
 	public function get_default_args() {
