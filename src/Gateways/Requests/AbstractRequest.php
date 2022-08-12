@@ -59,9 +59,9 @@ abstract class AbstractRequest implements RequestInterface {
 	 */
 	private function get_card_holder_name( $customer_name ) {
 		try {
-			if ( is_array( $this->data ) && isset( $this->data['globalpayments_gpapi'] ) ) {
+			if ( is_array( $this->data ) && isset( $this->data[$this->gateway_id] ) ) {
 
-				$data = str_replace('\\', '', $this->data['globalpayments_gpapi']['token_response']);
+				$data = str_replace('\\', '', $this->data[$this->gateway_id]['token_response']);
 				$data = json_decode( $data );
 
 				return $data->details->cardholderName;
