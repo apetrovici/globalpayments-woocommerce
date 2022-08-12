@@ -223,7 +223,6 @@ class GpApiGateway extends AbstractGateway {
 		return $fields;
 	}
 
-
 	protected function add_hooks() {
 		parent::add_hooks();
 
