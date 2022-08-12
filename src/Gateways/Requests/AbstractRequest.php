@@ -114,5 +114,4 @@ abstract class AbstractRequest implements RequestInterface {
 			$this->data = $data;
 		}
 	}
-
 }

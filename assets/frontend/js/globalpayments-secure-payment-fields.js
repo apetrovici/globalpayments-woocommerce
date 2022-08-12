@@ -586,8 +586,8 @@
 			};
 			if ( this.fieldOptions.hasOwnProperty( 'card-holder-name-field' ) ) {
 				fields["card-holder-name"] = {
-						placeholder: this.fieldOptions['card-holder-name-field'].placeholder,
-						target: '#' + this.id + '-' + this.fieldOptions['card-holder-name-field'].class
+					placeholder: this.fieldOptions['card-holder-name-field'].placeholder,
+					target: '#' + this.id + '-' + this.fieldOptions['card-holder-name-field'].class
 				}
 			}
 			return fields;
