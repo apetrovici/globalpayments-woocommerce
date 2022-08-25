@@ -265,10 +265,10 @@ class GpApiGateway extends AbstractGateway {
 		if ( ! wc_string_to_bool( $settings['enabled'] ) ) {
 			return $settings;
 		}
-		if ( empty( $settings['merchant_contact_url'] ) || 50 < strlen( $settings['merchant_contact_url'] ) ) {
+		if ( empty( $settings['merchant_contact_url'] ) || 256 < strlen( $settings['merchant_contact_url'] ) ) {
 			add_action( 'admin_notices', function () {
 				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
-				     __( 'Please provide a Contact Url (maxLength: 50). Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
+				     __( 'Please provide a Contact Url (maxLength: 256). Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 			} );
 			$settings['enabled'] = 'no';
 		}
