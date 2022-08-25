@@ -7,6 +7,7 @@
     function GlobalPaymentsAdmin( globalpayments_admin_params ) {
         this.id = globalpayments_admin_params.gateway_id;
         this.toggleCredentialsSettings();
+        this.toggleValidations();
         this.attachEventHandlers();
     };
     GlobalPaymentsAdmin.prototype = {
@@ -17,6 +18,7 @@
          */
         attachEventHandlers: function () {
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
+            $( document ).on( 'change', this.getEnabledGatewaySelector(), this.toggleValidations.bind( this ) );
 
             // Admin Pay for Order
             $( '#customer_user' ).on( 'change', this.updatePaymentMethods );
@@ -82,6 +84,27 @@
         },
 
         /**
+         * Checks if gateway setting is enabled
+         *
+         * @returns {*|jQuery}
+         */
+        isEnabled: function() {
+            return $( this.getEnabledGatewaySelector() ).is( ':checked' );
+        },
+
+        /**
+         * Toggle validations when enabled gateway settings
+         */
+        toggleValidations: function () {
+            var button = $('.woocommerce-save-button');
+            if ( this.isEnabled() ) {
+                button.removeAttr( "formnovalidate" );
+            } else {
+                button.attr( "formnovalidate","");
+            }
+        },
+
+        /**
          * Toggle gateway credentials settings
          */
         toggleCredentialsSettings: function () {
@@ -109,7 +132,13 @@
                     'transaction_key',
                 ],
             };
+
+            if ( ! globalpayments_keys.hasOwnProperty( this.id ) ) {
+                return;
+            }
+
             var gateway_credentials = globalpayments_keys[ this.id ];
+
             if ( this.isLiveMode() ) {
                 gateway_credentials.forEach( function( key ) {
                     $( '#woocommerce_' + this.id + '_' + key ).parents( 'tr' ).eq( 0 ).show();
@@ -130,6 +159,15 @@
          */
         getLiveModeSelector: function () {
             return '#woocommerce_' + this.id + '_is_production';
+        },
+
+        /**
+         * Convenience function to get CSS selector for the "Enabled" setting
+         *
+         * @returns {string}
+         */
+        getEnabledGatewaySelector: function () {
+            return '#woocommerce_' + this.id + '_enabled';
         }
     };
     new GlobalPaymentsAdmin( globalpayments_admin_params );

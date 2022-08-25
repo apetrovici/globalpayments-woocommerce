@@ -749,6 +749,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			) );
 			add_filter( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 			add_action( 'woocommerce_new_order', array( $this, 'admin_add_order_note_after_order_created' ) );
+
 		}
 
 		if ( 'no' === $this->enabled ) {
@@ -773,6 +774,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'woocommerce_available_payment_gateways'
 			) );
 		}
+
+
 	}
 
 	/**
@@ -1263,23 +1266,22 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		if ( $this->id != $section ) {
 			return;
 		}
-		if ( ! $this->is_digital_wallet ) {
-			wp_enqueue_script(
-				'globalpayments-admin',
-				Plugin::get_url( '/assets/admin/js/globalpayments-admin.js' ),
-				array(),
-				WC()->version,
-				true
-			);
-			wp_localize_script(
-				'globalpayments-admin',
-				'globalpayments_admin_params',
-				array(
-					'gateway_id' => $section,
-				)
-			);
-		}
 
+		wp_enqueue_script(
+			'globalpayments-admin',
+			Plugin::get_url( '/assets/admin/js/globalpayments-admin.js' ),
+			array(),
+			WC()->version,
+			true
+		);
+		wp_localize_script(
+			'globalpayments-admin',
+			'globalpayments_admin_params',
+			array(
+				'gateway_id' => $section,
+			)
+		);
+		
 		if ( $this->is_digital_wallet ) {
 			wp_enqueue_style(
 				'globalpayments-admin',
