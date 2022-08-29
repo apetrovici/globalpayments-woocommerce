@@ -195,6 +195,7 @@ class GpApiGateway extends AbstractGateway {
 			'methodNotificationUrl'    => WC()->api_request_url( 'globalpayments_threedsecure_methodnotification' ),
 			'challengeNotificationUrl' => WC()->api_request_url( 'globalpayments_threedsecure_challengenotification' ),
 			'merchantContactUrl'       => $this->merchant_contact_url,
+			'txn_descriptor'           => $this->txn_descriptor,
 			'dynamicHeaders'           => [
 				'x-gp-platform'  => 'wordpress;version=' . $wp_version . ';woocommerce;version=' . WC()->version,
 				'x-gp-extension' => 'globalpayments-woocommerce;version=' . Plugin::VERSION,

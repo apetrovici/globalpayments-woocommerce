@@ -232,6 +232,10 @@ class SdkClient implements ClientInterface {
 			$this->builder_args['description'] = array( $this->get_arg( RequestArg::DESCRIPTION ) );
 		}
 
+		if ( $this->has_arg( RequestArg::DYNAMIC_DESCRIPTOR ) ) {
+			$this->builder_args['dynamicDescriptor'] = array( $this->get_arg( RequestArg::DYNAMIC_DESCRIPTOR ) );
+		}
+
 		if ( $this->has_arg( RequestArg::AUTH_AMOUNT ) ) {
 			$this->builder_args['authAmount'] = array( $this->get_arg( RequestArg::AUTH_AMOUNT ) );
 		}
