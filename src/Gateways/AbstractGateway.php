@@ -773,8 +773,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'woocommerce_available_payment_gateways'
 			) );
 		}
-
-
 	}
 
 	/**
