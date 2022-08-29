@@ -1278,7 +1278,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'gateway_id' => $section,
 			)
 		);
-		
+
 		if ( $this->is_digital_wallet ) {
 			wp_enqueue_style(
 				'globalpayments-admin',

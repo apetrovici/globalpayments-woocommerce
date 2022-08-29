@@ -369,13 +369,7 @@ class SdkClient implements ClientInterface {
 			$this->args[ RequestArg::SERVICES_CONFIG ]
 		);
 		if ( $this->get_arg( RequestArg::SERVICES_CONFIG )['debug'] ) {
-			$gatewayConfig->requestLogger = new SampleRequestLogger( new Logger(
-				WC_LOG_DIR,
-				LogLevel::DEBUG,
-				[ 'prefix'    => 'globalpayments-woocommerce.' . $this->get_arg( RequestArg::SERVICES_CONFIG )['gatewayProvider'] . '-',
-				  'extension' => 'log',
-				]
-			) );
+			$gatewayConfig->requestLogger = new SampleRequestLogger( new Logger(WC_LOG_DIR ) );
 		}
 
 		ServicesContainer::configureService( $config );
