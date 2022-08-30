@@ -211,10 +211,10 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	/**
 	 * Builds payment fields area - including environment indicator
 	 */
-	public function payment_fields() {
-		$this->environment_indicator();
-		parent::payment_fields();
-	}
+//	public function payment_fields() {
+//		$this->environment_indicator();
+//		parent::payment_fields();
+//	}
 
 	/**
 	 * Adds environment indicator in sandbox/test mode.
@@ -335,7 +335,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		// Global Payments scripts for handling client-side tokenization
 		wp_enqueue_script(
 			'globalpayments-secure-payment-fields-lib',
-			'https://js.globalpay.com/v1/globalpayments'
+//			'https://js.globalpay.com/v1/globalpayments'
+			'https://js-qa.np-hpp.globalpay.com/v1/globalpayments'
 			. ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' ) . '.js',
 			array(),
 			WC()->version,

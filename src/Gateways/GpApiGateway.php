@@ -177,8 +177,10 @@ class GpApiGateway extends AbstractGateway {
 		return array(
 			'accessToken'           => $this->get_access_token(),
 			'apiVersion'            => GpApiConnector::GP_API_VERSION,
-			'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
+//			'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
+			'env'                   => 'qa',
 			'requireCardHolderName' => true,
+			'enableCardFingerPrinting' => true,
 		);
 	}
 
@@ -210,17 +212,37 @@ class GpApiGateway extends AbstractGateway {
 		return $response->token;
 	}
 
+	/**
+	 * The HTML template string for a secure payment field
+	 *
+	 * Format directives:
+	 *
+	 * 1) Gateway ID
+	 * 2) Field CSS class
+	 * 3) Field label
+	 * 4) Field validation message
+	 *
+	 * @return string
+	 */
+	protected function secure_payment_field_html_format() {
+		return (
+		'<div class="form-row form-row-wide globalpayments %1$s %2$s">
+				<div id="%1$s-%2$s"></div>
+			</div>'
+		);
+	}
+
 	protected function secure_payment_fields() {
-		$fields = parent::secure_payment_fields();
-		$fields['card-holder-name-field'] = array(
-			'class'       => 'card-holder-name',
-			'label'       => esc_html__( 'Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
-			'placeholder' => esc_html__( 'Jane Smith', 'globalpayments-gateway-provider-for-woocommerce' ),
-			'messages'    => array(
-				'validation' => esc_html__( 'Please enter a valid Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
+		return array(
+			'credit-card' => array(
+				'class'       => 'credit-card',
+				'label'       => '',
+				'placeholder' => '',
+				'messages'    => array(
+					'validation' => '',
+				),
 			),
 		);
-		return $fields;
 	}
 
 	protected function add_hooks() {

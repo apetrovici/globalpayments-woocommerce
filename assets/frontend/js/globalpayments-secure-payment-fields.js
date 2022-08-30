@@ -199,9 +199,9 @@
 		 * @returns
 		 */
 		renderPaymentFields: function () {
-			if ( $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
-				return;
-			}
+			// if ( $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
+			// 	return;
+			// }
 			if ( ! GlobalPayments.configure ) {
 				console.log( 'Warning! Payment fields cannot be loaded' );
 				return;
@@ -218,12 +218,13 @@
 			}
 
 			GlobalPayments.configure( gatewayConfig );
-			this.cardForm = GlobalPayments.ui.form(
-				{
-					fields: this.getFieldConfiguration(),
-					styles: this.getStyleConfiguration()
-				}
-			);
+			this.cardForm = GlobalPayments.creditCard.form( '#' + this.id + '-credit-card', { style: 'gp-default' } );
+			// this.cardForm = GlobalPayments.ui.form(
+			// 	{
+			// 		fields: this.getFieldConfiguration(),
+			// 		styles: this.getStyleConfiguration()
+			// 	}
+			// );
 			this.cardForm.on( 'submit', 'click', helper.blockOnSubmit.bind( this ) );
 			this.cardForm.on( 'token-success', this.handleResponse.bind( this ) );
 			this.cardForm.on( 'token-error', this.handleErrors.bind( this ) );
@@ -249,6 +250,7 @@
 		 * @returns
 		 */
 		handleResponse: function ( response ) {
+			console.log('>>> library response = ', response);
 			if ( ! this.validateTokenResponse( response ) ) {
 				return;
 			}
@@ -472,6 +474,7 @@
 		 * @returns
 		 */
 		handleErrors: function ( error ) {
+			console.log('>>> library error = ', error);
 			this.resetValidationErrors();
 			console.error(error);
 			if ( ! error.reasons ) {

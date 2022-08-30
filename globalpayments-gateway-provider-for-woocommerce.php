@@ -6,7 +6,7 @@
  * Version: 1.4.0
  * Requires PHP: 7.1
  * WC tested up to: 6.6.0
- * Author: Global Payments
+ * Author: JS LIB Global Payments
 */
 
 defined( 'ABSPATH' ) || exit;
