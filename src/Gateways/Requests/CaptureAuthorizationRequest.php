@@ -16,7 +16,7 @@ class CaptureAuthorizationRequest extends AbstractRequest {
 		$gateway_id    = $this->order->get_transaction_id();
 
 		return array(
-			RequestArg::GATEWAY_ID  => $gateway_id,
+			RequestArg::GATEWAY_ID  => $gateway_id
 		);
 	}
 }
