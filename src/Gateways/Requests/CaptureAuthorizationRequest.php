@@ -17,7 +17,6 @@ class CaptureAuthorizationRequest extends AbstractRequest {
 
 		return array(
 			RequestArg::GATEWAY_ID  => $gateway_id,
-			RequestArg::DYNAMIC_DESCRIPTOR => $this->config['txn_descriptor'],
 		);
 	}
 }
