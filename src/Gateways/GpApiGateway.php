@@ -157,7 +157,10 @@ class GpApiGateway extends AbstractGateway {
 				'desc_tip'          => true,
 				'description'       => __( 'A link to an About or Contact page on your website with customer care information (maxLength: 50).', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'default'           => '',
-				'custom_attributes' => array( 'required' => 'required' ),
+				'custom_attributes' => array(
+					'required' => 'required',
+					'maxlength' => '256'
+				),
 			),
 		);
 	}
@@ -265,13 +268,6 @@ class GpApiGateway extends AbstractGateway {
 	public function woocommerce_globalpayments_gpapi_settings( $settings ) {
 		if ( ! wc_string_to_bool( $settings['enabled'] ) ) {
 			return $settings;
-		}
-		if ( empty( $settings['merchant_contact_url'] ) || 256 < strlen( $settings['merchant_contact_url'] ) ) {
-			add_action( 'admin_notices', function () {
-				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
-				     __( 'Please provide a Contact Url (maxLength: 256). Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
-			} );
-			$settings['enabled'] = 'no';
 		}
 		if ( wc_string_to_bool( $settings['is_production'] ) ) {
 			if ( empty( $settings['app_id'] ) || empty( $settings['app_key'] ) ) {
