@@ -275,7 +275,6 @@ class GpApiGateway extends AbstractGateway {
 					echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
 					     __( 'Please provide Live Credentials. Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 				} );
-				$settings['enabled'] = 'no';
 			}
 
 			return $settings;
@@ -285,7 +284,6 @@ class GpApiGateway extends AbstractGateway {
 				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
 				     __( 'Please provide Sandbox Credentials. Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 			} );
-			$settings['enabled'] = 'no';
 		}
 
 		return $settings;
