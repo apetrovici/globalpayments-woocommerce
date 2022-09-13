@@ -24,7 +24,7 @@ class AuthorizationRequest extends AbstractRequest {
 			RequestArg::CARD_DATA          => $token,
 			RequestArg::SERVER_TRANS_ID    => $this->data[ $this->gateway_id ]['serverTransId'] ?? null,
 			RequestArg::PARES              => ! empty( $this->data[ $this->gateway_id ]['PaRes'] ) ? $this->data[ $this->gateway_id ]['PaRes'] : null,
-			RequestArg::DYNAMIC_DESCRIPTOR => $this->config['txn_descriptor'],
+			RequestArg::DYNAMIC_DESCRIPTOR => $this->data[ 'dynamic_descriptor' ],
 		);
 
 		if ( isset ( $this->data['entry_mode'] ) ) {

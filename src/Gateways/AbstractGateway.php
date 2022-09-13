@@ -104,6 +104,13 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public $txn_descriptor;
 
 	/**
+	 * Transaction descriptor length
+	 *
+	 * @var int
+	 */
+	public $txn_descriptor_length = 18;
+
+	/**
 	 * Control of WooCommerce's card storage (tokenization) support
 	 *
 	 * @var bool
@@ -446,7 +453,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 					'default'           => '',
 					'class'             => 'txn_descriptor',
 					'custom_attributes' => array(
-						'maxlength' => 18,
+						'maxlength' => $this->txn_descriptor_length,
 					),
 				),
 				'check_avs_cvv'         => array(
@@ -813,6 +820,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public function process_payment( $order_id ) {
 		$order         = new WC_Order( $order_id );
 		$request       = $this->prepare_request( $this->payment_action, $order );
+
+		$request->set_request_data( array(
+			'dynamic_descriptor' => $this->txn_descriptor,
+		));
+
 		$response      = $this->submit_request( $request );
 		$is_successful = $this->handle_response( $request, $response );
 
