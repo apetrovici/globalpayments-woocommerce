@@ -107,6 +107,32 @@ class GooglePayGateway extends AbstractGateway {
 		return $this->gateway->get_backend_gateway_options();
 	}
 
+
+	protected function add_hooks() {
+		parent::add_hooks();
+
+		add_filter( 'pre_update_option_woocommerce_globalpayments_googlepay_settings', array(
+			$this,
+			'woocommerce_globalpayments_googlepay_settings'
+		) );
+	}
+
+	public function woocommerce_globalpayments_googlepay_settings( $settings ) {
+		if ( ! wc_string_to_bool( $settings['enabled'] ) ) {
+			return $settings;
+		}
+
+		if ( empty( $settings['cc_types']  ) ) {
+			add_action( 'admin_notices', function () {
+				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
+				     __( 'Please provide at least one credit card types.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
+			} );
+			$settings['enabled'] = false;
+		}
+
+		return $settings;
+	}
+
 	public function get_gateway_form_fields() {
 		return array(
 			'global_payments_merchant_id' => array(
@@ -137,7 +163,8 @@ class GooglePayGateway extends AbstractGateway {
 					'DISCOVER'   => 'Discover',
 					'JCB'        => 'JCB',
 				),
-				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' , 'JCB' )
+				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' , 'JCB' ),
+				'custom_attributes' => array( 'required' => 'required' ),
 			),
 			'button_color'                => array(
 				'title'   => __( 'Button Color', 'globalpayments-gateway-provider-for-woocommerce' ),
