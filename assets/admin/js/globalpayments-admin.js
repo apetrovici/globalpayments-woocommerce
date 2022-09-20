@@ -8,7 +8,6 @@
         this.id = globalpayments_admin_params.gateway_id;
         this.toggleCredentialsSettings();
         this.toggleValidations();
-        this.toggleRequiredSettings();
         this.attachEventHandlers();
     };
     GlobalPaymentsAdmin.prototype = {
@@ -109,7 +108,7 @@
          * Toggle required settings
          */
         toggleRequiredSettings: function () {
-            var enabled = this.isLiveMode();
+            var enabled = this.isEnabled();
             var list =  $('.required');
             list.each(function(){
                 if ($(this).is(':visible')) {
