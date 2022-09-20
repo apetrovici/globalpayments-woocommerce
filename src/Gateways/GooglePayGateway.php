@@ -154,7 +154,7 @@ class GooglePayGateway extends AbstractGateway {
 			'cc_types'                    => array(
 				'title'   => __( 'Accepted Cards*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'multiselectcheckbox',
-				'class'   => 'accepted_cards',
+				'class'   => 'accepted_cards required-check',
 				'css'     => 'width: 450px; height: 110px',
 				'options' => array(
 					'VISA'       => 'Visa',
@@ -164,7 +164,6 @@ class GooglePayGateway extends AbstractGateway {
 					'JCB'        => 'JCB',
 				),
 				'default'	=> array( 'VISA' , 'MASTERCARD' , 'AMEX' , 'DISCOVER' , 'JCB' ),
-				'custom_attributes' => array( 'required' => 'required' ),
 			),
 			'button_color'                => array(
 				'title'   => __( 'Button Color', 'globalpayments-gateway-provider-for-woocommerce' ),

@@ -9,6 +9,7 @@
         this.toggleCredentialsSettings();
         this.toggleValidations();
         this.attachEventHandlers();
+        this.validate_cc_types();
     };
     GlobalPaymentsAdmin.prototype = {
         /**
@@ -93,9 +94,40 @@
         },
 
         /**
+         * Checks if cc_types at least one selected
+         */
+        validate_cc_types: function () {
+            if ( 'globalpayments_googlepay' != this.id) {
+                return;
+            }
+            var cc_type_error_msg = $( '#cc_type_error_msg' );
+
+            cc_type_error_msg.css( 'display',  "none" );
+
+            if ( this.isEnabled() ) {
+                var showErrorMsg = true;
+                var checksitems = $( '.accepted_cards.required-check' );
+                if ( checksitems && checksitems.length > 0 ) {
+                    checksitems.each( function() {
+                        if ( $(this).is(':checked') ){
+                            showErrorMsg = false;
+                        }
+                    } );
+                } else {
+                    showErrorMsg = false;
+                }
+                if( showErrorMsg ){
+                    cc_type_error_msg.css( 'display',  "block" );
+                }
+            }
+        },
+
+        /**
          * Toggle validations when enabled gateway settings
          */
         toggleValidations: function () {
+            this.validate_cc_types();
+
             var button = $('.woocommerce-save-button');
             if ( this.isEnabled() ) {
                 button.removeAttr( "formnovalidate" );
