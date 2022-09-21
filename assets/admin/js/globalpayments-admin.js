@@ -20,7 +20,8 @@
         attachEventHandlers: function () {
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
             $( document ).on( 'change', this.getEnabledGatewaySelector(), this.toggleValidations.bind( this ) );
-
+            $( document ).on( 'change', $( '.accepted_cards.required-check' ), this.validate_cc_types.bind( this ) );
+            
             // Admin Pay for Order
             $( '#customer_user' ).on( 'change', this.updatePaymentMethods );
             $( '.wc-globalpayments-pay-order' ).on( 'click', this.payForOrder );
