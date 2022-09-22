@@ -141,11 +141,10 @@
          * Toggle required settings
          */
         toggleRequiredSettings: function () {
-            var enabled = this.isEnabled();
             var list =  $('.required');
             list.each(function(){
                 if ($(this).is(':visible')) {
-                    $(this).prop('required', enabled);
+                    $(this).prop('required', true);
                 } else {
                     $(this).prop('required', false);
                 }
@@ -156,48 +155,11 @@
          * Toggle gateway credentials settings
          */
         toggleCredentialsSettings: function () {
-            var globalpayments_keys = {
-                globalpayments_gpapi: [
-                  'app_id',
-                  'app_key',
-                ],
-                globalpayments_heartland: [
-                    'public_key',
-                    'secret_key',
-                ],
-                globalpayments_genius: [
-                    'merchant_name',
-                    'merchant_site_id',
-                    'merchant_key',
-                    'web_api_key',
-                ],
-                globalpayments_transit: [
-                    'merchant_id',
-                    'user_id',
-                    'password',
-                    'device_id',
-                    'tsep_device_id',
-                    'transaction_key',
-                ],
-            };
+            var display = this.isLiveMode();
 
-            if ( ! globalpayments_keys.hasOwnProperty( this.id ) ) {
-                return;
-            }
+            $('.live-toggle').parents('tr').toggle(display);
+            $('.sandbox-toggle').parents('tr').toggle(!display);
 
-            var gateway_credentials = globalpayments_keys[ this.id ];
-
-            if ( this.isLiveMode() ) {
-                gateway_credentials.forEach( function( key ) {
-                    $( '#woocommerce_' + this.id + '_' + key ).parents( 'tr' ).eq( 0 ).show();
-                    $( '#woocommerce_' + this.id + '_sandbox_' + key ).parents( 'tr' ).eq( 0 ).hide();
-                }, this );
-            } else {
-                gateway_credentials.forEach(function(key) {
-                    $( '#woocommerce_' + this.id + '_' + key ).parents( 'tr' ).eq( 0 ).hide();
-                    $( '#woocommerce_' + this.id + '_sandbox_' + key ).parents( 'tr' ).eq( 0 ).show();
-                }, this );
-            }
             this.toggleRequiredSettings();
         },
 

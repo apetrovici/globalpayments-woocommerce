@@ -120,7 +120,7 @@ class GpApiGateway extends AbstractGateway {
 			'app_id'               => array(
 				'title' => __( 'Live App Id*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'  => 'text',
-				'class' => 'required',
+				'class' => 'required live-toggle',
 				'custom_attributes' => array(
 					'required' => 'required'
 				),
@@ -128,7 +128,7 @@ class GpApiGateway extends AbstractGateway {
 			'app_key'              => array(
 				'title' => __( 'Live App Key*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'  => 'password',
-				'class' => 'required',
+				'class' => 'required live-toggle',
 				'custom_attributes' => array(
 					'required' => 'required'
 				),
@@ -137,7 +137,7 @@ class GpApiGateway extends AbstractGateway {
 				'title'   => __( 'Sandbox App Id*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'text',
 				'default' => '',
-				'class' => 'required',
+				'class' => 'required sandbox-toggle',
 				'custom_attributes' => array(
 					'required' => 'required'
 				),
@@ -146,7 +146,7 @@ class GpApiGateway extends AbstractGateway {
 				'title'   => __( 'Sandbox App Key*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'password',
 				'default' => '',
-				'class' => 'required',
+				'class' => 'required sandbox-toggle',
 				'custom_attributes' => array(
 					'required' => 'required'
 				),
