@@ -326,7 +326,6 @@ class SdkClient implements ClientInterface {
 		try {
 			$threeDSecureData = Secure3dService::getAuthenticationData()
 			                                   ->withServerTransactionId( $this->get_arg( RequestArg::SERVER_TRANS_ID ) )
-			                                   ->withPayerAuthenticationResponse( $this->get_arg( RequestArg::PARES ) )
 			                                   ->execute();
 		} catch ( \Exception $e ) {
 			throw new ApiException( __( '3DS Authentication failed. Please try again.' ) );

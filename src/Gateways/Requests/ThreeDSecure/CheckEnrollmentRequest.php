@@ -42,21 +42,11 @@ class CheckEnrollmentRequest extends AbstractAuthenticationsRequest {
 				wp_send_json( $response );
 			}
 
-			if ( Secure3dVersion::TWO === $threeDSecureData->getVersion() ) {
-				$response['methodUrl']   = $threeDSecureData->issuerAcsUrl;
-				$response['methodData']  = $threeDSecureData->payerAuthenticationRequest;
-				$response['messageType'] = $threeDSecureData->messageType;
+			$response['methodUrl']   = $threeDSecureData->issuerAcsUrl;
+			$response['methodData']  = $threeDSecureData->payerAuthenticationRequest;
+			$response['messageType'] = $threeDSecureData->messageType;
 
-				wp_send_json($response);
-			}
-
-			if ( Secure3dVersion::ONE === $threeDSecureData->getVersion() ) {
-				$response['TermUrl']                              = $threeDSecureData->challengeReturnUrl;
-				$response['challengeMandated']                    = $threeDSecureData->challengeMandated;
-				$response['challenge']['requestUrl']              = $threeDSecureData->issuerAcsUrl;
-				$response['challenge']['encodedChallengeRequest'] = $threeDSecureData->payerAuthenticationRequest;
-				$response['challenge']['messageType']             = $threeDSecureData->messageType;
-			}
+			wp_send_json($response);
 		} catch (\Exception $e) {
 			$response = [
 				'error'    => true,
