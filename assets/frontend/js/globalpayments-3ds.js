@@ -779,10 +779,10 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
     // Source: https://developer.mozilla.org/en-US/docs/Web/API/ParentNode/prepend
     (function (arr) {
         arr.forEach(function (item) {
-            if (item.hasOwnProperty('prepend')) {
+            if (item.hasOwnProperty("prepend")) {
                 return;
             }
-            Object.defineProperty(item, 'prepend', {
+            Object.defineProperty(item, "prepend", {
                 configurable: true,
                 enumerable: true,
                 writable: true,
@@ -794,7 +794,7 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
                         docFrag.appendChild(isNode ? argItem : document.createTextNode(String(argItem)));
                     });
                     this.insertBefore(docFrag, this.firstChild);
-                }
+                },
             });
         });
     })([Element.prototype, Document.prototype, DocumentFragment.prototype]);
@@ -1374,9 +1374,7 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
     var isMobileNewTab = !isWindowsMobileOs && (isAndroidOrIOs || isMobileXS);
     // Display IFrame on WIndows Phone OS mobile devices
     var isMobileIFrame = isWindowsMobileOs || isMobileNewTab;
-    var randomId = Math.random()
-        .toString(16)
-        .substr(2, 8);
+    var randomId = Math.random().toString(16).substr(2, 8);
     function createLightbox(iFrame, options) {
         // Create the overlay
         var overlayElement = createOverlay();
@@ -1423,8 +1421,8 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
         iFrame.onload = getIFrameOnloadEventHandler(iFrame, spinner, overlayElement, options);
     }
     function closeModal() {
-        Array.prototype.slice.call(document
-            .querySelectorAll("[target$=\"-" + randomId + "\"],[id$=\"-" + randomId + "\"]"))
+        Array.prototype.slice
+            .call(document.querySelectorAll("[target$=\"-" + randomId + "\"],[id$=\"-" + randomId + "\"]"))
             .forEach(function (element) {
             if (element.parentNode) {
                 element.parentNode.removeChild(element);
@@ -1581,8 +1579,8 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
             clearTimeout(timeout);
         }
         try {
-            Array.prototype.slice.call(document
-                .querySelectorAll("[target$=\"-" + randomId + "\"],[id$=\"-" + randomId + "\"]"))
+            Array.prototype.slice
+                .call(document.querySelectorAll("[target$=\"-" + randomId + "\"],[id$=\"-" + randomId + "\"]"))
                 .forEach(function (element) {
                 if (element.parentNode) {
                     element.parentNode.removeChild(element);
@@ -1768,7 +1766,8 @@ this.GlobalPayments.ThreeDSecure = (function (exports) {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (!(data.challengeMandated || data.status === exports.TransactionStatus.ChallengeRequired)) return [3 /*break*/, 2];
+                        if (!(data.challengeMandated ||
+                            data.status === exports.TransactionStatus.ChallengeRequired)) return [3 /*break*/, 2];
                         data.challenge = data.challenge || {};
                         if (!data.challenge.requestUrl) {
                             throw new Error("Invalid challenge state. Missing challenge URL");
