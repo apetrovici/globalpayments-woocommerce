@@ -50,7 +50,7 @@ class CheckEnrollmentRequest extends AbstractAuthenticationsRequest {
 				wp_send_json( $response );
 			}
 
-			if (Secure3dVersion::ONE === $threeDSecureData->getVersion()) {
+			if ( Secure3dVersion::ONE === $threeDSecureData->getVersion() ) {
 				throw new \Exception( 'Please try again with another card.' );
 			}
 		}
