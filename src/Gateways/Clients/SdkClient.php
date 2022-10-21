@@ -100,7 +100,7 @@ class SdkClient implements ClientInterface {
 		$this->configure_sdk();
 		$builder = $this->get_transaction_builder();
 		if ( ! isset( $builder ) ) {
-			throw new \Exception( __( 'Unable to perform request.' ) );
+			throw new \Exception( __( 'Unable to perform request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		if ( 'transactionDetail' === $this->args['TXN_TYPE'] ) {
 			return $builder->execute();
@@ -329,11 +329,11 @@ class SdkClient implements ClientInterface {
 			                                   ->withServerTransactionId( $this->get_arg( RequestArg::SERVER_TRANS_ID ) )
 			                                   ->execute();
 		} catch ( \Exception $e ) {
-			throw new ApiException( __( '3DS Authentication failed. Please try again.' ) );
+			throw new ApiException( __( '3DS Authentication failed. Please try again.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		if ( AbstractAuthenticationsRequest::YES !== $threeDSecureData->liabilityShift
 		     || ! in_array( $threeDSecureData->status, $this->three_d_secure_auth_status ) ) {
-			throw new ApiException( __( '3DS Authentication failed. Please try again.' ) );
+			throw new ApiException( __( '3DS Authentication failed. Please try again.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		$this->card_data->threeDSecure = $threeDSecureData;
 	}
