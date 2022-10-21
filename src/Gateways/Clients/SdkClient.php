@@ -4,6 +4,7 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Clients;
 
 use GlobalPayments\Api\Builders\TransactionBuilder;
 use GlobalPayments\Api\Entities\Address;
+use GlobalPayments\Api\Entities\Enums\Secure3dStatus;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
 use GlobalPayments\Api\Entities\Transaction;
 use GlobalPayments\Api\Entities\Enums\AddressType;
@@ -69,9 +70,9 @@ class SdkClient implements ClientInterface {
 	);
 
 	protected $three_d_secure_auth_status = array(
-		AbstractAuthenticationsRequest::AUTH_STATUS_NOT_ENROLLED,
-		AbstractAuthenticationsRequest::AUTH_STATUS_SUCCESS_AUTHENTICATED,
-		AbstractAuthenticationsRequest::AUTH_STATUS_SUCCESS_ATTEMPT_MADE,
+		Secure3dStatus::NOT_ENROLLED,
+		Secure3dStatus::SUCCESS_AUTHENTICATED,
+		Secure3dStatus::SUCCESS_ATTEMPT_MADE,
 	);
 
 	/**
