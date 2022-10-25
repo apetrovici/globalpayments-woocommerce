@@ -84,6 +84,11 @@ class GpApiGateway extends AbstractGateway {
 	 */
 	public $debug;
 
+	public function __construct( $is_provider = false ) {
+		parent::__construct( $is_provider );
+		array_push( $this->supports, 'globalpayments_hosted_fields', 'globalpayments_three_d_secure' );
+	}
+
 	public function configure_method_settings() {
 		$this->id                 = self::GATEWAY_ID;
 		$this->method_title       = __( 'Unified Payments', 'globalpayments-gateway-provider-for-woocommerce' );
