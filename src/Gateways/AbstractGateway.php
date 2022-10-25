@@ -327,7 +327,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		);
 
 		$secure_payment_fields_deps = array( 'globalpayments-secure-payment-fields-lib' );
-		if ( $this->supports( 'globalpayments_three_d_secure' ) && ( is_checkout() || is_checkout_pay_page() ) ) {
+		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout_pay_page() ) {
 			wp_enqueue_script(
 				'globalpayments-threedsecure-lib',
 				Plugin::get_url( '/assets/frontend/js/globalpayments-3ds' )
@@ -335,19 +335,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				array( 'globalpayments-secure-payment-fields-lib' ),
 				WC()->version,
 				true
-			);
-			wp_localize_script(
-				'globalpayments-secure-payment-fields',
-				'globalpayments_secure_payment_threedsecure_params',
-				array(
-					'threedsecure' => array(
-						'methodNotificationUrl'     => WC()->api_request_url( 'globalpayments_threedsecure_methodnotification' ),
-						'challengeNotificationUrl'  => WC()->api_request_url( 'globalpayments_threedsecure_challengenotification' ),
-						'checkEnrollmentUrl'        => WC()->api_request_url( 'globalpayments_threedsecure_checkenrollment' ),
-						'initiateAuthenticationUrl' => WC()->api_request_url( 'globalpayments_threedsecure_initiateauthentication' ),
-						'ajaxCheckoutUrl'           => \WC_AJAX::get_endpoint( 'checkout' ),
-					)
-				)
 			);
 			array_push( $secure_payment_fields_deps, 'globalpayments-threedsecure-lib' );
 		}
@@ -373,6 +360,21 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'field_styles'    => $this->secure_payment_fields_styles(),
 			)
 		);
+		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout_pay_page() ) {
+			wp_localize_script(
+				'globalpayments-secure-payment-fields',
+				'globalpayments_secure_payment_threedsecure_params',
+				array(
+					'threedsecure' => array(
+						'methodNotificationUrl'     => WC()->api_request_url( 'globalpayments_threedsecure_methodnotification' ),
+						'challengeNotificationUrl'  => WC()->api_request_url( 'globalpayments_threedsecure_challengenotification' ),
+						'checkEnrollmentUrl'        => WC()->api_request_url( 'globalpayments_threedsecure_checkenrollment' ),
+						'initiateAuthenticationUrl' => WC()->api_request_url( 'globalpayments_threedsecure_initiateauthentication' ),
+						'ajaxCheckoutUrl'           => \WC_AJAX::get_endpoint( 'checkout' ),
+					)
+				)
+			);
+		}
 	}
 
 	public function helper_script() {
