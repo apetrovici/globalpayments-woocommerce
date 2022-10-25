@@ -392,7 +392,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			array(
 				'orderInfoUrl' => WC()->api_request_url( 'globalpayments_order_info' ),
 				'order'        => array(
-					'amount'   => $this->get_session_amount(),
+					'id'       => absint( get_query_var( 'order-pay' ) ),
+					'amount'   => wc_format_decimal( $this->get_order_total(), 2 ),
 					'currency' => get_woocommerce_currency(),
 				)
 			)
@@ -823,7 +824,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @throws ApiException
 	 */
 	public function process_payment( $order_id ) {
-		$order         = new WC_Order( $order_id );
+		$order         = wc_get_order( $order_id );
 		$request       = $this->prepare_request( $this->payment_action, $order );
 		$response      = $this->submit_request( $request );
 		$is_successful = $this->handle_response( $request, $response );
@@ -889,7 +890,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		$is_order_txn_id_active = $this->is_transaction_active( $details );
 		$txn_type               = $is_order_txn_id_active ? self::TXN_TYPE_REVERSAL : self::TXN_TYPE_REFUND;
 
-		$order        = new WC_Order( $order_id );
+		$order        = wc_get_order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
 
 		if ( null != $amount ) {
@@ -982,7 +983,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @throws Exception
 	 */
 	public function get_transaction_details( $order_id ) {
-		$order    = new WC_Order( $order_id );
+		$order    = wc_get_order( $order_id );
 		$request  = $this->prepare_request( self::TXN_TYPE_REPORT_TXN_DETAILS, $order );
 		$response = $this->submit_request( $request );
 
@@ -1154,29 +1155,13 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		}
 
 		$response = new \stdClass();
-		$response->amount = $this->get_session_amount();
+		$response->amount   = wc_format_decimal( $this->get_order_total(), 2 );
 		$response->currency = get_woocommerce_currency();
 
 		wp_send_json( [
 			'error'   => false,
 			'message' => $response,
 		] );
-	}
-
-	public function get_session_amount() {
-		if ( is_admin() ) {
-			return null;
-		}
-		if ( is_checkout_pay_page() ) {
-			$order = wc_get_order( get_query_var( 'order-pay' ) );
-
-			return round( $order->get_total(), 2 );
-		}
-		if ( is_checkout() ) {
-			$cart_totals = WC()->session->get( 'cart_totals' );
-
-			return round( $cart_totals['total'], 2 );
-		}
 	}
 
 	/**
