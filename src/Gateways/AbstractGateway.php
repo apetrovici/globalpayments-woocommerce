@@ -327,7 +327,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		);
 
 		$secure_payment_fields_deps = array( 'globalpayments-secure-payment-fields-lib' );
-		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout_pay_page() ) {
+		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout() ) {
 			wp_enqueue_script(
 				'globalpayments-threedsecure-lib',
 				Plugin::get_url( '/assets/frontend/js/globalpayments-3ds' )
@@ -360,7 +360,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'field_styles'    => $this->secure_payment_fields_styles(),
 			)
 		);
-		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout_pay_page() ) {
+		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout() ) {
 			wp_localize_script(
 				'globalpayments-secure-payment-fields',
 				'globalpayments_secure_payment_threedsecure_params',
