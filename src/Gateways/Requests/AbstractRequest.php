@@ -48,6 +48,13 @@ abstract class AbstractRequest implements RequestInterface {
 		$this->config     = $config;
 
 		$this->data = $this->get_request_data();
+
+		if ( empty( $this->order ) && ! empty( $this->data->order->id ) ) {
+			$order = wc_get_order( $this->data->order->id );
+			if ( ! empty( $order ) ) {
+				$this->order = $order;
+			}
+		}
 	}
 
 	/**
@@ -94,12 +101,12 @@ abstract class AbstractRequest implements RequestInterface {
 			// phpcs:ignore WordPress.Security.NonceVerification
 			return wc_clean( $_POST );
 		}
-
-		if ( ! isset( $this->data[ $key ] ) ) {
-			return null;
+		if ( is_array( $this->data ) && isset( $this->data[ $key ] ) ) {
+			return wc_clean( $this->data[ $key ] );
 		}
-
-		return wc_clean( $this->data[ $key ] );
+		if ( is_object( $this->data ) && isset( $this->data->{$key} ) ) {
+			return wc_clean( $this->data->{$key} );
+		}
 	}
 
 	/**

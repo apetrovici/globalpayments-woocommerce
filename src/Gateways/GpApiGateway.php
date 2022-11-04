@@ -231,7 +231,7 @@ class GpApiGateway extends AbstractGateway {
 	protected function add_hooks() {
 		parent::add_hooks();
 
-		if ( is_admin() ) {
+		if ( is_admin() && current_user_can( 'edit_shop_orders' ) ) {
 			// Admin Pay for Order hooks
 			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'pay_order_modal' ), 99 );
 			add_filter( 'globalpayments_secure_payment_fields_styles', array( $this, 'pay_order_modal_secure_payment_fields_styles' ) );

@@ -340,8 +340,12 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		}
 
 		$this->helper_script();
+		array_push( $secure_payment_fields_deps, 'globalpayments-helper' );
 
-		array_push( $secure_payment_fields_deps, 'globalpayments-helper', 'wc-checkout' );
+		if ( is_checkout() ) {
+			array_push( $secure_payment_fields_deps, 'wc-checkout' );
+		}
+
 		wp_enqueue_script(
 			'globalpayments-secure-payment-fields',
 			Plugin::get_url( '/assets/frontend/js/globalpayments-secure-payment-fields.js' ),
@@ -391,11 +395,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'globalpayments_helper_params',
 			array(
 				'orderInfoUrl' => WC()->api_request_url( 'globalpayments_order_info' ),
-				'order'        => array(
-					'id'       => absint( get_query_var( 'order-pay' ) ),
-					'amount'   => wc_format_decimal( $this->get_order_total(), 2 ),
-					'currency' => get_woocommerce_currency(),
-				)
+				'order'        => $this->get_order_data(),
 			)
 		);
 	}
@@ -1154,14 +1154,18 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			return;
 		}
 
-		$response = new \stdClass();
-		$response->amount   = wc_format_decimal( $this->get_order_total(), 2 );
-		$response->currency = get_woocommerce_currency();
-
 		wp_send_json( [
 			'error'   => false,
-			'message' => $response,
+			'message' => $this->get_order_data(),
 		] );
+	}
+
+	protected function get_order_data() {
+		return array(
+			'id'       => absint( get_query_var( 'order-pay' ) ),
+			'amount'   => wc_format_decimal( $this->get_order_total(), 2 ),
+			'currency' => get_woocommerce_currency(),
+		);
 	}
 
 	/**
