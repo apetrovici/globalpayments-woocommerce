@@ -138,7 +138,7 @@ class SdkClient implements ClientInterface {
 		$this->prepare_request_args( $request );
 		$this->configure_sdk();
 
-		$request->do_request();
+		return $request->do_request();
 	}
 
 	protected function prepare_builder( TransactionBuilder $builder ) {
@@ -182,6 +182,7 @@ class SdkClient implements ClientInterface {
 		$subject =
 			in_array( $this->get_arg( RequestArg::TXN_TYPE ), $this->auth_transactions, true )
 				? $this->card_data : $this->previous_transaction;
+
 		if ( $subject instanceof IChargable || $subject instanceof IAuthable ) {
 			return $subject->{$this->get_arg( RequestArg::TXN_TYPE )}();
 		}

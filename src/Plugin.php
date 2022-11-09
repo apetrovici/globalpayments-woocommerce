@@ -5,6 +5,7 @@
 
 namespace GlobalPayments\WooCommercePaymentGatewayProvider;
 
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GpApiGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\HeartlandGateway;
 
 defined( 'ABSPATH' ) || exit;
@@ -52,7 +53,7 @@ class Plugin {
 	}
 
 	/**
-	 * Appends our payment gateways to WooCommerce's known list
+	 * Appends our payment gateways to WooCommerce's known list.
 	 *
 	 * @param string[] $methods
 	 *
@@ -67,6 +68,7 @@ class Plugin {
 			Gateways\GooglePayGateway::class,
 			Gateways\ApplePayGateway::class,
 		);
+		$gateways = array_merge( $gateways, GpApiGateway::get_payment_methods() );
 
 		foreach ( $gateways as $gateway ) {
 			$methods[] = $gateway;

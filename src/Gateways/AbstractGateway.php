@@ -8,6 +8,7 @@ use Exception;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
 use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests\RequestArg;
+use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Affirm;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
 use WC_Payment_Gateway_CC;
 use WC_Order;
@@ -28,9 +29,10 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	const ENVIRONMENT_SANDBOX = 'sandbox';
 
 	// auth requests
-	const TXN_TYPE_AUTHORIZE = 'authorize';
-	const TXN_TYPE_SALE      = 'charge';
-	const TXN_TYPE_VERIFY    = 'verify';
+	const TXN_TYPE_AUTHORIZE      = 'authorize';
+	const TXN_TYPE_BNPL_AUTHORIZE = 'bnpl_authorize';
+	const TXN_TYPE_SALE           = 'charge';
+	const TXN_TYPE_VERIFY         = 'verify';
 
 	// mgmt requests
 	const TXN_TYPE_REFUND   = 'refund';
@@ -115,7 +117,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @var Clients\ClientInterface
 	 */
-	protected $client;
+	public $client;
 
 	/**
 	 * AVS CVN auto reverse condition
@@ -932,6 +934,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			case GpApiGateway::GATEWAY_ID:
 			case GooglePayGateway::GATEWAY_ID:
 			case ApplePayGateway::GATEWAY_ID:
+			case Affirm::PAYMENT_METHOD_ID:
 				$gateway = new GpApiGateway();
 				break;
 		};
@@ -962,9 +965,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	}
 
 	/**
-	 * Handle online refund requests via WP Admin > WooCommerce > Edit Order > Order actions
+	 * Get transaction details from Order ID.
 	 *
-	 * @param $order_id
+	 * @param int $order_id
 	 *
 	 * @return Transaction
 	 * @throws Exception
@@ -972,9 +975,25 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	public function get_transaction_details( $order_id ) {
 		$order    = new WC_Order( $order_id );
 		$request  = $this->prepare_request( self::TXN_TYPE_REPORT_TXN_DETAILS, $order );
-		$response = $this->submit_request( $request );
 
-		return $response;
+		return $this->submit_request( $request );
+	}
+
+	/**
+	 * Get transaction details from Global Payments transaction ID.
+	 *
+	 * @param string $txn_id
+	 *
+	 * @return Transaction
+	 * @throws Exception
+	 */
+	public function get_transaction_details_by_txn_id( $txn_id ) {
+		$request  = $this->prepare_request( self::TXN_TYPE_REPORT_TXN_DETAILS );
+		$request->set_request_data( array(
+			'txn_id' => $txn_id,
+		));
+
+		return $this->submit_request( $request );
 	}
 
 	/**
@@ -986,7 +1005,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @return Requests\RequestInterface
 	 * @throws Exception
 	 */
-	protected function prepare_request( $txn_type, WC_Order $order = null ) {
+	public function prepare_request( $txn_type, WC_Order $order = null ) {
 		$map = array(
 			self::TXN_TYPE_AUTHORIZE               => Requests\AuthorizationRequest::class,
 			self::TXN_TYPE_SALE                    => Requests\SaleRequest::class,
@@ -1000,6 +1019,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			self::TXN_TYPE_GET_ACCESS_TOKEN        => Requests\GetAccessTokenRequest::class,
 			self::TXN_TYPE_CHECK_ENROLLMENT        => Requests\ThreeDSecure\CheckEnrollmentRequest::class,
 			self::TXN_TYPE_INITIATE_AUTHENTICATION => Requests\ThreeDSecure\InitiateAuthenticationRequest::class,
+			self::TXN_TYPE_BNPL_AUTHORIZE          => Requests\BuyNowPayLater\AuthorizationRequest::class,
 		);
 
 		if ( ! isset( $map[ $txn_type ] ) ) {
@@ -1022,7 +1042,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return Transaction
 	 */
-	protected function submit_request( Requests\RequestInterface $request ) {
+	public function submit_request( Requests\RequestInterface $request ) {
 		return $this->client->set_request( $request )->execute();
 	}
 
@@ -1035,7 +1055,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @return bool
 	 * @throws ApiException
 	 */
-	protected function handle_response( Requests\RequestInterface $request, Transaction $response ) {
+	public function handle_response( Requests\RequestInterface $request, Transaction $response ) {
 		if ( $response->responseCode !== '00' && 'SUCCESS' !== $response->responseCode || $response->responseMessage === 'Partially Approved' ) {
 			if ( $response->responseCode === '10' || $response->responseMessage === 'Partially Approved' ) {
 				try {
