@@ -36,7 +36,6 @@ trait MulticheckboxTrait {
 				<label for="<?php echo esc_attr( $field_key ); ?>"><?php echo wp_kses_post( $data['title'] ); ?> <?php echo $this->get_tooltip_html( $data ); // WPCS: XSS ok. ?></label>
 			</th>
 			<td class="forminp">
-                <div id="cc_type_error_msg" style="display: none;">Please select at least one Card. </div>
 				<fieldset>
 					<legend class="screen-reader-text"><span><?php echo wp_kses_post( $data['title'] ); ?></span></legend>
 					<ul class="ul-multicheckbox">

@@ -21,11 +21,3 @@
     min-height:32px;
     width:auto;
 }
-#cc_type_error_msg {
-    background: red;
-    color: #fff;
-    text-align: center;
-    width: 400px;
-    padding: 5px;
-    height: 20px;
-}

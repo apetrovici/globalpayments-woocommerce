@@ -127,7 +127,6 @@ class GooglePayGateway extends AbstractGateway {
 				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
 				     __( 'Please provide at least one credit card types.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 			} );
-			$settings['enabled'] = false;
 		}
 
 		return $settings;
@@ -154,7 +153,7 @@ class GooglePayGateway extends AbstractGateway {
 			'cc_types'                    => array(
 				'title'   => __( 'Accepted Cards*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'multiselectcheckbox',
-				'class'   => 'accepted_cards required-check',
+				'class'   => 'accepted_cards required',
 				'css'     => 'width: 450px; height: 110px',
 				'options' => array(
 					'VISA'       => 'Visa',

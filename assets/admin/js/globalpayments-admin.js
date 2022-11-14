@@ -20,7 +20,7 @@
         attachEventHandlers: function () {
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
             $( document ).on( 'change', this.getEnabledGatewaySelector(), this.toggleValidations.bind( this ) );
-            $( document ).on( 'change', $( '.accepted_cards.required-check' ), this.validate_cc_types.bind( this ) );
+            $( document ).on( 'change', $( '.accepted_cards.required' ), this.validate_cc_types.bind( this ) );
             
             // Admin Pay for Order
             $( '#customer_user' ).on( 'change', this.updatePaymentMethods );
@@ -101,24 +101,20 @@
             if ( 'globalpayments_googlepay' != this.id) {
                 return;
             }
-            var cc_type_error_msg = $( '#cc_type_error_msg' );
-
-            cc_type_error_msg.css( 'display',  "none" );
-
             if ( this.isEnabled() ) {
-                var showErrorMsg = true;
-                var checksitems = $( '.accepted_cards.required-check' );
+                var checksitems = $( '.accepted_cards.required' );
+                var required = true;
                 if ( checksitems && checksitems.length > 0 ) {
                     checksitems.each( function() {
-                        if ( $(this).is(':checked') ){
-                            showErrorMsg = false;
+                        if ( $( this ).is( ':checked' ) ) {
+                            required = false;
+                            checksitems.prop( 'required', false );
+                            return;
                         }
                     } );
-                } else {
-                    showErrorMsg = false;
-                }
-                if( showErrorMsg ){
-                    cc_type_error_msg.css( 'display',  "block" );
+                    if ( required ) {
+                        checksitems.prop( 'required', true );
+                    }
                 }
             }
         },
