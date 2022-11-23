@@ -201,6 +201,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 * @inheritdoc
 	 */
 	public function process_payment( $order_id ) {
+
 		// At this point, order should be placed in 'Pending Payment', but products should still be visible in the cart
 		$order = wc_get_order( $order_id );
 
@@ -216,9 +217,11 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			get_woocommerce_currency_symbol( $order->get_currency() ),
 			$order->get_total(),
 			__( 'preauthorized', 'globalpayments-gateway-provider-for-woocommerce' ),
-			$order->get_transaction_id()
+			$gateway_response->transactionId
 		);
 		$order->add_order_note( $note_text );
+		$order->set_transaction_id( $gateway_response->transactionId );
+		$order->save();
 
 		// 2. Redirect the customer
 		return array(
