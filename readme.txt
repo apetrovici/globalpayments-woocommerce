@@ -1,5 +1,5 @@
 === GlobalPayments WooCommerce ===
-Contributors: globalpayments
+Contributors: globalpayments 
 Tags: woocommerce, woo, unified, commerce, platform, global, payments, heartland, payment, systems, tsys, genius, 3DS, gateway, token, tokenize, save cards
 Requires at least: 5.4
 Tested up to: 6.0.4
