@@ -61,18 +61,34 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		 * The WooCommerce API allows plugins make a callback to a special URL that will then load the specified class (if it exists)
 		 * and run an action. This is also useful for gateways that are not initialized.
 		 */
-		add_action( 'woocommerce_api_globalpayments_bnpl_return', array(
+		add_action( 'woocommerce_api_' . $this->id . '_return', array(
 			$this,
 			'process_bnpl_return'
 		) );
-		add_action( 'woocommerce_api_globalpayments_bnpl_status', array(
+		add_action( 'woocommerce_api_' . $this->id . '_status', array(
 			$this,
 			'process_bnpl_status'
 		) );
-		add_action( 'woocommerce_api_globalpayments_bnpl_cancel', array(
+		add_action( 'woocommerce_api_' . $this->id . '_cancel', array(
 			$this,
 			'process_bnpl_cancel'
 		) );
+
+		add_action( 'woocommerce_after_checkout_validation', function( $data, $wp_error ) {
+			if ( $this->id != $data['payment_method'] ) {
+				return;
+			}
+
+			if ( empty( $data['billing_postcode'] ) && ( empty( $wp_error->errors['billing_postcode_required'] ) || empty( $wp_error->errors['billing_postcode_validation'] ) ) ) {
+				$wp_error->add ( 'billing_postcode', __( '<strong>Billing ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+			if ( empty( $data['shipping_postcode'] ) && ( empty( $wp_error->errors['shipping_postcode_required'] ) || empty( $wp_error->errors['shipping_postcode_validation'] ) ) ) {
+				$wp_error->add ( 'shipping_postcode', __( '<strong>Shipping ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+			if ( empty( $data['billing_phone'] ) && ( empty( $wp_error->errors['billing_phone_required'] ) || empty( $wp_error->errors['billing_phone_validation'] ) ) ) {
+				$wp_error->add ( 'billing_phone', __( '<strong>Phone</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+		}, 10, 2);
 	}
 
 	/**
@@ -191,9 +207,9 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	public function get_provider_endpoints() {
 		return array(
 			'provider'  => $this->payment_method_BNPL_provider,
-			'returnUrl' => WC()->api_request_url( 'globalpayments_bnpl_return', true ),
-			'statusUrl' => WC()->api_request_url( 'globalpayments_bnpl_status', true ),
-			'cancelUrl' => WC()->api_request_url( 'globalpayments_bnpl_cancel', true ),
+			'returnUrl' => WC()->api_request_url( $this->id . '_return', true ),
+			'statusUrl' => WC()->api_request_url( $this->id . '_status', true ),
+			'cancelUrl' => WC()->api_request_url( $this->id . '_cancel', true ),
 		);
 	}
 
@@ -201,7 +217,6 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 * @inheritdoc
 	 */
 	public function process_payment( $order_id ) {
-
 		// At this point, order should be placed in 'Pending Payment', but products should still be visible in the cart
 		$order = wc_get_order( $order_id );
 
@@ -213,11 +228,12 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 
 		// Add order note  prior to customer redirect
 		$note_text = sprintf(
-			'%1$s%2$s %3$s. Transaction ID: %4$s.',
+			'%1$s%2$s %3$s %5$s. Transaction ID: %4$s.',
 			get_woocommerce_currency_symbol( $order->get_currency() ),
 			$order->get_total(),
-			__( 'preauthorized', 'globalpayments-gateway-provider-for-woocommerce' ),
-			$gateway_response->transactionId
+			__( 'payment initiated with', 'globalpayments-gateway-provider-for-woocommerce' ),
+			$gateway_response->transactionId,
+			$this->payment_method_BNPL_provider
 		);
 		$order->add_order_note( $note_text );
 		$order->set_transaction_id( $gateway_response->transactionId );
@@ -228,6 +244,10 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			'result'   => 'success',
 			'redirect' => $gateway_response->transactionReference->bnplResponse->redirectUrl,
 		);
+	}
+
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+		return $this->gateway->process_refund( $order_id, $amount, $reason );
 	}
 
 	/**
@@ -244,6 +264,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		) );
 
 		$gateway_response = $this->gateway->client->submit_request( $request );
+
 		$is_successful    = $this->gateway->handle_response( $request, $gateway_response );
 
 		if ( ! $is_successful ) {
@@ -296,6 +317,18 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			$order = $this->get_order( $gateway_response );
 
 			if( TransactionStatus::PREAUTHORIZED !== $gateway_response->transactionStatus ) {
+				if ( TransactionStatus::DECLINED == $gateway_response->transactionStatus ) {
+					$note_text = sprintf(
+						'%1$s%2$s %3$s. Transaction ID: %4$s.',
+						get_woocommerce_currency_symbol( $order->get_currency() ),
+						$order->get_total(),
+						__( 'payment failed/declined', 'globalpayments-gateway-provider-for-woocommerce' ),
+						$order->get_transaction_id()
+					);
+					$order->add_order_note( $note_text );
+					$order->set_status( 'failed' );
+					$order->save();
+				}
 				// @TODO: display proper message for customer
 				throw new \Exception('Something went wrong with Affirm - transaction doesn\'t have the PREAUTHORIZED status. Current status: ' . $gateway_response->transactionStatus );
 			}
@@ -311,7 +344,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			$order->set_status( 'processing' );
 			$order->save();
 
-			if ($this->payment_action == AbstractGateway::TXN_TYPE_SALE) {
+			if ( $this->payment_action == AbstractGateway::TXN_TYPE_SALE ) {
 				AbstractGateway::capture_credit_card_authorization( $order );
 				$order->payment_complete();
 			}
@@ -325,6 +358,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 					$e->getMessage()
 				)
 			);
+			wc_add_notice( $e->getMessage() );
 			wp_redirect( wc_get_checkout_url() );
 		}
 		exit();
@@ -335,44 +369,57 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 */
 	public function process_bnpl_status() {
 		// @TODO
-		try {
-			Utils::validate_bnpl_request();
+		$this->bnpl_debug('process_bnpl_status');
 
-			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( wc_clean( $_GET['id'] ) );
-			$order = $this->get_order( $gateway_response );
-
-			if( TransactionStatus::PREAUTHORIZED !== $gateway_response->transactionStatus ) {
-				// @TODO: display proper message for customer
-				throw new \Exception('Something went wrong with Affirm - transaction doesn\'t have the PREAUTHORIZED status');
-			}
-
-			$note_text = sprintf(
-				'%1$s%2$s %3$s. Transaction ID: %4$s.',
-				get_woocommerce_currency_symbol( $order->get_currency() ),
-				$order->get_total(),
-				__( 'authorized', 'globalpayments-gateway-provider-for-woocommerce' ),
-				$order->get_transaction_id()
-			);
-			$order->add_order_note( $note_text );
-			$order->set_status( 'processing' );
-			$order->save();
-
-			if ($this->payment_action == AbstractGateway::TXN_TYPE_SALE) {
-				AbstractGateway::capture_credit_card_authorization( $order );
-				$order->payment_complete();
-			}
-
-			wp_redirect( $order->get_checkout_order_received_url() );
-		} catch (\Exception $e) {
-			$logger = wc_get_logger();
-			$logger->error(
-				sprintf(
-					'Error completing order with ' . $this->payment_method_BNPL_provider . '. %s',
-					$e->getMessage()
-				)
-			);
-			wp_redirect( wc_get_checkout_url() );
-		}
+//		try {
+//			//Utils::validate_bnpl_request();
+//
+//			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( wc_clean( $_GET['id'] ) );
+//			$order = $this->get_order( $gateway_response );
+//
+//			if ( TransactionStatus::PREAUTHORIZED !== $gateway_response->transactionStatus ) {
+//				if ( TransactionStatus::DECLINED == $gateway_response->transactionStatus ) {
+//					$note_text = sprintf(
+//						'%1$s%2$s %3$s. Transaction ID: %4$s.',
+//						get_woocommerce_currency_symbol( $order->get_currency() ),
+//						$order->get_total(),
+//						__( 'payment failed/declined', 'globalpayments-gateway-provider-for-woocommerce' ),
+//						$order->get_transaction_id()
+//					);
+//					$order->add_order_note( $note_text );
+//					$order->set_status( 'failed' );
+//					$order->save();
+//				}
+//				// @TODO: display proper message for customer
+//				throw new \Exception('Something went wrong with Affirm - transaction doesn\'t have the PREAUTHORIZED status');
+//			}
+//
+//			$note_text = sprintf(
+//				'%1$s%2$s %3$s. Transaction ID: %4$s.',
+//				get_woocommerce_currency_symbol( $order->get_currency() ),
+//				$order->get_total(),
+//				__( 'authorized', 'globalpayments-gateway-provider-for-woocommerce' ),
+//				$order->get_transaction_id()
+//			);
+//			$order->add_order_note( $note_text );
+//			$order->set_status( 'processing' );
+//			$order->save();
+//
+//			if ($this->payment_action == AbstractGateway::TXN_TYPE_SALE) {
+//				AbstractGateway::capture_credit_card_authorization( $order );
+//				$order->payment_complete();
+//			}
+//
+//			//wp_redirect( $order->get_checkout_order_received_url() );
+//		} catch (\Exception $e) {
+//			$logger = wc_get_logger();
+//			$logger->error(
+//				sprintf(
+//					'Error completing order with ' . $this->payment_method_BNPL_provider . '. %s',
+//					$e->getMessage()
+//				)
+//			);
+//		}
 		exit();
 	}
 
@@ -390,11 +437,11 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 				'%1$s%2$s %3$s. Transaction ID: %4$s.',
 				get_woocommerce_currency_symbol( $order->get_currency() ),
 				$order->get_total(),
-				__( 'canceled by customer', 'globalpayments-gateway-provider-for-woocommerce' ),
+				__( 'payment canceled by customer', 'globalpayments-gateway-provider-for-woocommerce' ),
 				$order->get_transaction_id()
 			);
 			$order->add_order_note( $note_text );
-			$order->set_status( 'failed' );
+			$order->set_status( 'cancelled' );
 			$order->save();
 
 			wp_redirect( wc_get_checkout_url() );
@@ -434,5 +481,35 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 
 		return $order;
+	}
+
+	private function bnpl_debug( $endpoint ) {
+		$logger = wc_get_logger();
+		$logger->error(
+			sprintf(
+				'Provider: %s: %s reached',
+				$this->payment_method_BNPL_provider,
+				$endpoint
+			)
+		);
+		if ( 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
+			$body = file_get_contents( 'php://input' );
+			if ( false === $body ) {
+				$logger->error( 'failed to read php://input' );
+			}
+			$logger->error(
+				sprintf(
+					'body php://input: [%s]',
+					print_r( $body, true )
+				)
+			);
+			$decoded_body = json_decode( file_get_contents( 'php://input' ) );
+			$logger->error(
+				sprintf(
+					'json decoded body php://input: [%s]',
+					print_r( $decoded_body, true )
+				)
+			);
+		}
 	}
 }
