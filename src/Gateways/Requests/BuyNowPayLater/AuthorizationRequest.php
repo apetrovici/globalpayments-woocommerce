@@ -13,6 +13,7 @@ use GlobalPayments\Api\PaymentMethods\BNPL;
 use GlobalPayments\Api\Utils\CountryUtils;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests\AbstractRequest;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -104,12 +105,11 @@ class AuthorizationRequest extends AbstractRequest {
 	private function get_customer_data() {
 		$customer = new Customer();
 		$customer->id        = $this->order->get_customer_id();
-		$customer->firstName = $this->order->get_billing_first_name();
-		$customer->lastName  = $this->order->get_billing_last_name();
+		$customer->firstName = Utils::sanitize_string( $this->order->get_billing_first_name() );
+		$customer->lastName  = Utils::sanitize_string( $this->order->get_billing_last_name() );
 		$customer->email     = $this->order->get_billing_email();
-//		$phone_code = CountryUtils::getPhoneCodesByCountry( $this->order->get_billing_country() );
-//		$customer->phone     = new PhoneNumber( $phone_code[0], $this->order->get_billing_phone(), PhoneNumberType::HOME );
-		$customer->phone     = new PhoneNumber( '41', $this->order->get_billing_phone(), PhoneNumberType::HOME );
+		$phone_code = CountryUtils::getPhoneCodesByCountry( $this->order->get_billing_country() );
+		$customer->phone     = new PhoneNumber( $phone_code[0], $this->order->get_billing_phone(), PhoneNumberType::HOME );
 
 		return $customer;
 	}

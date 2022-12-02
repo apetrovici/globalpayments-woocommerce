@@ -37,4 +37,17 @@ class Utils {
 		// @TODO: validate X-GP-Signature
 		return true;
 	}
+
+	/**
+	 * Converts all accent characters to ASCII characters and removes non-supported chars.
+	 *
+	 * @param $string
+	 *
+	 * @return mixed
+	 */
+	public static function sanitize_string( $string ) {
+		$string = remove_accents( $string );
+
+		return preg_replace( "/[^a-zA-Z-_.]/", "", $string );
+	}
 }
