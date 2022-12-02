@@ -5,6 +5,7 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways;
 use GlobalPayments\Api\Entities\Enums\Environment;
 use GlobalPayments\Api\Entities\Enums\GatewayProvider;
 use GlobalPayments\Api\Entities\Enums\Channel;
+use GlobalPayments\Api\Entities\Enums\TransactionStatus;
 use GlobalPayments\Api\Gateways\GpApiConnector;
 use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Affirm;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Requests\ThreeDSecure\CheckEnrollmentRequest;
@@ -72,6 +73,13 @@ class GpApiGateway extends AbstractGateway {
 	public $merchant_contact_url;
 
 	/**
+	 * Transaction descriptor length
+	 *
+	 * @var int
+	 */
+	public $txn_descriptor_length = 25;
+
+	/**
 	 * Integration's Developer ID
 	 *
 	 * @var string
@@ -84,6 +92,11 @@ class GpApiGateway extends AbstractGateway {
 	 * @var bool
 	 */
 	public $debug;
+
+	public function __construct( $is_provider = false ) {
+		parent::__construct( $is_provider );
+		array_push( $this->supports, 'globalpayments_hosted_fields', 'globalpayments_three_d_secure' );
+	}
 
 	public function configure_method_settings() {
 		$this->id                 = self::GATEWAY_ID;
@@ -114,20 +127,36 @@ class GpApiGateway extends AbstractGateway {
 			'app_id'               => array(
 				'title' => __( 'Live App Id*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'  => 'text',
+				'class' => 'required live-toggle',
+				'custom_attributes' => array(
+					'required' => 'required'
+				),
 			),
 			'app_key'              => array(
 				'title' => __( 'Live App Key*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'  => 'password',
+				'class' => 'required live-toggle',
+				'custom_attributes' => array(
+					'required' => 'required'
+				),
 			),
 			'sandbox_app_id'       => array(
 				'title'   => __( 'Sandbox App Id*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'text',
 				'default' => '',
+				'class' => 'required sandbox-toggle',
+				'custom_attributes' => array(
+					'required' => 'required'
+				),
 			),
 			'sandbox_app_key'      => array(
 				'title'   => __( 'Sandbox App Key*', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'    => 'password',
 				'default' => '',
+				'class' => 'required sandbox-toggle',
+				'custom_attributes' => array(
+					'required' => 'required'
+				),
 			),
 			'allow_card_saving'    => array(
 				'title'       => __( 'Allow Card Saving', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -158,7 +187,10 @@ class GpApiGateway extends AbstractGateway {
 				'desc_tip'          => true,
 				'description'       => __( 'A link to an About or Contact page on your website with customer care information (maxLength: 50).', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'default'           => '',
-				'custom_attributes' => array( 'required' => 'required' ),
+				'custom_attributes' => array(
+					'required' => 'required',
+					'maxlength' => '256'
+				),
 			),
 		);
 	}
@@ -227,7 +259,7 @@ class GpApiGateway extends AbstractGateway {
 	protected function add_hooks() {
 		parent::add_hooks();
 
-		if ( is_admin() ) {
+		if ( is_admin() && current_user_can( 'edit_shop_orders' ) ) {
 			// Admin Pay for Order hooks
 			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'pay_order_modal' ), 99 );
 			add_filter( 'globalpayments_secure_payment_fields_styles', array( $this, 'pay_order_modal_secure_payment_fields_styles' ) );
@@ -266,20 +298,12 @@ class GpApiGateway extends AbstractGateway {
 		if ( ! wc_string_to_bool( $settings['enabled'] ) ) {
 			return $settings;
 		}
-		if ( empty( $settings['merchant_contact_url'] ) || 50 < strlen( $settings['merchant_contact_url'] ) ) {
-			add_action( 'admin_notices', function () {
-				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
-				     __( 'Please provide a Contact Url (maxLength: 50). Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
-			} );
-			$settings['enabled'] = 'no';
-		}
 		if ( wc_string_to_bool( $settings['is_production'] ) ) {
 			if ( empty( $settings['app_id'] ) || empty( $settings['app_key'] ) ) {
 				add_action( 'admin_notices', function () {
 					echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
-					     __( 'Please provide Live Credentials. Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
+					     __( 'Please provide Live Credentials.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 				} );
-				$settings['enabled'] = 'no';
 			}
 
 			return $settings;
@@ -287,9 +311,8 @@ class GpApiGateway extends AbstractGateway {
 		if ( empty( $settings['sandbox_app_id'] ) || empty( $settings['sandbox_app_key'] ) ) {
 			add_action( 'admin_notices', function () {
 				echo '<div id="message" class="notice notice-error is-dismissible"><p><strong>' .
-				     __( 'Please provide Sandbox Credentials. Gateway not enabled.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
+				     __( 'Please provide Sandbox Credentials.', 'globalpayments-gateway-provider-for-woocommerce' ) . '</strong></p></div>';
 			} );
-			$settings['enabled'] = 'no';
 		}
 
 		return $settings;
@@ -311,11 +334,11 @@ class GpApiGateway extends AbstractGateway {
 	}
 
 	public function mapResponseCodeToFriendlyMessage( $responseCode ) {
-		if ( 'DECLINED' === $responseCode ) {
-			return __( 'Your card has been declined by the bank.', 'globalpayments-gateway-provider-for-woocommerce' );
+		if ( TransactionStatus::DECLINED === $responseCode ) {
+			return __( 'Your payment was unsuccessful. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
 		}
 
-		return __( 'An error occurred while processing the card.', 'globalpayments-gateway-provider-for-woocommerce' );
+		return __( 'An error occurred while processing the card. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 
 	public function process_threeDSecure_checkEnrollment() {
