@@ -6,6 +6,7 @@ use GlobalPayments\Api\Entities\Enums\BNPLType;
 
 defined( 'ABSPATH' ) || exit;
 
+
 class Affirm extends AbstractBuyNowPayLater {
 	public const PAYMENT_METHOD_ID = 'globalpayments_affirm';
 
