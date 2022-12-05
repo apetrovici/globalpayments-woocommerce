@@ -9,6 +9,8 @@
  * Author: Global Payments
 */
 
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\HeartlandGateway;
+
 defined( 'ABSPATH' ) || exit;
 
 if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
@@ -59,7 +61,7 @@ function globalpayments_update_v110_v111( WP_Upgrader $wp_upgrader, $hook_extra 
 		];
 		foreach ( $globalpayments_keys as $gateway_id => $gateway_keys ) {
 			$settings = get_option( 'woocommerce_' . $gateway_id . '_settings' );
-			if ( 'globalpayments_heartland' === $gateway_id ) {
+			if ( HeartlandGateway::GATEWAY_ID === $gateway_id ) {
 				$settings['is_production'] = ( isset( $settings['public_key'] ) && false !== strpos( $settings['public_key'], 'pkapi_prod_' ) ) ? 'yes' : 'no';
 			}
 			// General rule: if the gateway is not set to "Live Mode", move the credentials in sandbox keys.

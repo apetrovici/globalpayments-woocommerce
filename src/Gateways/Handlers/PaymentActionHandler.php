@@ -25,8 +25,18 @@ class PaymentActionHandler extends AbstractHandler {
 
 		$this->save_meta_to_order( $this->request->order, array( 'payment_action' => $txn_type ) );
 
-		if ( AbstractGateway::TXN_TYPE_VERIFY !== $txn_type && Affirm::PAYMENT_METHOD_ID !== $this->request->order->get_payment_method() ) {
+		if (
+			AbstractGateway::TXN_TYPE_VERIFY !== $txn_type
+			&& ! in_array(
+				$this->request->order->get_payment_method(),
+				array(
+					Affirm::PAYMENT_METHOD_ID,
+					Clearpay::PAYMENT_METHOD_ID,
+					Klarna::PAYMENT_METHOD_ID
+				) )
+		) {
 			$this->request->order->payment_complete( $this->response->transactionId );
+
 			return;
 		}
 

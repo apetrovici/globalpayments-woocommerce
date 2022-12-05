@@ -33,7 +33,7 @@ class Plugin {
 
 		//initialize gift related hooks for Heartland ajax requests
 		if ( true === wp_doing_ajax() || ! empty( $_GET['wc-ajax'] ) ) {
-			$heartlandSettings = get_option( 'woocommerce_globalpayments_heartland_settings' );
+			$heartlandSettings = get_option( 'woocommerce_' . HeartlandGateway::GATEWAY_ID . '_settings' );
 			// prevent checkout blocker when Heartland settings not setted loop
 			if (
 			    !empty( $heartlandSettings )  &&
