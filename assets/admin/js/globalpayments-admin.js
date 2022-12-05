@@ -21,10 +21,14 @@
             $( document ).on( 'change', this.getLiveModeSelector(), this.toggleCredentialsSettings.bind( this ) );
             $( document ).on( 'change', this.getEnabledGatewaySelector(), this.toggleValidations.bind( this ) );
             $( document ).on( 'change', $( '.accepted_cards.required' ), this.validate_cc_types.bind( this ) );
-            
+
             // Admin Pay for Order
             $( '#customer_user' ).on( 'change', this.updatePaymentMethods );
             $( '.wc-globalpayments-pay-order' ).on( 'click', this.payForOrder );
+            $( document.body ).on('wc_backbone_modal_loaded', this.modalLoaded.bind( this ) );
+
+            // Admin View Transaction Status
+            $( '.wc-globalpayments-transaction-status' ).on( 'click', this.viewTransactionStatus );
             $( document.body ).on('wc_backbone_modal_loaded', this.modalLoaded.bind( this ) );
         },
 
@@ -62,6 +66,22 @@
         },
 
         /**
+         * Enable modal template.
+         *
+         * @param e
+         */
+        viewTransactionStatus: function( e ) {
+            e.preventDefault();
+            $( this ).WCGlobalPaymentsPayOrderBackboneModal({
+                template: 'wc-globalpayments-transaction-status-modal',
+                variable: {
+                    customer_id: $( '#customer_user' ).val(),
+                    payment_methods: globalpayments_admin_params.payment_methods,
+                }
+            });
+        },
+
+        /**
          * Render modal content.
          *
          * @param e
@@ -72,6 +92,9 @@
                 case 'wc-globalpayments-pay-order-modal':
                     $( document.body ).trigger( 'globalpayments_pay_order_modal_loaded' );
                     $( document.body ).trigger( 'wc-credit-card-form-init' );
+                    break;
+                case 'wc-globalpayments-transaction-status-modal':
+                    $( document.body ).trigger( 'globalpayments_transaction_status_modal_loaded' );
                     break;
             }
         },

@@ -32,7 +32,8 @@
 
 	$.WCGlobalPaymentsPayOrderBackboneModal.View = $.WCBackboneModal.View.extend( {
 		events: _.extend( $.WCBackboneModal.View.prototype.events, {
-			'click #place_order': 'payOrder'
+			'click #place_order': 'payOrder',
+			'click #transaction_status': 'transactionStatus'
 		} ),
 		payOrder: function( e ) {
 			e.preventDefault();
@@ -53,6 +54,10 @@
 				$( document.body ).trigger( 'globalpayments_pay_order_modal_error', [ errorThrown ] );
 			}.bind( this ) )
 				$( document.body ).trigger( 'globalpayments_pay_order_modal_response', [ this ] );
+		},
+		transactionStatus: function( e ) {
+			e.preventDefault();
+			console.log('View Btn Clicked!!! View Transaction Status modal');
 		},
 		block: function() {
 			this.$el.find( '.wc-backbone-modal-content' ).block( {
