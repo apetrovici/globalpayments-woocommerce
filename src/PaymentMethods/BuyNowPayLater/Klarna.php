@@ -73,3 +73,4 @@ class Klarna extends AbstractBuyNowPayLater {
 		return array( 'AUD', 'NZD', 'EUR', 'DKK', 'NOK', 'PLN', 'SEK', 'CHF', 'GBP', 'USD', 'CAD' );
 	}
 }
+

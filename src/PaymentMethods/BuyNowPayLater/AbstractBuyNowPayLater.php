@@ -7,6 +7,7 @@ use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
 use GlobalPayments\Api\Entities\Transaction;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GpApiGateway;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\TransactionInfoTrait;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 use WC_Order;
 use WC_Payment_Gateway;
@@ -14,6 +15,8 @@ use WC_Payment_Gateway;
 defined( 'ABSPATH' ) || exit;
 
 abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
+	use TransactionInfoTrait;
+
 	/**
 	 * Payment method BNPL provider. Should be overridden by individual BNPL payment methods implementations.
 	 *
@@ -89,6 +92,10 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 				$wp_error->add ( 'billing_phone', __( '<strong>Phone</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 			}
 		}, 10, 2);
+
+		// Admin View Transaction Info hooks
+		add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'transaction_info_modal' ), 99 );
+		add_action( 'woocommerce_api_globalpayments_get_transaction_info', array( $this, 'get_transaction_info' ) );
 	}
 
 	/**
