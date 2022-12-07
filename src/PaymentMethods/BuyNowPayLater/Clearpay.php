@@ -55,4 +55,3 @@ class Clearpay extends AbstractBuyNowPayLater {
 		return array( 'GBP', 'AUD', 'NZD', 'CAD', 'USD' );
 	}
 }
-
