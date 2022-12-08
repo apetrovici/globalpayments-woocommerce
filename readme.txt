@@ -2,8 +2,8 @@
 Contributors: globalpayments
 Tags: woocommerce, woo, unified, commerce, platform, global, payments, heartland, payment, systems, tsys, genius, 3DS, gateway, token, tokenize, save cards
 Requires at least: 5.4
-Tested up to: 6.0
-Stable tag: 1.2.3
+Tested up to: 6.0.4
+Stable tag: 1.5.1
 License: MIT
 License URI: https://github.com/globalpayments/globalpayments-woocommerce/blob/main/LICENSE
 
@@ -21,7 +21,6 @@ This extension allows WooCommerce to use the available Global Payments payment g
 - Refund transactions from a previous Sale
 - Stored payment methods
 - 3D Secure 2 & SCA
-- 3D Secure 1
 - Digital Wallets - Google Pay
 - Digital Wallets - Apple Pay
 - Payments over the phone
@@ -47,6 +46,21 @@ Access to our Unified Payments requires sandbox credentials which you can retrie
 4. Click  ‘Create a New App’. An app is a set of credentials used to access the API and generate access tokens.
 
 == Changelog ==
+
+= 1.5.1 =
+* Unified Payments - Added transaction descriptor
+* Unified Payments settings - Increased `Merchant contact url` length
+* Unified Payments bug fix - Added `Pay for Order` 3DS
+* Unified Payments bug fix - `Pay for Order` amount
+
+= 1.5.0 =
+* Unified Payments - remove 3DS1
+
+= 1.4.2 =
+* Update PHP-SDK to v6.0.0
+
+= 1.4.1 =
+* Bug fix - fixed for payment failed issue (transIt)
 
 = 1.4.0 =
 * Unified Payments - added Card Holder Name for Hosted Fields

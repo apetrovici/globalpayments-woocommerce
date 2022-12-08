@@ -9,7 +9,6 @@ abstract class RequestArg {
 	const CARD_HOLDER_NAME     = 'CARD_HOLDER_NAME';
 	const CURRENCY             = 'CURRENCY';
 	const ENTRY_MODE           = 'ENTRY_MODE';
-	const PARES                = 'PARES';
 	const PERMISSIONS          = 'PERMISSIONS';
 	const SERVER_TRANS_ID      = 'SERVER_TRANS_ID';
 	const SERVICES_CONFIG      = 'SERVICES_CONFIG';
@@ -21,4 +20,5 @@ abstract class RequestArg {
 	const DIGITAL_WALLET_TOKEN = 'DIGITAL_WALLET_TOKEN';
 	const MOBILE_TYPE          = 'MOBILE_TYPE';
 	const TRANSACTION_MODIFIER = 'TRANSACTION_MODIFIER';
+	const DYNAMIC_DESCRIPTOR   = 'DYNAMIC_DESCRIPTOR';
 }

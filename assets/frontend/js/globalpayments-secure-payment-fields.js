@@ -92,7 +92,6 @@
 			$( document.body ).on( 'checkout_error', function() {
 				$('#globalpayments_gpapi-checkout_validated').remove();
 				$('#globalpayments_gpapi-serverTransId').remove();
-				$('#globalpayments_gpapi-PaRes').remove();
 			} );
 
 			// Checkout
@@ -104,6 +103,14 @@
 			// Order Pay
 			if ( $( document.body ).hasClass( 'woocommerce-order-pay' ) ) {
 				$( document ).ready( this.renderPaymentFields.bind( this ) );
+				$( document ).ready( function () {
+					$( helper.getPlaceOrderButtonSelector() ).on( 'click', function ( $e ) {
+						$e.preventDefault();
+						$e.stopImmediatePropagation();
+						self.threeDSecure();
+						return;
+					} );
+				} );
 				return;
 			}
 
@@ -140,7 +147,6 @@
 				.done( function( result ) {
 					if ( -1 !== result.messages.indexOf( self.id + '_checkout_validated' ) ) {
 						helper.createInputElement( self.id, 'checkout_validated', 1 );
-						self.order = helper.order;
 						self.threeDSecure();
 					} else {
 						self.showPaymentError( result.messages );
@@ -231,7 +237,6 @@
 			this.cardForm.on( 'error', this.handleErrors.bind( this ) );
 			GlobalPayments.on( 'error', this.handleErrors.bind( this ) );
 
-			var self = this;
 			// match the visibility of our payment form
 			this.cardForm.ready( function () {
 				helper.toggleSubmitButtons();
@@ -294,7 +299,7 @@
 		 */
 		threeDSecure: function () {
 			helper.blockOnSubmit();
-
+			this.order = helper.order;
 			var self = this;
 			var _form = helper.getForm();
 			var $form = $( _form );
@@ -302,12 +307,11 @@
 			GlobalPayments.ThreeDSecure.checkVersion( this.threedsecure.checkEnrollmentUrl, {
 				tokenResponse: this.tokenResponse,
 				wcTokenId: $( 'input[name="wc-' + this.id + '-payment-token"]:checked', _form ).val(),
-				amount: this.order.amount,
-				currency: this.order.currency,
-				challengeWindow: {
-					windowSize: GlobalPayments.ThreeDSecure.ChallengeWindowSize.Windowed500x600,
-					displayMode: 'lightbox',
-				},
+				order: {
+					id: this.order.id,
+					amount: this.order.amount,
+					currency: this.order.currency,
+				}
 			})
 				.then( function( versionCheckData ) {
 					if ( versionCheckData.error ) {
@@ -315,18 +319,12 @@
 						return false;
 					}
 					if ( "NOT_ENROLLED" === versionCheckData.status && "YES" !== versionCheckData.liabilityShift ) {
-						self.showPaymentError( '3DS Authentication failed. Please try again.' );
+						self.showPaymentError( 'Please try again with another card.' );
 						return false;
 					}
 					if ( "NOT_ENROLLED" === versionCheckData.status && "YES" === versionCheckData.liabilityShift ) {
 						$form.submit();
 						return true;
-					}
-					if ( "ONE" === versionCheckData.version ) {
-						helper.createInputElement( self.id, 'serverTransId', versionCheckData.challenge.response.data.MD || versionCheckData.serverTransactionId );
-						helper.createInputElement( self.id, 'PaRes', versionCheckData.challenge.response.data.PaRes || '');
-						$form.submit();
-						return false;
 					}
 
 					var addressMatch = ! self.isDifferentShippingAddress();
@@ -342,6 +340,7 @@
 							displayMode: 'lightbox',
 						},
 						order: {
+							id: self.order.id,
 							amount: self.order.amount,
 							currency: self.order.currency,
 							billingAddress: billingAddress,
@@ -361,12 +360,14 @@
 						})
 						.catch( function( error ) {
 							console.error( error );
+							console.error( error.reasons );
 							self.showPaymentError( 'Something went wrong while doing 3DS processing.' );
 							return false;
 						});
 				})
 				.catch( function( error ) {
 					console.error( error );
+					console.error( error.reasons );
 					self.showPaymentError( 'Something went wrong while doing 3DS processing.' );
 					return false;
 				});

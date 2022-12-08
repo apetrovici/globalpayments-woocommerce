@@ -4,6 +4,7 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Clients;
 
 use GlobalPayments\Api\Builders\TransactionBuilder;
 use GlobalPayments\Api\Entities\Address;
+use GlobalPayments\Api\Entities\Enums\Secure3dStatus;
 use GlobalPayments\Api\Entities\Exceptions\ApiException;
 use GlobalPayments\Api\Entities\Transaction;
 use GlobalPayments\Api\Entities\Enums\AddressType;
@@ -69,9 +70,9 @@ class SdkClient implements ClientInterface {
 	);
 
 	protected $three_d_secure_auth_status = array(
-		AbstractAuthenticationsRequest::AUTH_STATUS_NOT_ENROLLED,
-		AbstractAuthenticationsRequest::AUTH_STATUS_SUCCESS_AUTHENTICATED,
-		AbstractAuthenticationsRequest::AUTH_STATUS_SUCCESS_ATTEMPT_MADE,
+		Secure3dStatus::NOT_ENROLLED,
+		Secure3dStatus::SUCCESS_AUTHENTICATED,
+		Secure3dStatus::SUCCESS_ATTEMPT_MADE,
 	);
 
 	/**
@@ -99,7 +100,7 @@ class SdkClient implements ClientInterface {
 		$this->configure_sdk();
 		$builder = $this->get_transaction_builder();
 		if ( ! isset( $builder ) ) {
-			throw new \Exception( __( 'Unable to perform request.' ) );
+			throw new \Exception( __( 'Unable to perform request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		if ( 'transactionDetail' === $this->args['TXN_TYPE'] ) {
 			return $builder->execute();
@@ -114,12 +115,24 @@ class SdkClient implements ClientInterface {
 			$this->set_threedsecure_data();
 		}
 		$response = $builder->execute();
-		if ( ! is_null( $this->card_data ) && $response instanceof Transaction && $response->token ) {
+		if (
+			$this->is_gateway(GatewayProvider::PORTICO)
+			&& !is_null($this->card_data)
+			&& $response instanceof Transaction
+			&& $response->token
+		) {
 			$this->card_data->token = $response->token;
 			$this->card_data->updateTokenExpiry();
 		}
 
 		return $response;
+	}
+
+	protected function is_gateway($gatewayProvider)
+	{
+		return isset($this->args['SERVICES_CONFIG'])
+			&& isset($this->args['SERVICES_CONFIG']['gatewayProvider'])
+			&& $this->args['SERVICES_CONFIG']['gatewayProvider'] === $gatewayProvider;
 	}
 
 	public function submit_request( RequestInterface $request ) {
@@ -232,6 +245,10 @@ class SdkClient implements ClientInterface {
 			$this->builder_args['description'] = array( $this->get_arg( RequestArg::DESCRIPTION ) );
 		}
 
+		if ( $this->has_arg( RequestArg::DYNAMIC_DESCRIPTOR ) ) {
+			$this->builder_args['dynamicDescriptor'] = array( $this->get_arg( RequestArg::DYNAMIC_DESCRIPTOR ) );
+		}
+
 		if ( $this->has_arg( RequestArg::AUTH_AMOUNT ) ) {
 			$this->builder_args['authAmount'] = array( $this->get_arg( RequestArg::AUTH_AMOUNT ) );
 		}
@@ -314,14 +331,13 @@ class SdkClient implements ClientInterface {
 		try {
 			$threeDSecureData = Secure3dService::getAuthenticationData()
 			                                   ->withServerTransactionId( $this->get_arg( RequestArg::SERVER_TRANS_ID ) )
-			                                   ->withPayerAuthenticationResponse( $this->get_arg( RequestArg::PARES ) )
 			                                   ->execute();
 		} catch ( \Exception $e ) {
-			throw new ApiException( __( '3DS Authentication failed. Please try again.' ) );
+			throw new ApiException( __( '3DS Authentication failed. Please try again.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		if ( AbstractAuthenticationsRequest::YES !== $threeDSecureData->liabilityShift
 		     || ! in_array( $threeDSecureData->status, $this->three_d_secure_auth_status ) ) {
-			throw new ApiException( __( '3DS Authentication failed. Please try again.' ) );
+			throw new ApiException( __( '3DS Authentication failed. Please try again.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		$this->card_data->threeDSecure = $threeDSecureData;
 	}
@@ -369,13 +385,7 @@ class SdkClient implements ClientInterface {
 			$this->args[ RequestArg::SERVICES_CONFIG ]
 		);
 		if ( $this->get_arg( RequestArg::SERVICES_CONFIG )['debug'] ) {
-			$gatewayConfig->requestLogger = new SampleRequestLogger( new Logger(
-				WC_LOG_DIR,
-				LogLevel::DEBUG,
-				[ 'prefix'    => 'globalpayments-woocommerce.' . $this->get_arg( RequestArg::SERVICES_CONFIG )['gatewayProvider'] . '-',
-				  'extension' => 'log',
-				]
-			) );
+			$gatewayConfig->requestLogger = new SampleRequestLogger( new Logger(WC_LOG_DIR ) );
 		}
 
 		ServicesContainer::configureService( $config );
