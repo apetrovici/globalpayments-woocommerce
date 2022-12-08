@@ -534,7 +534,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return array
 	 */
-	protected function secure_payment_fields() {
+	public function secure_payment_fields() {
 		return array(
 			'card-number-field' => array(
 				'class'       => 'card-number',
@@ -740,7 +740,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return string
 	 */
-	protected function secure_payment_field_html_format() {
+	public function secure_payment_field_html_format() {
 		return (
 		'<div class="form-row form-row-wide globalpayments %1$s %2$s">
 				<label for="%1$s-%2$s">%3$s&nbsp;<span class="required">*</span></label>

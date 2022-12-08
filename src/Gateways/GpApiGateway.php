@@ -92,6 +92,10 @@ class GpApiGateway extends AbstractGateway {
 	 */
 	public $debug;
 
+	public $js_lib_config;
+	public $js_lib_config_default;
+	public $js_lib_config_integrations;
+
 	public function __construct( $is_provider = false ) {
 		parent::__construct( $is_provider );
 		array_push( $this->supports, 'globalpayments_hosted_fields', 'globalpayments_three_d_secure' );
@@ -168,6 +172,25 @@ class GpApiGateway extends AbstractGateway {
 				),
 				'default'     => 'no',
 			),
+			'section_general_js'      => array(
+				'title' => __( 'JS LIB Settings', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'  => 'title',
+			),
+			'js_lib_config' => array(
+				'title'             => __( 'JS Lib Config', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'              => 'textarea',
+				'description'       => __( 'JSON Encoded lib config', 'globalpayments-gateway-provider-for-woocommerce' ),
+			),
+			'js_lib_config_default' => array(
+				'title'             => __( 'JS Lib Config - Default', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'              => 'checkbox',
+				'description'       => __( 'Check this if you want to display the GP default form. The above settings will be ignored.', 'globalpayments-gateway-provider-for-woocommerce' ),
+			),
+			'js_lib_config_integrations' => array(
+				'title'             => __( 'JS Lib Config - Integrations', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'type'              => 'checkbox',
+				'description'       => __( 'Check this if you want to display the Integrations form. The above settings will be ignored.', 'globalpayments-gateway-provider-for-woocommerce' ),
+			),
 			'section_general'      => array(
 				'title' => __( 'General Settings', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'  => 'title',
@@ -206,14 +229,31 @@ class GpApiGateway extends AbstractGateway {
 	}
 
 	public function get_frontend_gateway_options() {
-		return array(
-			'accessToken'           => $this->get_access_token(),
-			'apiVersion'            => GpApiConnector::GP_API_VERSION,
-//			'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
-			'env'                   => 'qa',
-			'requireCardHolderName' => true,
-			'enableCardFingerPrinting' => true,
+		if ($this->js_lib_config_integrations) {
+			return array(
+				'accessToken'           => $this->get_access_token(),
+				'apiVersion'            => GpApiConnector::GP_API_VERSION,
+				'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
+				'env'                   => 'qa',
+				'requireCardHolderName' => true,
+				'default'               => false,
+			);
+		}
+		$default = array(
+			'accessToken' => $this->get_access_token(),
+			'apiVersion'  => GpApiConnector::GP_API_VERSION,
+			'env'         => 'qa',
+			'default'     => true,
 		);
+		if ($this->js_lib_config_default) {
+			return $default;
+		}
+		if (!empty($this->js_lib_config)) {
+			$custom_config = json_decode($this->js_lib_config, true);
+		} else {
+			$custom_config = array();
+		}
+		return array_merge($default, $custom_config, array('default' => true));
 	}
 
 	public function get_backend_gateway_options() {
@@ -256,7 +296,10 @@ class GpApiGateway extends AbstractGateway {
 	 *
 	 * @return string
 	 */
-	protected function secure_payment_field_html_format() {
+	public function secure_payment_field_html_format() {
+		if ($this->js_lib_config_integrations) {
+			return parent::secure_payment_field_html_format();
+		}
 		return (
 		'<div class="form-row form-row-wide globalpayments %1$s %2$s">
 				<div id="%1$s-%2$s"></div>
@@ -264,7 +307,19 @@ class GpApiGateway extends AbstractGateway {
 		);
 	}
 
-	protected function secure_payment_fields() {
+	public function secure_payment_fields() {
+		if ($this->js_lib_config_integrations) {
+			$fields = parent::secure_payment_fields();
+			$fields['card-holder-name-field'] = array(
+				'class'       => 'card-holder-name',
+				'label'       => esc_html__( 'Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'placeholder' => esc_html__( 'Jane Smith', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'messages'    => array(
+					'validation' => esc_html__( 'Please enter a valid Card Holder Name', 'globalpayments-gateway-provider-for-woocommerce' ),
+				),
+			);
+			return $fields;
+		}
 		return array(
 			'credit-card' => array(
 				'class'       => 'credit-card',

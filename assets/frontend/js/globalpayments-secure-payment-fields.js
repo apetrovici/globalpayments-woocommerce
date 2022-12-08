@@ -224,13 +224,19 @@
 			}
 
 			GlobalPayments.configure( gatewayConfig );
-			this.cardForm = GlobalPayments.creditCard.form( '#' + this.id + '-credit-card', { style: 'gp-default' } );
-			// this.cardForm = GlobalPayments.ui.form(
-			// 	{
-			// 		fields: this.getFieldConfiguration(),
-			// 		styles: this.getStyleConfiguration()
-			// 	}
-			// );
+			console.log('>>> config=', gatewayConfig);
+			if (gatewayConfig.default) {
+				this.cardForm = GlobalPayments.creditCard.form( '#' + this.id + '-credit-card', { style: 'gp-default' } );
+			} else {
+				this.cardForm = GlobalPayments.ui.form(
+					{
+						fields: this.getFieldConfiguration(),
+						styles: this.getStyleConfiguration()
+					}
+				);
+			}
+
+
 			this.cardForm.on( 'submit', 'click', helper.blockOnSubmit.bind( this ) );
 			this.cardForm.on( 'token-success', this.handleResponse.bind( this ) );
 			this.cardForm.on( 'token-error', this.handleErrors.bind( this ) );
@@ -476,6 +482,7 @@
 		 */
 		handleErrors: function ( error ) {
 			console.log('>>> library error = ', error);
+			console.log('>>> library error.reasons = ', error.reasons);
 			this.resetValidationErrors();
 			console.error(error);
 			if ( ! error.reasons ) {
