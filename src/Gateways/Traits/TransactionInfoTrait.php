@@ -52,6 +52,7 @@ trait TransactionInfoTrait {
 			'globalpayments-admin',
 			'globalpayments_admin_txn_params',
 			array(
+				'_wpnonce'            => wp_create_nonce( 'woocommerce-globalpayments-view-transaction-info' ),
 				'gateway_id'           => $this->id,
 				'transaction_id'       => $order->get_transaction_id(),
 				'transaction_info_url' => WC()->api_request_url( 'globalpayments_get_transaction_info' ),
@@ -68,6 +69,11 @@ trait TransactionInfoTrait {
 
 	public function get_transaction_info() {
 		try {
+			$nonce_value = wc_get_var( $_REQUEST['woocommerce-globalpayments-view-transaction-info-nonce'], wc_get_var( $_REQUEST['_wpnonce'], '' ) ); // @codingStandardsIgnoreLine.
+			if ( ! wp_verify_nonce( $nonce_value, 'woocommerce-globalpayments-view-transaction-info' ) ) {
+				throw new \Exception( __( 'Invalid view transaction request.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+			}
+
 			$transactionId = wc_get_var( $_REQUEST['transactionId'] );
 			if ( ! $transactionId ) {
 				throw new \Exception( __( 'Invalid transaction id.', 'globalpayments-gateway-provider-for-woocommerce' ) );
@@ -81,7 +87,7 @@ trait TransactionInfoTrait {
 				'transaction_type'   => $response->transactionType,
 				'amount'             => wc_format_decimal( $response->amount, 2 ),
 				'currency'           => $response->currency,
-				'bnpl_provider'      => $this->method_title
+				'bnpl_provider'      => $response->bnplResponse->providerName
 			) );
 		} catch ( \Exception $e ) {
 			wp_send_json( [

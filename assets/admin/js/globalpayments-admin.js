@@ -84,7 +84,11 @@
 
                 $.ajax({
                     url: globalpayments_admin_txn_params.transaction_info_url,
-                    data: {transactionId: globalpayments_admin_txn_params.transaction_id}
+                    method: 'POST',
+                    data: {
+                        _wpnonce: globalpayments_admin_txn_params._wpnonce,
+                        transactionId: globalpayments_admin_txn_params.transaction_id
+                    }
                 }).done( function ( response ) {
                     if ( response.error ) {
                         $( this ).WCBackboneModal({

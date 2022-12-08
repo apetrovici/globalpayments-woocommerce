@@ -94,7 +94,9 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}, 10, 2);
 
 		// Admin View Transaction Info hooks
-		add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'transaction_info_modal' ), 99 );
+		if ( is_admin() && current_user_can( 'edit_shop_orders' ) ) {
+			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'transaction_info_modal' ), 99 );
+		}
 		add_action( 'woocommerce_api_globalpayments_get_transaction_info', array( $this, 'get_transaction_info' ) );
 	}
 

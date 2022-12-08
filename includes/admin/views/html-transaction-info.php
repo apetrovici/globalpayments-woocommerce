@@ -17,6 +17,7 @@
                     </button>
                 </header>
                 <article>
+	                <?php wp_nonce_field( 'woocommerce-globalpayments-view-transaction-info', 'woocommerce-globalpayments-view-transaction-info-nonce' ); ?>
                     <#if( data.error_message ){#>
                         <div class="wc-globalpayments-transaction-info-error">
                             {{ data.error_message }}
