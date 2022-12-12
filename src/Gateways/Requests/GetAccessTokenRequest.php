@@ -12,6 +12,12 @@ class GetAccessTokenRequest extends AbstractRequest {
 	}
 
 	public function get_args() {
+		return array();
+
+		/**
+		 * @TODO: add `PMT_POST_Create_Single` for App Id: sz3hGj7KFsWb6A4JeP9jgIG8GgHXL2gT
+		 * BE Requests are performed on QA env
+		 */
 		return array(
 			RequestArg::PERMISSIONS => array(
 				'PMT_POST_Create_Single',
