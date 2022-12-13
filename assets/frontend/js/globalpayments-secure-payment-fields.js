@@ -205,14 +205,22 @@
 		 * @returns
 		 */
 		renderPaymentFields: function () {
-			// if ( $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
-			// 	return;
-			// }
+			var gatewayConfig = this.gatewayOptions;
+			if (gatewayConfig.default) {
+				if ( $( '#' + this.id + '-' + this.fieldOptions['credit-card'].class ).children().length > 0 ) {
+					return;
+				}
+			} else {
+				if ( $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
+					return;
+				}
+			}
+
 			if ( ! GlobalPayments.configure ) {
 				console.log( 'Warning! Payment fields cannot be loaded' );
 				return;
 			}
-			var gatewayConfig = this.gatewayOptions;
+
 			if ( gatewayConfig.error ) {
 				this.showPaymentError( gatewayConfig.message );
 			}
