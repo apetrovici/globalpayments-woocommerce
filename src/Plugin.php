@@ -49,6 +49,9 @@ class Plugin {
 			Gateways\AbstractGateway::class,
 			'capture_credit_card_authorization'
 		) );
+		add_action( 'admin_menu', function() {
+			add_submenu_page( 'woocommerce', 'Unified Payments', 'Unified Payments', 'administrator', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=globalpayments_gpapi' ), '', 0.5 );
+		}, 99 );
 	}
 
 	/**
