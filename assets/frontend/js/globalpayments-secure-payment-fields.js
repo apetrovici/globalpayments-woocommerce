@@ -211,7 +211,10 @@
 					return;
 				}
 			} else {
-				if ( $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
+				if ( this.fieldOptions.hasOwnProperty('card-number-field') && $( '#' + this.id + '-' + this.fieldOptions['card-number-field'].class ).children().length > 0 ) {
+					return;
+				}
+				if ( this.fieldOptions.hasOwnProperty('click-to-pay-field') && $( '#' + this.id + '-' + this.fieldOptions['click-to-pay-field'].class ).children().length > 0 ) {
 					return;
 				}
 			}
@@ -585,6 +588,14 @@
 		 * @returns {object}
 		 */
 		getFieldConfiguration: function () {
+			if ( this.fieldOptions.hasOwnProperty( 'click-to-pay-field' ) ) {
+				return {
+					'click-to-pay': {
+						placeholder: this.fieldOptions['click-to-pay-field'].placeholder,
+						target: '#' + this.id + '-' + this.fieldOptions['click-to-pay-field'].class
+					}
+				}
+			}
 			var fields = {
 				'card-number': {
 					placeholder: this.fieldOptions['card-number-field'].placeholder,
