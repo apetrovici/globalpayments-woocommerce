@@ -18,6 +18,13 @@ use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 defined( 'ABSPATH' ) || exit;
 
 class AuthorizationRequest extends AbstractRequest {
+	/**
+	 * Country codes to send the state for
+	 *
+	 * @var array
+	 */
+	private $country_codes = [ 'CA', 'US' ];
+
 	public function get_transaction_type() {
 		return AbstractGateway::TXN_TYPE_BNPL_AUTHORIZE;
 	}
@@ -62,9 +69,9 @@ class AuthorizationRequest extends AbstractRequest {
 			$product = new Product();
 			$product->productId      = $item->get_product_id();
 			$product->productName    = $order_product->get_title();
-			$product->description    = $order_product->get_short_description();
+			$product->description    = $product->productName;
 			$product->quantity       = $item->get_quantity();
-//			$product->unitPrice      = wc_format_decimal( $this->order->get_item_total( $item, true ), 2 );
+			$product->unitPrice      = wc_format_decimal( $this->order->get_item_total( $item, true ), 2 );
 			$product->netUnitPrice   = wc_format_decimal( $this->order->get_item_total( $item, true ), 2 );
 			$product->taxAmount      = wc_format_decimal( $this->order->get_item_tax( $item ), 2 );
 //			$product->discountAmount = 0;
@@ -86,6 +93,9 @@ class AuthorizationRequest extends AbstractRequest {
 		$billingAddress->state          = $this->order->get_billing_state();
 		$billingAddress->postalCode     = $this->order->get_billing_postcode();
 		$billingAddress->country        = $this->order->get_billing_country();
+		if ( ! in_array( $billingAddress->country, $this->country_codes ) ) {
+			$billingAddress->state = $billingAddress->country;
+		}
 
 		return $billingAddress;
 	}
@@ -98,6 +108,9 @@ class AuthorizationRequest extends AbstractRequest {
 		$shippingAddress->state          = $this->order->get_shipping_state();
 		$shippingAddress->postalCode     = $this->order->get_shipping_postcode();
 		$shippingAddress->country        = $this->order->get_shipping_country();
+		if ( ! in_array( $shippingAddress->country, $this->country_codes ) ) {
+			$shippingAddress->state = $shippingAddress->country;
+		}
 
 		return $shippingAddress;
 	}
