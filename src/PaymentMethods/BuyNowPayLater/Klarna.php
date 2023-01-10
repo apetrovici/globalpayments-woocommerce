@@ -43,33 +43,19 @@ class Klarna extends AbstractBuyNowPayLater {
 	/**
 	 * @inheritDoc
 	 */
-	public function get_available_countries() {
+	public function get_method_availability() {
 		return array(
-			'AU',
-			'NZ',
-			'AT',
-			'BE',
-			'DK',
-			'FI',
-			'FR',
-			'DE',
-			'IT',
-			'NL',
-			'NO',
-			'PL',
-			'ES',
-			'SE',
-			'CH',
-			'GB',
-			'US',
-			'CA'
+			'AUD' => array( 'AU', 'NZ' ),
+			'NZD' => array( 'AU', 'NZ' ),
+			'EUR' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'DKK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'NOK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'PLN' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'SEK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'CHF' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'GBP' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
+			'CAD' => array( 'CA', 'US' ),
+			'USD' => array( 'CA', 'US' ),
 		);
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get_available_currencies() {
-		return array( 'AUD', 'NZD', 'EUR', 'DKK', 'NOK', 'PLN', 'SEK', 'CHF', 'GBP', 'USD', 'CAD' );
 	}
 }

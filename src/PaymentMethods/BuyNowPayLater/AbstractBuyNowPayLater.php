@@ -116,33 +116,42 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	abstract public function get_gateway_form_fields();
 
 	/**
-	 * Countries this payment method is allowed for.
+	 * Currencies and countries this payment method is allowed for.
 	 *
 	 * @return array
 	 */
-	abstract public function get_available_countries();
-
-	/**
-	 * Currencies this payment method is allowed for.
-	 *
-	 * @return array
-	 */
-	abstract public function get_available_currencies();
+	abstract public function get_method_availability();
 
 	/**
 	 * @inheritdoc
 	 */
 	public function is_available() {
-		$currencies = $this->get_available_currencies();
-		if ( ! empty( $currencies ) && ! in_array( get_woocommerce_currency(), $currencies ) ) {
+		if ( false === parent::is_available() ) {
 			return false;
 		}
-		$countries = $this->get_available_countries();
-		if ( ! empty( $countries ) && WC()->cart && ! in_array( WC()->cart->get_customer()->get_billing_country(), $countries ) ) {
+		$currency = get_woocommerce_currency();
+		$method_availability = $this->get_method_availability();
+		if ( ! isset( $method_availability[ $currency ] ) ) {
 			return false;
+		}
+		if ( WC()->cart ) {
+			$customer = WC()->cart->get_customer();
+			switch( $this->id ) {
+				case Affirm::PAYMENT_METHOD_ID:
+					if ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] )
+					     || ! in_array( $customer->get_shipping_country(), $method_availability[ $currency ] ) ) {
+						return false;
+					}
+					break;
+				default:
+					if ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] ) ) {
+						return false;
+					}
+					break;
+			}
 		}
 
-		return parent::is_available();
+		return true;
 	}
 
 	/**
@@ -377,8 +386,8 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 * Handle status Update URL.
 	 */
 	public function process_bnpl_status() {
-		// @TODO
-		$this->bnpl_debug('process_bnpl_status');
+//		 @TODO
+//		$this->bnpl_debug('process_bnpl_status');
 
 //		try {
 //			//Utils::validate_bnpl_request();
@@ -490,35 +499,5 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 
 		return $order;
-	}
-
-	private function bnpl_debug( $endpoint ) {
-		$logger = wc_get_logger();
-		$logger->error(
-			sprintf(
-				'Provider: %s: %s reached',
-				$this->payment_method_BNPL_provider,
-				$endpoint
-			)
-		);
-		if ( 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
-			$body = file_get_contents( 'php://input' );
-			if ( false === $body ) {
-				$logger->error( 'failed to read php://input' );
-			}
-			$logger->error(
-				sprintf(
-					'body php://input: [%s]',
-					print_r( $body, true )
-				)
-			);
-			$decoded_body = json_decode( file_get_contents( 'php://input' ) );
-			$logger->error(
-				sprintf(
-					'json decoded body php://input: [%s]',
-					print_r( $decoded_body, true )
-				)
-			);
-		}
 	}
 }

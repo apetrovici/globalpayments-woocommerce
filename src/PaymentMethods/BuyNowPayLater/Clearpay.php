@@ -44,14 +44,13 @@ class Clearpay extends AbstractBuyNowPayLater {
 	/**
 	 * @inheritDoc
 	 */
-	public function get_available_countries() {
-		return array( 'GB', 'AU', 'NZ', 'CA', 'US' );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function get_available_currencies() {
-		return array( 'GBP', 'AUD', 'NZD', 'CAD', 'USD' );
+	public function get_method_availability() {
+		return array(
+			'GBP' => array( 'GB' ),
+			'AUD' => array( 'AU' ),
+			'NZD' => array( 'NZ' ),
+			'CAD' => array( 'CA' ),
+			'USD' => array( 'US' ),
+		);
 	}
 }
