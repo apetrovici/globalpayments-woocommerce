@@ -4,6 +4,8 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Handlers;
 
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Affirm;
+use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Clearpay;
+use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Klarna;
 
 class PaymentActionHandler extends AbstractHandler {
 	protected $accepted_transaction_types = array(

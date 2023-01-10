@@ -277,8 +277,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		$is_successful    = $this->gateway->handle_response( $request, $gateway_response );
 
 		if ( ! $is_successful ) {
-			// @TODO: display proper message for customer
-			throw new \Exception('Something went wrong with Affirm - transaction failed');
+			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction failed');
 		}
 
 		return $gateway_response;
@@ -296,8 +295,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			case TransactionStatus::INITIATED:
 				break;
 			default:
-				// @TODO: display proper message for customer
-				throw new \Exception('Something went wrong with Affirm - transaction ' . $gateway_response->responseMessage );
+				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction ' . $gateway_response->responseMessage );
 		}
 	}
 
@@ -310,8 +308,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 */
 	private function validate_provider_redirect_url( Transaction $gateway_response ) {
 		if ( empty( $gateway_response->transactionReference->bnplResponse->redirectUrl ) ) {
-			// @TODO: display proper message for customer
-			throw new \Exception('Something went wrong with Affirm - no redirect url');
+			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - no redirect url');
 		}
 	}
 
@@ -338,8 +335,8 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 					$order->set_status( 'failed' );
 					$order->save();
 				}
-				// @TODO: display proper message for customer
-				throw new \Exception('Something went wrong with Affirm - transaction doesn\'t have the PREAUTHORIZED status. Current status: ' . $gateway_response->transactionStatus );
+
+				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction doesn\'t have the PREAUTHORIZED status. Current status: ' . $gateway_response->transactionStatus );
 			}
 
 			$note_text = sprintf(
@@ -377,58 +374,54 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 * Handle status Update URL.
 	 */
 	public function process_bnpl_status() {
-		// @TODO
 		$this->bnpl_debug('process_bnpl_status');
 
-//		try {
-//			//Utils::validate_bnpl_request();
-//
-//			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( wc_clean( $_GET['id'] ) );
-//			$order = $this->get_order( $gateway_response );
-//
-//			if ( TransactionStatus::PREAUTHORIZED !== $gateway_response->transactionStatus ) {
-//				if ( TransactionStatus::DECLINED == $gateway_response->transactionStatus ) {
-//					$note_text = sprintf(
-//						'%1$s%2$s %3$s. Transaction ID: %4$s.',
-//						get_woocommerce_currency_symbol( $order->get_currency() ),
-//						$order->get_total(),
-//						__( 'payment failed/declined', 'globalpayments-gateway-provider-for-woocommerce' ),
-//						$order->get_transaction_id()
-//					);
-//					$order->add_order_note( $note_text );
-//					$order->set_status( 'failed' );
-//					$order->save();
-//				}
-//				// @TODO: display proper message for customer
-//				throw new \Exception('Something went wrong with Affirm - transaction doesn\'t have the PREAUTHORIZED status');
-//			}
-//
-//			$note_text = sprintf(
-//				'%1$s%2$s %3$s. Transaction ID: %4$s.',
-//				get_woocommerce_currency_symbol( $order->get_currency() ),
-//				$order->get_total(),
-//				__( 'authorized', 'globalpayments-gateway-provider-for-woocommerce' ),
-//				$order->get_transaction_id()
-//			);
-//			$order->add_order_note( $note_text );
-//			$order->set_status( 'processing' );
-//			$order->save();
-//
-//			if ($this->payment_action == AbstractGateway::TXN_TYPE_SALE) {
-//				AbstractGateway::capture_credit_card_authorization( $order );
-//				$order->payment_complete();
-//			}
-//
-//			//wp_redirect( $order->get_checkout_order_received_url() );
-//		} catch (\Exception $e) {
-//			$logger = wc_get_logger();
-//			$logger->error(
-//				sprintf(
-//					'Error completing order with ' . $this->payment_method_BNPL_provider . '. %s',
-//					$e->getMessage()
-//				)
-//			);
-//		}
+		try {
+			$response = Utils::validate_bnpl_request();
+			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( wc_clean( $response->id ) );
+			$order = $this->get_order( $gateway_response );
+
+			if ( TransactionStatus::PREAUTHORIZED !== $gateway_response->transactionStatus ) {
+				if ( TransactionStatus::DECLINED == $gateway_response->transactionStatus ) {
+					$note_text = sprintf(
+						'%1$s%2$s %3$s. Transaction ID: %4$s.',
+						get_woocommerce_currency_symbol( $order->get_currency() ),
+						$order->get_total(),
+						__( 'payment failed/declined', 'globalpayments-gateway-provider-for-woocommerce' ),
+						$order->get_transaction_id()
+					);
+					$order->add_order_note( $note_text );
+					$order->set_status( 'failed' );
+					$order->save();
+				}
+
+				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction doesn\'t have the PREAUTHORIZED status');
+			}
+
+			$note_text = sprintf(
+				'%1$s%2$s %3$s. Transaction ID: %4$s.',
+				get_woocommerce_currency_symbol( $order->get_currency() ),
+				$order->get_total(),
+				__( 'authorized', 'globalpayments-gateway-provider-for-woocommerce' ),
+				$order->get_transaction_id()
+			);
+			$order->add_order_note( $note_text );
+			$order->set_status( 'processing' );
+			$order->save();
+
+			if ($this->payment_action == AbstractGateway::TXN_TYPE_SALE) {
+				AbstractGateway::capture_credit_card_authorization( $order );
+				$order->payment_complete();
+			}
+		} catch (\Exception $e) {
+			$logger = wc_get_logger();
+			$logger->error(
+				sprintf(
+					'Error completing order with ' . $this->payment_method_BNPL_provider . '. %s',
+					$e->getMessage()
+				)
+			);
+		}
 		exit();
 	}
 
@@ -481,8 +474,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			throw new \Exception( __( 'Order ID: ' . $gateway_response->orderId . ' Order not found.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 		if ( $this->id != $order->get_payment_method() ) {
-			// @TODO: display proper message for customer
-			throw new \Exception('Order ID: ' . $gateway_response->orderId . ' Something went wrong with Affirm - order has different payment code');
+			throw new \Exception('Order ID: ' . $gateway_response->orderId . ' Something went wrong with ' . $this->payment_method_BNPL_provider . ' - order has different payment code');
 		}
 		if ( $gateway_response->transactionId !== $order->get_transaction_id() ) {
 			// @TODO: display proper message for customer
@@ -505,20 +497,69 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			$body = file_get_contents( 'php://input' );
 			if ( false === $body ) {
 				$logger->error( 'failed to read php://input' );
+			} else {
+				$logger->error(
+					sprintf(
+						'body php://input: [%s]',
+						print_r( $body, true )
+					)
+				);
+				$logger->error(
+					sprintf(
+						'body php://input: [%s]',
+						var_dump( $body, true )
+					)
+				);
 			}
-			$logger->error(
-				sprintf(
-					'body php://input: [%s]',
-					print_r( $body, true )
-				)
-			);
-			$decoded_body = json_decode( file_get_contents( 'php://input' ) );
-			$logger->error(
-				sprintf(
-					'json decoded body php://input: [%s]',
-					print_r( $decoded_body, true )
-				)
-			);
+			$gz_decoded_body = gzdecode($body);
+			if ( false === $gz_decoded_body ) {
+				$logger->error( 'failed to gzdecode php://input' );
+				$json_decoded_body = json_decode( $body );
+				$logger->error(
+					sprintf(
+						'json decoded body php://input: [%s]',
+						print_r( $json_decoded_body, true )
+					)
+				);
+				$logger->error(
+					sprintf(
+						'json_last_error: [%s]',
+						print_r( json_last_error(), true )
+					)
+				);
+				$logger->error(
+					sprintf(
+						'json_last_error_msg: [%s]',
+						print_r( json_last_error_msg(), true )
+					)
+				);
+			} else {
+				$logger->error(
+					sprintf(
+						'gz decoded body php://input: [%s]',
+						print_r( $gz_decoded_body, true )
+					)
+				);
+				$json_decoded_gz = json_decode( $gz_decoded_body );
+				$logger->error(
+					sprintf(
+						'json decoded gz body php://input: [%s]',
+						print_r( $json_decoded_gz, true )
+					)
+				);
+				$logger->error(
+					sprintf(
+						'json_last_error: [%s]',
+						print_r( json_last_error(), true )
+					)
+				);
+				$logger->error(
+					sprintf(
+						'json_last_error_msg: [%s]',
+						print_r( json_last_error_msg(), true )
+					)
+				);
+			}
 		}
 	}
 }
