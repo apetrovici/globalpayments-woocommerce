@@ -44,16 +44,12 @@ class Affirm extends AbstractBuyNowPayLater {
 	}
 
 	/**
-	 * @inheritdoc
+	 * @inheritDoc
 	 */
-	public function get_available_countries() {
-		return array( 'CA', 'US' );
-	}
-
-	/**
-	 * @inheritdoc
-	 */
-	public function get_available_currencies() {
-		return array( 'CAD', 'USD' );
+	public function get_method_availability() {
+		return array(
+			'USD' => array( 'US' ),
+			'CAD' => array( 'US', 'CA' ),
+		);
 	}
 }
