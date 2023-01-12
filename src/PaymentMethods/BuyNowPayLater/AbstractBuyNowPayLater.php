@@ -60,6 +60,12 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	}
 
 	public function add_hooks() {
+		if ( is_admin() ) {
+			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array(
+				$this,
+				'process_admin_options'
+			) );
+		}
 		/**
 		 * The WooCommerce API allows plugins make a callback to a special URL that will then load the specified class (if it exists)
 		 * and run an action. This is also useful for gateways that are not initialized.
