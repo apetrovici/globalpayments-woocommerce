@@ -83,21 +83,10 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			'process_bnpl_cancel'
 		) );
 
-		add_action( 'woocommerce_after_checkout_validation', function( $data, $wp_error ) {
-			if ( $this->id != $data['payment_method'] ) {
-				return;
-			}
-
-			if ( empty( $data['billing_postcode'] ) && ( empty( $wp_error->errors['billing_postcode_required'] ) || empty( $wp_error->errors['billing_postcode_validation'] ) ) ) {
-				$wp_error->add ( 'billing_postcode', __( '<strong>Billing ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
-			}
-			if ( empty( $data['shipping_postcode'] ) && ( empty( $wp_error->errors['shipping_postcode_required'] ) || empty( $wp_error->errors['shipping_postcode_validation'] ) ) ) {
-				$wp_error->add ( 'shipping_postcode', __( '<strong>Shipping ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
-			}
-			if ( empty( $data['billing_phone'] ) && ( empty( $wp_error->errors['billing_phone_required'] ) || empty( $wp_error->errors['billing_phone_validation'] ) ) ) {
-				$wp_error->add ( 'billing_phone', __( '<strong>Phone</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
-			}
-		}, 10, 2);
+		add_action( 'woocommerce_after_checkout_validation', array(
+			$this,
+			'after_checkout_validation'
+		), 10, 2);
 
 		// Admin View Transaction Info hooks
 		if ( is_admin() && current_user_can( 'edit_shop_orders' ) ) {
@@ -158,6 +147,21 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 
 		return true;
+	}
+
+	public function after_checkout_validation( $data, $wp_error ) {
+		if ( $this->id != $data['payment_method'] ) {
+			return;
+		}
+		if ( empty( $data['billing_postcode'] ) && ( empty( $wp_error->errors['billing_postcode_required'] ) || empty( $wp_error->errors['billing_postcode_validation'] ) ) ) {
+			$wp_error->add ( 'billing_postcode', __( '<strong>Billing ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+		}
+		if ( WC()->cart->needs_shipping() && empty( $data['shipping_postcode'] ) && ( empty( $wp_error->errors['shipping_postcode_required'] ) || empty( $wp_error->errors['shipping_postcode_validation'] ) ) ) {
+			$wp_error->add ( 'shipping_postcode', __( '<strong>Shipping ZIP Code</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+		}
+		if ( empty( $data['billing_phone'] ) && ( empty( $wp_error->errors['billing_phone_required'] ) || empty( $wp_error->errors['billing_phone_validation'] ) ) ) {
+			$wp_error->add ( 'billing_phone', __( '<strong>Phone</strong> is a required field for this payment method.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+		}
 	}
 
 	/**
