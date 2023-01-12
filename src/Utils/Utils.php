@@ -6,7 +6,7 @@ class Utils {
 	/**
 	 * Validate BNPL notification request.
 	 *
-	 * @return array
+	 * @return array|bool
 	 * @throws \Exception
 	 */
 	public static function validate_bnpl_request() {
@@ -14,11 +14,14 @@ class Utils {
 			throw new \Exception( __( 'The request method is missing.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 
-		return match ( $_SERVER['REQUEST_METHOD'] ) {
-			'GET' => self::validate_bnpl_get_request(),
-			'POST' => self::validate_bnpl_post_request(),
-			default => throw new \Exception( __( 'This request method is not supported.', 'globalpayments-gateway-provider-for-woocommerce' ) ),
-		};
+		switch ( $_SERVER['REQUEST_METHOD'] ) {
+			case 'GET':
+				return self::validate_bnpl_get_request();
+			case 'POST':
+				return self::validate_bnpl_post_request();
+			default:
+				throw new \Exception( __( 'This request method is not supported.', 'globalpayments-gateway-provider-for-woocommerce' ) );
+		}
 	}
 
 	/**
