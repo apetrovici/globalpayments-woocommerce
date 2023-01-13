@@ -46,19 +46,45 @@ class Utils {
 	 * @throws \Exception
 	 */
 	private static function validate_bnpl_post_request() {
-		$headers = getallheaders();
-		if (false === $headers) {
+		$req_details = self::get_request_details();
+		$xgp_signature = $req_details->headers['X_GP_SIGNATURE'];
+		if ( empty( $xgp_signature ) ) {
 			throw new \Exception( __( 'This request has invalid headers.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 
-		self::verify_xgp_signature($headers['X-Gp-Signature']);
+		self::verify_xgp_signature($xgp_signature);
 
-		$body = json_decode(file_get_contents('php://input'));
-		if ( empty( $body->id ) ) {
+		$content = $req_details->content;
+		if ( empty( $content->id ) ) {
 			throw new \Exception( __( 'Missing transaction id.', 'globalpayments-gateway-provider-for-woocommerce' ) );
 		}
 
-		return $body;
+		return $content;
+	}
+
+	/**
+	 * Get request headers and request content
+	 *
+	 * @return object
+	 */
+	private static function get_request_details() {
+		$server = rest_get_server();
+		$headers = $server->get_headers($_SERVER);
+
+		$raw_content = $server::get_raw_data();
+
+		if ( isset( $headers['CONTENT_ENCODING'] ) && false !== strpos( $headers['CONTENT_ENCODING'], 'gzip' ) ) {
+			$raw_content = gzdecode($raw_content);
+		}
+
+		if ( isset( $headers['CONTENT_TYPE'] ) && 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
+			$raw_content = json_decode($raw_content);
+		}
+
+		return (object) array(
+			'headers' => $headers,
+			'content' => $raw_content
+		);
 	}
 
 	/**
