@@ -19,7 +19,7 @@ class Plugin {
 	 *
 	 * @var string
 	 */
-	const VERSION = '1.5.1';
+	const VERSION = '1.5.2';
 
 	/**
 	 * Init the package.
@@ -34,12 +34,14 @@ class Plugin {
 		//initialize gift related hooks for Heartland ajax requests
 		if ( true === wp_doing_ajax() || ! empty( $_GET['wc-ajax'] ) ) {
 			$heartlandSettings = get_option( 'woocommerce_' . HeartlandGateway::GATEWAY_ID . '_settings' );
-			// prevent checkout blocker when Heartland settings not setted loop
+			// prevent checkout blocker when Heartland settings not set loop
 			if (
-			    !empty( $heartlandSettings )  &&
-                'yes' === $heartlandSettings['enabled'] &&
-                'yes' === $heartlandSettings['allow_gift_cards']
-            ) {
+				! empty( $heartlandSettings ) &&
+				isset( $heartlandSettings['enabled'] ) &&
+				'yes' === $heartlandSettings['enabled'] &&
+				isset( $heartlandSettings['allow_gift_cards'] ) &&
+				'yes' === $heartlandSettings['allow_gift_cards']
+			) {
 				new HeartlandGateway();
 			}
 		}

@@ -323,7 +323,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'globalpayments-secure-payment-fields',
 			Plugin::get_url( '/assets/frontend/css/globalpayments-secure-payment-fields.css' ),
 			array(),
-			WC()->version
+			Plugin::VERSION
 		);
 
 		// Global Payments scripts for handling client-side tokenization
@@ -343,7 +343,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				Plugin::get_url( '/assets/frontend/js/globalpayments-3ds' )
 				. ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min' ) . '.js',
 				array( 'globalpayments-secure-payment-fields-lib' ),
-				WC()->version,
+				Plugin::VERSION,
 				true
 			);
 			array_push( $secure_payment_fields_deps, 'globalpayments-threedsecure-lib' );
@@ -360,7 +360,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'globalpayments-secure-payment-fields',
 			Plugin::get_url( '/assets/frontend/js/globalpayments-secure-payment-fields.js' ),
 			$secure_payment_fields_deps,
-			WC()->version,
+			Plugin::VERSION,
 			true
 		);
 
@@ -396,7 +396,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			'globalpayments-helper',
 			Plugin::get_url( '/assets/frontend/js/globalpayments-helper.js' ),
 			array( 'jquery', 'jquery-blockui' ),
-			WC()->version,
+			Plugin::VERSION,
 			true
 		);
 
