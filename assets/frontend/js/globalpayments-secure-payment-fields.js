@@ -24,6 +24,13 @@
 		this.cardForm = {};
 
 		/**
+		 * Apm form instance
+		 *
+		 * @type {any}
+		 */
+		this.apmForm = {};
+
+		/**
 		 * Payment gateway id
 		 *
 		 * @type {string}
@@ -41,6 +48,8 @@
 		 * Payment field styles
 		 */
 		this.fieldStyles = options.field_styles;
+
+		this.apmFormEnabled = options.apm_form;
 
 		/**
 		 * Payment gateway options
@@ -206,6 +215,8 @@
 		 */
 		renderPaymentFields: function () {
 			var gatewayConfig = this.gatewayOptions;
+			console.log('>>> config=', gatewayConfig);
+			console.log('>>> this.fieldOptions=', this.fieldOptions);
 			if (gatewayConfig.default) {
 				if ( $( '#' + this.id + '-' + this.fieldOptions['credit-card'].class ).children().length > 0 ) {
 					return;
@@ -235,10 +246,15 @@
 			}
 
 			GlobalPayments.configure( gatewayConfig );
-			console.log('>>> config=', gatewayConfig);
+			GlobalPayments.on("error", function (error) {
+				console.error('GlobalPayments JS Library configuration error');
+				console.error(error);
+			});
 			if (gatewayConfig.default) {
+				// GP default form
 				this.cardForm = GlobalPayments.creditCard.form( '#' + this.id + '-credit-card', { style: 'gp-default' } );
 			} else {
+				// GP Integrations form - custom config
 				this.cardForm = GlobalPayments.ui.form(
 					{
 						fields: this.getFieldConfiguration(),
@@ -247,18 +263,31 @@
 				);
 			}
 
-
 			this.cardForm.on( 'submit', 'click', helper.blockOnSubmit.bind( this ) );
 			this.cardForm.on( 'token-success', this.handleResponse.bind( this ) );
 			this.cardForm.on( 'token-error', this.handleErrors.bind( this ) );
 			this.cardForm.on( 'error', this.handleErrors.bind( this ) );
-			GlobalPayments.on( 'error', this.handleErrors.bind( this ) );
 
 			// match the visibility of our payment form
 			this.cardForm.ready( function () {
 				helper.toggleSubmitButtons();
 			} );
 
+			if ( this.apmFormEnabled ) {
+				// APM form for CTP STandalone
+				console.log('>>> APM form for CTP STandalone');
+				console.log('>>> GlobalPayments.enums', GlobalPayments.enums);
+				this.apmForm = GlobalPayments.apm.form('#globalpayments_clicktopay-click-to-pay',
+					{
+						amount: "3.4",
+						style: "gp-default",
+						apms: [GlobalPayments.enums.Apm.ClickToPay]
+					});
+				// this.apmForm.setSubtotalAmount("4.57");
+				this.apmForm.on("token-success", function (resp) { console.log(resp); });
+				this.apmForm.on("token-error", function (resp) { console.log(resp); });
+				this.apmForm.on("error", function (resp) { console.log(resp); });
+			}
 		},
 
 		/**

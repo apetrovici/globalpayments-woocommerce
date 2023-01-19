@@ -181,6 +181,7 @@ class GpApiGateway extends AbstractGateway {
 				'title'             => __( 'JS Lib Config', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'              => 'textarea',
 				'description'       => __( 'JSON Encoded lib config', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'css'               => 'height: 422px; width: 500px;',
 			),
 			'js_lib_config_default' => array(
 				'title'             => __( 'JS Lib Config - Default', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -188,9 +189,9 @@ class GpApiGateway extends AbstractGateway {
 				'description'       => __( 'Check this if you want to display the GP default form. The above settings will be ignored.', 'globalpayments-gateway-provider-for-woocommerce' ),
 			),
 			'js_lib_config_clicktopay' => array(
-				'title'             => __( 'JS Lib Config - Standalone Click to Pay', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'title'             => __( 'JS Lib Config - Click to Pay', 'globalpayments-gateway-provider-for-woocommerce' ),
 				'type'              => 'checkbox',
-				'description'       => __( 'Check this if you want to display the Standalone Click to Pay form. <b style="color: #0A246A">You will still need to add the JSON Encoded lib config</b>.', 'globalpayments-gateway-provider-for-woocommerce' ),
+				'description'       => __( 'Check this if you want to display the Click to Pay form. <b style="color: #0A246A">You will still need to add the JSON Encoded lib config</b>.', 'globalpayments-gateway-provider-for-woocommerce' ),
 			),
 			'js_lib_config_integrations' => array(
 				'title'             => __( 'JS Lib Config - Integrations', 'globalpayments-gateway-provider-for-woocommerce' ),
@@ -239,7 +240,7 @@ class GpApiGateway extends AbstractGateway {
 			return array(
 				'accessToken'           => $this->get_access_token(),
 				'apiVersion'            => GpApiConnector::GP_API_VERSION,
-				'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
+//				'env'                   => $this->is_production ? parent::ENVIRONMENT_PRODUCTION : parent::ENVIRONMENT_SANDBOX,
 				'env'                   => 'qa',
 				'requireCardHolderName' => true,
 				'default'               => false,
@@ -251,10 +252,13 @@ class GpApiGateway extends AbstractGateway {
 			'env'         => 'qa',
 			'default'     => true,
 		);
+
 		if ($this->js_lib_config_clicktopay) {
-			$custom_config = json_decode($this->js_lib_config, true);
-			return array_merge($default, $custom_config, array('default' => false));
+			$custom_config = json_decode( $this->js_lib_config, true );
+
+			return array_merge( $default, $custom_config, array( 'default' => true ) );
 		}
+
 		if ($this->js_lib_config_default) {
 			return $default;
 		}
@@ -330,18 +334,18 @@ class GpApiGateway extends AbstractGateway {
 			);
 			return $fields;
 		}
-		if ($this->js_lib_config_clicktopay) {
-			return array(
-				'click-to-pay-field' => array(
-					'class'       => 'click-to-pay',
-					'label'       => '',
-					'placeholder' => '',
-					'messages'    => array(
-						'validation' => '',
-					),
-				),
-			);
-		}
+//		if ($this->js_lib_config_clicktopay) {
+//			return array(
+//				'click-to-pay-field' => array(
+//					'class'       => 'click-to-pay',
+//					'label'       => '',
+//					'placeholder' => '',
+//					'messages'    => array(
+//						'validation' => '',
+//					),
+//				),
+//			);
+//		}
 		return array(
 			'credit-card' => array(
 				'class'       => 'credit-card',

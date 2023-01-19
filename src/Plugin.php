@@ -52,6 +52,9 @@ class Plugin {
 		add_action( 'admin_menu', function() {
 			add_submenu_page( 'woocommerce', 'Unified Payments', 'Unified Payments', 'administrator', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=globalpayments_gpapi' ), '', 0.5 );
 		}, 99 );
+		add_action( 'admin_menu', function() {
+			add_submenu_page( 'woocommerce', 'Click to Pay', 'Click to Pay', 'administrator', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=globalpayments_clicktopay' ), '', 0.5 );
+		}, 99 );
 	}
 
 	/**
@@ -69,6 +72,7 @@ class Plugin {
 			Gateways\GpApiGateway::class,
 			Gateways\GooglePayGateway::class,
 			Gateways\ApplePayGateway::class,
+			Gateways\ClickToPayGateway::class,
 		);
 
 		foreach ( $gateways as $gateway ) {

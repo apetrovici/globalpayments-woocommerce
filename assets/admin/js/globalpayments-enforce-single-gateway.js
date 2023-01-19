@@ -1,6 +1,6 @@
 ( function( $ ) {
     $( function() {
-        var digitalWallet = [ 'globalpayments_googlepay', 'globalpayments_applepay' ];
+        var digitalWallet = [ 'globalpayments_googlepay', 'globalpayments_applepay', 'globalpayments_clicktopay' ];
         // Toggle GlobalPayments gateway on/off.
         $( '[data-gateway_id^="globalpayments_"]' ).on( 'click', '.wc-payment-gateway-method-toggle-enabled', function() {
             var toggle = true;

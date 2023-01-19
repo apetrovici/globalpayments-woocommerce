@@ -284,7 +284,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 *
 	 * @return array
 	 */
-	public function woocommerce_credit_card_form_fields() {
+	public function woocommerce_credit_card_form_fields( $default_fields, $id ) {
+		if ( $this->id != $id ) {
+			return $default_fields;
+		}
+
 		$field_format = $this->secure_payment_field_html_format();
 		$fields       = $this->secure_payment_fields();
 		$result       = array();
@@ -362,6 +366,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			true
 		);
 
+		$click_to_pay_settings = get_option( 'woocommerce_globalpayments_clicktopay_settings' );
+		$apm_form = false;
+		if ( isset( $click_to_pay_settings['enabled'] ) && 'yes' == $click_to_pay_settings['enabled'] ) {
+			$apm_form = true;
+		}
 		wp_localize_script(
 			'globalpayments-secure-payment-fields',
 			'globalpayments_secure_payment_fields_params',
@@ -370,6 +379,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				'gateway_options' => $this->secure_payment_fields_config(),
 				'field_options'   => $this->secure_payment_fields(),
 				'field_styles'    => $this->secure_payment_fields_styles(),
+				'apm_form'        => $apm_form,
 			)
 		);
 		if ( $this->supports( 'globalpayments_three_d_secure' ) && is_checkout() ) {
@@ -777,7 +787,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		}
 		// hooks only active when the gateway is enabled
 		if ( ! $this->is_digital_wallet ) {
-			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ) );
+			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ), 10, 2 );
 		}
 
 		add_action( 'woocommerce_api_globalpayments_order_info', array(
@@ -1239,7 +1249,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @return mixed
 	 */
 	public function admin_enforce_single_gateway( $settings ) {
-		if ( $this->is_digital_wallet ) {
+		if ( $this->is_digital_wallet || ClickToPayGateway::GATEWAY_ID == $this->id ) {
 			return $settings;
 		}
 		if ( ! wc_string_to_bool( $settings['enabled'] ) ) {
