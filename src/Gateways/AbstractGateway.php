@@ -285,9 +285,16 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * Replaces WooCommerce's default card inputs for empty container elements
 	 * for our secure payment fields (iframes).
 	 *
+	 * @param $fields
+	 * @param $id
+	 *
 	 * @return array
 	 */
-	public function woocommerce_credit_card_form_fields() {
+	public function woocommerce_credit_card_form_fields( $fields, $id ) {
+		if ( $this->id != $id ) {
+			return $fields;
+		}
+
 		$field_format = $this->secure_payment_field_html_format();
 		$fields       = $this->secure_payment_fields();
 		$result       = array();
@@ -782,7 +789,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 		}
 		// hooks only active when the gateway is enabled
 		if ( ! $this->is_digital_wallet ) {
-			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ) );
+			add_filter( 'woocommerce_credit_card_form_fields', array( $this, 'woocommerce_credit_card_form_fields' ), 10, 2 );
 		}
 
 		add_action( 'woocommerce_api_globalpayments_order_info', array(
