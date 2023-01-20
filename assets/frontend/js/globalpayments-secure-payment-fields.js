@@ -224,6 +224,8 @@
 			}
 
 			GlobalPayments.configure( gatewayConfig );
+			GlobalPayments.on( 'error', this.handleErrors.bind( this ) );
+
 			this.cardForm = GlobalPayments.ui.form(
 				{
 					fields: this.getFieldConfiguration(),
@@ -234,7 +236,6 @@
 			this.cardForm.on( 'token-success', this.handleResponse.bind( this ) );
 			this.cardForm.on( 'token-error', this.handleErrors.bind( this ) );
 			this.cardForm.on( 'error', this.handleErrors.bind( this ) );
-			GlobalPayments.on( 'error', this.handleErrors.bind( this ) );
 
 			// match the visibility of our payment form
 			this.cardForm.ready( function () {
