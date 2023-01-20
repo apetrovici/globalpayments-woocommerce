@@ -52,4 +52,11 @@ class Affirm extends AbstractBuyNowPayLater {
 			'CAD' => array( 'US', 'CA' ),
 		);
 	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function is_shipping_required() {
+		return true;
+	}
 }

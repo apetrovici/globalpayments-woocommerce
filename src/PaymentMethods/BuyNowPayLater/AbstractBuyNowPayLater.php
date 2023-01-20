@@ -118,6 +118,15 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	abstract public function get_method_availability();
 
 	/**
+	 * States whether the shipping country should be considered for method availability.
+	 *
+	 * @return bool
+	 */
+	public function is_shipping_required() {
+		return false;
+	}
+
+	/**
 	 * @inheritdoc
 	 */
 	public function is_available() {
@@ -131,18 +140,13 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 		if ( WC()->cart ) {
 			$customer = WC()->cart->get_customer();
-			switch( $this->id ) {
-				case Affirm::PAYMENT_METHOD_ID:
-					if ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] )
-					     || ! in_array( $customer->get_shipping_country(), $method_availability[ $currency ] ) ) {
-						return false;
-					}
-					break;
-				default:
-					if ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] ) ) {
-						return false;
-					}
-					break;
+			if ( $this->is_shipping_required() ) {
+				if ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] )
+				     || ! in_array( $customer->get_shipping_country(), $method_availability[ $currency ] ) ) {
+					return false;
+				}
+			} elseif ( ! in_array( $customer->get_billing_country(), $method_availability[ $currency ] ) ) {
+				return false;
 			}
 		}
 
