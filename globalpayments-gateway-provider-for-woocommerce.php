@@ -87,3 +87,12 @@ function globalpayments_update_plugin_version( WP_Upgrader $wp_upgrader, $hook_e
 	}
 }
 add_action( 'upgrader_process_complete', 'globalpayments_update_plugin_version', 10, 2 );
+
+$requiredExtensions = [ 'curl', 'dom', 'openssl', 'json', 'zlib', 'intl', 'mbstring', 'xml' ];
+foreach ($requiredExtensions as $ext) {
+	if (!extension_loaded($ext)) {
+		add_action( 'admin_notices', function () use ($ext) {
+			echo '<div class="notice notice-error"><p> The GlobalPayments WooCommerce plugin requires the ' . $ext . ' extension.' . '</p></div>';
+		});
+	}
+}
