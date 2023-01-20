@@ -255,6 +255,9 @@ class GpApiGateway extends AbstractGateway {
 
 		if ($this->js_lib_config_clicktopay) {
 			$custom_config = json_decode( $this->js_lib_config, true );
+			if ( json_last_error() ) {
+				throw new \Exception( json_last_error_msg() );
+			}
 
 			return array_merge( $default, $custom_config, array( 'default' => true ) );
 		}
@@ -264,6 +267,9 @@ class GpApiGateway extends AbstractGateway {
 		}
 		if (!empty($this->js_lib_config)) {
 			$custom_config = json_decode($this->js_lib_config, true);
+			if ( json_last_error() ) {
+				throw new \Exception( json_last_error_msg() );
+			}
 		} else {
 			$custom_config = array();
 		}
