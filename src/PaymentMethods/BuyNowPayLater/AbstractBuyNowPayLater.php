@@ -252,29 +252,34 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		// At this point, order should be placed in 'Pending Payment', but products should still be visible in the cart
 		$order = wc_get_order( $order_id );
 
-		// 1. Initiate the payment
-		$gateway_response = $this->initiate_payment( $order );
+		try {
+			// 1. Initiate the payment
+			$gateway_response = $this->initiate_payment( $order );
 
-		$this->validate_transaction_status( $gateway_response );
-		$this->validate_provider_redirect_url( $gateway_response );
+			$this->validate_transaction_status( $gateway_response );
+			$this->validate_provider_redirect_url( $gateway_response );
 
-		// Add order note  prior to customer redirect
-		$note_text = sprintf(
-			'%1$s %2$s %4$s. Transaction ID: %3$s.',
-			wc_price( $order->get_total() ),
-			__( 'payment initiated with', 'globalpayments-gateway-provider-for-woocommerce' ),
-			$gateway_response->transactionId,
-			$this->payment_method_BNPL_provider
-		);
-		$order->add_order_note( $note_text );
-		$order->set_transaction_id( $gateway_response->transactionId );
-		$order->save();
+			// Add order note  prior to customer redirect
+			$note_text = sprintf(
+				'%1$s %2$s %4$s. Transaction ID: %3$s.',
+				wc_price( $order->get_total() ),
+				__( 'payment initiated with', 'globalpayments-gateway-provider-for-woocommerce' ),
+				$gateway_response->transactionId,
+				$this->payment_method_BNPL_provider
+			);
+			$order->add_order_note( $note_text );
+			$order->set_transaction_id( $gateway_response->transactionId );
+			$order->save();
 
-		// 2. Redirect the customer
-		return array(
-			'result'   => 'success',
-			'redirect' => $gateway_response->transactionReference->bnplResponse->redirectUrl,
-		);
+			// 2. Redirect the customer
+			return array(
+				'result'   => 'success',
+				'redirect' => $gateway_response->transactionReference->bnplResponse->redirectUrl,
+			);
+		} catch ( \Exception $e ) {
+			wc_get_logger()->error( $e->getMessage() );
+			throw new \Exception( $this->map_response_code_to_friendly_message() );
+		}
 	}
 
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
@@ -296,11 +301,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 
 		$gateway_response = $this->gateway->client->submit_request( $request );
 
-		$is_successful    = $this->gateway->handle_response( $request, $gateway_response );
-
-		if ( ! $is_successful ) {
-			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction failed');
-		}
+		$this->gateway->handle_response( $request, $gateway_response );
 
 		return $gateway_response;
 	}
@@ -317,7 +318,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			case TransactionStatus::INITIATED:
 				break;
 			default:
-				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - transaction ' . $gateway_response->responseMessage );
+				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . '. Unexpected transaction status on initiate payment: expected INITIATED but received: ' . $gateway_response->responseMessage );
 		}
 	}
 
@@ -330,7 +331,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 */
 	private function validate_provider_redirect_url( Transaction $gateway_response ) {
 		if ( empty( $gateway_response->transactionReference->bnplResponse->redirectUrl ) ) {
-			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . ' - no redirect url');
+			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . '. No redirect url.');
 		}
 	}
 
