@@ -12,7 +12,7 @@ class TransactionDetailRequest extends AbstractRequest {
 	}
 
 	public function get_args() {
-		$gateway_id = ! empty( $this->data['txn_id'] ) ? $this->data['txn_id'] : $this->order->get_transaction_id();
+		$gateway_id = $this->data['txn_id'] ?? null;
 
 		return array(
 			RequestArg::GATEWAY_ID => $gateway_id,

@@ -910,11 +910,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 	 * @throws ApiException
 	 */
 	public function process_refund( $order_id, $amount = null, $reason = '' ) {
-		$details                = $this->get_transaction_details( $order_id );
+		$order                  = wc_get_order( $order_id );
+		$details                = $this->get_transaction_details_by_txn_id( $order->get_transaction_id() );
 		$is_order_txn_id_active = $this->is_transaction_active( $details );
 		$txn_type               = $is_order_txn_id_active ? self::TXN_TYPE_REVERSAL : self::TXN_TYPE_REFUND;
 
-		$order        = wc_get_order( $order_id );
 		$request      = $this->prepare_request( $txn_type, $order );
 
 		if ( null != $amount ) {
@@ -999,21 +999,6 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				)
 			);
 		}
-	}
-
-	/**
-	 * Get transaction details from Order ID.
-	 *
-	 * @param int $order_id
-	 *
-	 * @return Transaction
-	 * @throws Exception
-	 */
-	public function get_transaction_details( $order_id ) {
-		$order   = wc_get_order( $order_id );
-		$request = $this->prepare_request( self::TXN_TYPE_REPORT_TXN_DETAILS, $order );
-
-		return $this->submit_request( $request );
 	}
 
 	/**
