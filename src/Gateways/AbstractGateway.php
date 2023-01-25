@@ -12,6 +12,7 @@ use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLat
 use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Clearpay;
 use GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNowPayLater\Klarna;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 use WC_Payment_Gateway_CC;
 use WC_Order;
 use GlobalPayments\Api\Entities\Transaction;
@@ -1089,7 +1090,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 				}
 			}
 
-			throw new ApiException( $this->mapResponseCodeToFriendlyMessage( $response->responseCode ) );
+			throw new ApiException( Utils::map_response_code_to_friendly_message( $response->responseCode ) );
 		}
 
 		// phpcs:ignore WordPress.NamingConventions.ValidVariableName

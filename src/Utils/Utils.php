@@ -2,6 +2,8 @@
 
 namespace GlobalPayments\WooCommercePaymentGatewayProvider\Utils;
 
+use GlobalPayments\Api\Entities\Enums\TransactionStatus;
+
 class Utils {
 	/**
 	 * Get request headers and request content
@@ -44,5 +46,22 @@ class Utils {
 		$string = remove_accents( $string );
 
 		return preg_replace( "/[^a-zA-Z-_.]/", "", $string );
+	}
+
+	/**
+	 * Converts API response code to user friendly message.
+	 *
+	 * @param string $responseCode
+	 *
+	 * @return string
+	 */
+	public static function map_response_code_to_friendly_message( $responseCode = '' ) {
+		switch ( $responseCode ) {
+			case TransactionStatus::DECLINED:
+			case 'FAILED':
+				return __( 'Your payment was unsuccessful. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
+			default:
+				return __( 'An error occurred while processing the payment. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
+		}
 	}
 }

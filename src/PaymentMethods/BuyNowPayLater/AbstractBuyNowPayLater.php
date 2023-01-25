@@ -4,7 +4,6 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNow
 
 use GlobalPayments\Api\Entities\Enums\TransactionStatus;
 use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
-use GlobalPayments\Api\Entities\Transaction;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GpApiGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\TransactionInfoTrait;
@@ -275,7 +274,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			);
 		} catch ( \Exception $e ) {
 			wc_get_logger()->error( $e->getMessage() );
-			throw new \Exception( $this->map_response_code_to_friendly_message() );
+			throw new \Exception( Utils::map_response_code_to_friendly_message() );
 		}
 	}
 
@@ -342,7 +341,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 						$order->get_transaction_id()
 					);
 					$order->update_status( 'failed', $note_text );
-					wc_add_notice( $this->map_response_code_to_friendly_message( $gateway_response->transactionStatus ), 'error' );
+					wc_add_notice( Utils::map_response_code_to_friendly_message( $gateway_response->transactionStatus ), 'error' );
 					wp_safe_redirect( wc_get_checkout_url() );
 					break;
 				default:
@@ -506,13 +505,5 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 
 		return true;
-	}
-
-	public function map_response_code_to_friendly_message( $responseCode = '' ) {
-		if ( TransactionStatus::DECLINED === $responseCode || 'FAILED' === $responseCode ) {
-			return __( 'Your payment was unsuccessful. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
-		}
-
-		return __( 'An error occurred while processing the payment. Please try again or use a different payment method.', 'globalpayments-gateway-provider-for-woocommerce' );
 	}
 }
