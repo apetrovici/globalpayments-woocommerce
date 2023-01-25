@@ -256,9 +256,6 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			// 1. Initiate the payment
 			$gateway_response = $this->initiate_payment( $order );
 
-			$this->validate_transaction_status( $gateway_response );
-			$this->validate_provider_redirect_url( $gateway_response );
-
 			// Add order note  prior to customer redirect
 			$note_text = sprintf(
 				'%1$s %2$s %4$s. Transaction ID: %3$s.',
@@ -304,35 +301,6 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		$this->gateway->handle_response( $request, $gateway_response );
 
 		return $gateway_response;
-	}
-
-	/**
-	 * Validate the transaction is initiated after the Initiate call.
-	 *
-	 * @param Transaction $gateway_response
-	 *
-	 * @throws \Exception
-	 */
-	private function validate_transaction_status( Transaction $gateway_response ) {
-		switch( $gateway_response->responseMessage ) {
-			case TransactionStatus::INITIATED:
-				break;
-			default:
-				throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . '. Unexpected transaction status on initiate payment: expected INITIATED but received: ' . $gateway_response->responseMessage );
-		}
-	}
-
-	/**
-	 * Validate the provider redirect URL is returned in the Initiate response (after the Initiate call).
-	 *
-	 * @param Transaction $gateway_response
-	 *
-	 * @throws \Exception
-	 */
-	private function validate_provider_redirect_url( Transaction $gateway_response ) {
-		if ( empty( $gateway_response->transactionReference->bnplResponse->redirectUrl ) ) {
-			throw new \Exception('Something went wrong with ' . $this->payment_method_BNPL_provider . '. No redirect url.');
-		}
 	}
 
 	/**
