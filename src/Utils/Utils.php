@@ -20,10 +20,6 @@ class Utils {
 			$raw_content = gzdecode( $raw_content );
 		}
 
-//		if ( isset( $headers['CONTENT_TYPE'] ) && 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
-//			$raw_content = json_decode( $raw_content );
-//		}
-
 		$request = new \WP_REST_Request( $_SERVER['REQUEST_METHOD'] );
 		$request->set_query_params( wp_unslash( $_GET ) );
 		$request->set_body_params( wp_unslash( $_POST ) );
