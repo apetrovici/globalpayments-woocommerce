@@ -65,6 +65,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 				'process_admin_options'
 			) );
 		}
+		add_filter( 'woocommerce_thankyou_order_received_text', array( $this, 'thankyou_order_received_text' ) );
 		/**
 		 * The WooCommerce API allows plugins make a callback to a special URL that will then load the specified class (if it exists)
 		 * and run an action. This is also useful for gateways that are not initialized.
@@ -309,12 +310,12 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 */
 	public function process_bnpl_return() {
 		$request = Utils::get_request();
+
 		try {
 			$this->validate_request( $request );
 
 			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( $request->get_param( 'id' ) );
 			$order = $this->get_order( $gateway_response );
-
 			switch( $gateway_response->transactionStatus ) {
 				case TransactionStatus::INITIATED:
 					wp_safe_redirect( $order->get_checkout_order_received_url() );
@@ -358,7 +359,13 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 				print_r( $request->get_params(), true )
 			);
 			wc_get_logger()->error( $log_text );
-			wp_safe_redirect( wc_get_checkout_url() );
+
+			if ( empty( $order ) ) {
+				$order = new WC_Order();
+				wp_safe_redirect( add_query_arg( $this->id, 'error', $order->get_checkout_order_received_url() ) );
+			} else {
+				wp_safe_redirect( $order->get_checkout_order_received_url() );
+			}
 		}
 		exit();
 	}
@@ -507,5 +514,20 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		}
 
 		return true;
+	}
+
+	/**
+	 * Display a message to the user if unable to match notifications requests with an order.
+	 *
+	 * @param $text
+	 *
+	 * @return string
+	 */
+	public function thankyou_order_received_text( $text ) {
+		if ( isset( $_GET[ $this->id ] ) ) {
+			return __( 'Thank you. Your order has been received, but we have encountered an issue when redirecting back. Please contact us for assistance.', 'globalpayments-gateway-provider-for-woocommerce' );
+		}
+
+		return $text;
 	}
 }
