@@ -267,6 +267,8 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			$order->set_transaction_id( $gateway_response->transactionId );
 			$order->save();
 
+			update_post_meta( $order_id, '_globalpayments_payment_action', $this->payment_action );
+
 			// 2. Redirect the customer
 			return array(
 				'result'   => 'success',
