@@ -7,6 +7,7 @@ use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GpApiGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\TransactionInfoTrait;
+use GlobalPayments\WooCommercePaymentGatewayProvider\Plugin;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 use WC_Order;
 use WC_Payment_Gateway;
@@ -56,6 +57,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 		$this->configure_merchant_settings();
 
 		$this->add_hooks();
+		$this->enqueue_scripts();
 	}
 
 	public function add_hooks() {
@@ -93,6 +95,25 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 			add_action( 'woocommerce_admin_order_data_after_order_details', array( $this, 'transaction_info_modal' ), 99 );
 		}
 		add_action( 'woocommerce_api_globalpayments_get_transaction_info', array( $this, 'get_transaction_info' ) );
+	}
+
+	/**
+	 * Enqueues BNPL scripts from Global Payments.
+	 *
+	 * @return
+	 */
+	public function enqueue_scripts() {
+		if ( ! is_checkout() ) {
+			return;
+		}
+
+		wp_enqueue_script(
+			'globalpayments-bnpl',
+			Plugin::get_url( '/assets/frontend/js/globalpayments-bnpl.js' ),
+			array( 'jquery', 'jquery-blockui' ),
+			Plugin::VERSION,
+			true
+		);
 	}
 
 	/**
