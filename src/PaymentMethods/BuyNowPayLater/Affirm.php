@@ -49,7 +49,7 @@ class Affirm extends AbstractBuyNowPayLater {
 	public function get_method_availability() {
 		return array(
 			'USD' => array( 'US' ),
-			'CAD' => array( 'US', 'CA' ),
+			'CAD' => array( 'CA' ),
 		);
 	}
 

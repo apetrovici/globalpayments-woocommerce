@@ -45,17 +45,17 @@ class Klarna extends AbstractBuyNowPayLater {
 	 */
 	public function get_method_availability() {
 		return array(
-			'AUD' => array( 'AU', 'NZ' ),
-			'NZD' => array( 'AU', 'NZ' ),
-			'EUR' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'DKK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'NOK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'PLN' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'SEK' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'CHF' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'GBP' => array( 'AT', 'BE', 'DK', 'FI', 'FR', 'DE', 'IT', 'NL', 'NO', 'PL', 'ES', 'SE', 'CH', 'GB' ),
-			'CAD' => array( 'CA', 'US' ),
-			'USD' => array( 'CA', 'US' ),
+			'USD' => array( 'US' ),
+			'CAD' => array( 'CA' ),
+			'GBP' => array( 'GB' ),
+			'AUD' => array( 'AU' ),
+			'NZD' => array( 'NZ' ),
+			'EUR' => array( 'AT', 'BE', 'DE', 'ES', 'FI', 'FR', 'IT', 'NL' ),
+			'CHF' => array( 'CH' ),
+			'DKK' => array( 'DK' ),
+			'NOK' => array( 'NO' ),
+			'PLN' => array( 'PL' ),
+			'SEK' => array( 'SE' ),
 		);
 	}
 }
