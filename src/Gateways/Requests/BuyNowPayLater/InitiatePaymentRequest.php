@@ -17,7 +17,7 @@ use GlobalPayments\WooCommercePaymentGatewayProvider\Utils\Utils;
 
 defined( 'ABSPATH' ) || exit;
 
-class AuthorizationRequest extends AbstractRequest {
+class InitiatePaymentRequest extends AbstractRequest {
 	/**
 	 * Country codes to send the state for
 	 *
@@ -47,7 +47,7 @@ class AuthorizationRequest extends AbstractRequest {
 		return $paymentMethod->authorize( $this->order->get_total() )
 		                     ->withCurrency( $this->order->get_currency() )
 		                     ->withOrderId( (string) $this->order->get_id() )
-		                     ->withProductData( $this->get_products_data() )
+		                     ->withProductData( $this->get_items_data() )
 		                     ->withAddress( $shipping_address, AddressType::SHIPPING )
 		                     ->withAddress( $billing_address, AddressType::BILLING )
 		                     ->withCustomerData( $this->get_customer_data() )
@@ -59,11 +59,23 @@ class AuthorizationRequest extends AbstractRequest {
 		return array();
 	}
 
-	private function get_products_data() {
-		$products_data = array();
-		$order_items   = $this->order->get_items();
+	private function get_items_data() {
+		$items_data = array();
 
-		foreach ( $order_items as $item_id => $item ) {
+//		Order item (product, shipping, fee, coupon, tax).
+		$this->get_products_data( $items_data );
+		$this->get_shipping_data( $items_data );
+
+		return $items_data;
+	}
+
+	/**
+	 * Get product items from order.
+	 *
+	 * @param $items_data
+	 */
+	private function get_products_data( &$items_data ) {
+		foreach ( $this->order->get_items() as $item ) {
 			$order_product = $item->get_product();
 			$image         = wp_get_attachment_image_url( $order_product->get_image_id() );
 			$product = new Product();
@@ -72,17 +84,40 @@ class AuthorizationRequest extends AbstractRequest {
 			$product->description    = $product->productName;
 			$product->quantity       = $item->get_quantity();
 			$product->unitPrice      = wc_format_decimal( $this->order->get_item_total( $item, true ), 2 );
-			$product->netUnitPrice   = wc_format_decimal( $this->order->get_item_total( $item, true ), 2 );
+			$product->netUnitPrice   = $product->unitPrice;
 			$product->taxAmount      = wc_format_decimal( $this->order->get_item_tax( $item ), 2 );
 //			$product->discountAmount = 0;
 //			$product->taxPercentage  = 0;
 			$product->url            = $order_product->get_permalink();
 			$product->imageUrl       = ! empty( $image ) ? $image : wc_placeholder_img_src();
 
-			$products_data[] = $product;
+			$items_data[] = $product;
 		}
+	}
 
-		return $products_data;
+	/**
+	 * Get shipping item from order.
+	 *
+	 * @param $items_data
+	 */
+	private function get_shipping_data( &$items_data ) {
+		$shipping_tax   = $this->order->get_shipping_tax();
+		$shipping_total = $this->order->get_shipping_total() + $shipping_tax;
+
+		$product = new Product();
+		$product->productId      = 'shipping_fee';
+		$product->productName    = __( 'Shipping', 'woocommerce' );
+		$product->description    = $product->productName;
+		$product->quantity       = 1;
+		$product->unitPrice      = wc_format_decimal( $shipping_total, 2 );
+		$product->netUnitPrice   = $product->unitPrice;
+		$product->taxAmount      = wc_format_decimal( $shipping_tax, 2 );
+//		$product->discountAmount = 0;
+//		$product->taxPercentage  = 0;
+		$product->url            = home_url();
+		$product->imageUrl       = wc_placeholder_img_src();
+
+		$items_data[] = $product;
 	}
 
 	private function get_billing_address() {
@@ -132,7 +167,7 @@ class AuthorizationRequest extends AbstractRequest {
 
 		$needs_shipping    = false;
 		$has_virtual_items = false;
-		foreach ( $order_items as $item_id => $item ) {
+		foreach ( $order_items as $item ) {
 			$order_product = $item->get_product();
 			if ( $order_product->needs_shipping() ) {
 				$needs_shipping = true;

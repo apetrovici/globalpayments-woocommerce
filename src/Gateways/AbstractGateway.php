@@ -1042,7 +1042,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway_Cc {
 			self::TXN_TYPE_GET_ACCESS_TOKEN        => Requests\GetAccessTokenRequest::class,
 			self::TXN_TYPE_CHECK_ENROLLMENT        => Requests\ThreeDSecure\CheckEnrollmentRequest::class,
 			self::TXN_TYPE_INITIATE_AUTHENTICATION => Requests\ThreeDSecure\InitiateAuthenticationRequest::class,
-			self::TXN_TYPE_BNPL_AUTHORIZE          => Requests\BuyNowPayLater\AuthorizationRequest::class,
+			self::TXN_TYPE_BNPL_AUTHORIZE          => Requests\BuyNowPayLater\InitiatePaymentRequest::class,
 		);
 
 		if ( ! isset( $map[ $txn_type ] ) ) {
