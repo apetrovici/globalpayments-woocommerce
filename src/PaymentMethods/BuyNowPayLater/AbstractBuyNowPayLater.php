@@ -4,6 +4,7 @@ namespace GlobalPayments\WooCommercePaymentGatewayProvider\PaymentMethods\BuyNow
 
 use GlobalPayments\Api\Entities\Enums\TransactionStatus;
 use GlobalPayments\Api\Entities\Reporting\TransactionSummary;
+use GlobalPayments\Api\Utils\GenerationUtils;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\AbstractGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\GpApiGateway;
 use GlobalPayments\WooCommercePaymentGatewayProvider\Gateways\Traits\TransactionInfoTrait;
@@ -103,7 +104,7 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 	 * @return
 	 */
 	public function enqueue_scripts() {
-		if ( ! is_checkout() ) {
+		if ( ! is_checkout() || wp_script_is( 'globalpayments-bnpl', 'enqueued' ) ) {
 			return;
 		}
 
@@ -337,6 +338,11 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 
 			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( $request->get_param( 'id' ) );
 			$order = $this->get_order( $gateway_response );
+
+			if ( in_array( $order->get_status(), array( 'processing', 'failed' ) ) ) {
+				wp_safe_redirect( $order->get_checkout_order_received_url() );
+			}
+
 			switch( $gateway_response->transactionStatus ) {
 				case TransactionStatus::INITIATED:
 					wp_safe_redirect( $order->get_checkout_order_received_url() );
@@ -401,6 +407,10 @@ abstract class AbstractBuyNowPayLater extends WC_Payment_Gateway {
 
 			$gateway_response = $this->gateway->get_transaction_details_by_txn_id( $request->get_param( 'id' ) );
 			$order = $this->get_order( $gateway_response );
+
+			if ( in_array( $order->get_status(), array( 'processing', 'failed' ) ) ) {
+				return;
+			}
 
 			switch( $request->get_param( 'status' ) ) {
 				case TransactionStatus::PREAUTHORIZED:
