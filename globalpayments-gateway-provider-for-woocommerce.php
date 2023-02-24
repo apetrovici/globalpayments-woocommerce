@@ -7,12 +7,46 @@
  * Requires PHP: 7.1
  * WC tested up to: 7.2.2
  * Author: Global Payments
-*/
+ */
 
 defined( 'ABSPATH' ) || exit;
 
 if ( version_compare( PHP_VERSION, '7.1', '<' ) ) {
+	add_action( 'admin_notices', function () {
+		$message = sprintf( __( 'Your PHP version is %s but GlobalPayments For WooCommerce requires version 7.1+.', 'globalpayments-gateway-provider-for-woocommerce' ), PHP_VERSION );
+		echo '<div class="notice notice-error"><p>' . $message . '</p></div>';
+	} );
+
 	return;
+}
+
+register_activation_hook( __FILE__, 'globalpayments_plugin_activation' );
+
+function globalpayments_plugin_activation() {
+	$requiredExtensions = [ 'curl', 'dom', 'openssl', 'json', 'zlib', 'intl', 'mbstring', 'xml' ];
+	foreach ( $requiredExtensions as $ext ) {
+		if ( ! extension_loaded( $ext ) ) {
+			$notices   = get_option( 'globalpayments_plugin_deferred_admin_notices', array() );
+			$notices[] = sprintf( __( 'The GlobalPayments WooCommerce plugin requires the %s extension.', 'globalpayments-gateway-provider-for-woocommerce' ), $ext );
+			update_option( 'globalpayments_plugin_deferred_admin_notices', $notices );
+		}
+	}
+}
+
+add_action( 'admin_notices', 'globalpayments_plugin_admin_notices' );
+function globalpayments_plugin_admin_notices() {
+	if ( $notices = get_option( 'globalpayments_plugin_deferred_admin_notices' ) ) {
+		foreach ( $notices as $notice ) {
+			echo "<div class='notice notice-error'><p>$notice</p></div>";
+		}
+		delete_option( 'globalpayments_plugin_deferred_admin_notices' );
+		deactivate_plugins( __FILE__ );
+	}
+}
+
+register_deactivation_hook( __FILE__, 'globalpayments_plugin_deactivation' );
+function globalpayments_plugin_deactivation() {
+	delete_option( 'globalpayments_plugin_deferred_admin_notices' );
 }
 
 /**
